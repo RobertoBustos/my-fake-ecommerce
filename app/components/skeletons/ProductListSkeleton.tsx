@@ -1,5 +1,5 @@
-import SkeletonLoading from "expo-skeleton-loading";
 import { StyleSheet, View } from "react-native";
+import SkeletonWrapper from "../common/SkeletonWrapper";
 
 const ProductListSkeleton = () => {
   return Array.from({ length: 8 }).map((_, index) => {
@@ -9,12 +9,12 @@ const ProductListSkeleton = () => {
 
 export const ProductCardSkeleton = () => {
   return (
-    <SkeletonLoading background={"#adadad"} highlight={"#ffffff"}>
+    <SkeletonWrapper>
       <View style={styles.container}>
         <View style={styles.left} />
         <View style={styles.right} />
       </View>
-    </SkeletonLoading>
+    </SkeletonWrapper>
   );
 };
 

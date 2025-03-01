@@ -1,5 +1,5 @@
-import SkeletonLoading from "expo-skeleton-loading";
 import { StyleSheet, View } from "react-native";
+import SkeletonWrapper from "../common/SkeletonWrapper";
 
 export type ImageSkeletonPropsType = {
   width: number;
@@ -13,11 +13,11 @@ const ImageSkeleton = ({ height, width }: ImageSkeletonPropsType) => {
   mixedStyles.width = width;
 
   return (
-    <SkeletonLoading background={"#adadad"} highlight={"#ffffff"}>
+    <SkeletonWrapper>
       <View style={mixedStyles}>
         <View style={styles.image} />
       </View>
-    </SkeletonLoading>
+    </SkeletonWrapper>
   );
 };
 

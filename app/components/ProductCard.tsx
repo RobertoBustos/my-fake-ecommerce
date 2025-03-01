@@ -1,14 +1,9 @@
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useMemo } from "react";
-import {
-  Image,
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
 import { ProductType, RootStackParamList } from "../constants/types";
 import { formatCurrency } from "../utils/formatCurrency";
+import CustomImage from "./common/CustomImage";
 
 export type ProductCardPropsType = {
   data: ProductType;
@@ -51,7 +46,7 @@ const ProductCard = ({ data, disabled, quantity }: ProductCardPropsType) => {
             </Text>
           ) : null}
         </View>
-        <Image source={{ uri: data.image }} style={styles.image} />
+        <CustomImage imageUrl={data.image} width={120} height={120} />
       </View>
     </TouchableWithoutFeedback>
   );
@@ -59,10 +54,13 @@ const ProductCard = ({ data, disabled, quantity }: ProductCardPropsType) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#fff",
-    padding: 16,
+    backgroundColor: "white",
+    justifyContent: "space-between",
+    flexDirection: "row",
     marginVertical: 8,
     borderRadius: 8,
+    padding: 8,
+    //shadows
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -71,13 +69,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 8,
-    justifyContent: "space-between",
-    flexDirection: "row",
   },
   description: {
-    maxWidth: "70%",
+    flex: 1,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-evenly",
   },
   title: {
     fontSize: 16,
@@ -94,10 +90,6 @@ const styles = StyleSheet.create({
   subtotal: {
     color: "teal",
     fontSize: 24,
-  },
-  image: {
-    width: 100,
-    height: 100,
   },
 });
 export default ProductCard;

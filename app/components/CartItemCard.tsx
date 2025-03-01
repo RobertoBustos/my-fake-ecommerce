@@ -34,7 +34,7 @@ const CartItem = ({ data }: CartItemPropsType) => {
       </View>
       <CustomButton
         onPress={handleRemoveFromCart}
-        buttonComponent={<DeleteButton color="red" size={40} />}
+        buttonComponent={<DeleteButton color="red" size={30} />}
       />
     </View>
   );

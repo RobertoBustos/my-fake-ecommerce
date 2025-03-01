@@ -1,8 +1,9 @@
 import { FlatList, StyleSheet, View } from "react-native";
+import { ProductType } from "../constants/types";
 import ProductCard from "./ProductCard";
 
 export type ProductListPropsType = {
-  products: any[];
+  products: ProductType[];
 };
 
 const ProductList = ({ products }: ProductListPropsType) => {

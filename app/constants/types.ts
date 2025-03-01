@@ -37,7 +37,6 @@ export type CartType = {
 export type CartItemType = {
     item: ProductType
     quantity: number
-    subtotal: number
 }
 
 export type OrderType = {

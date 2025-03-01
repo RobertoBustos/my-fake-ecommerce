@@ -15,6 +15,7 @@ import { useSiblingContext } from "./SiblingContext";
 export type CartContextType = {
   cart: CartType;
   onAdd: (data: CartItemType) => void;
+  onUpdate: (productId: number, quantity: number) => void;
   onRemove: (productId: number) => void;
 };
 
@@ -25,6 +26,7 @@ export type CartStoreType = {
 const CartContext = createContext<CartContextType>({
   cart: { items: [] },
   onAdd: () => {},
+  onUpdate: () => {},
   onRemove: () => {},
 });
 
@@ -33,6 +35,12 @@ const CartStore = ({ children }: CartStoreType) => {
   const { onAdd: addMessage } = useSiblingContext();
 
   const onAdd = (data: CartItemType) => {
+    const index = cart.items.findIndex(({ item }) => {
+      return item.id === data.item.id;
+    });
+    if (index !== -1) {
+      return onUpdate(data.item.id, cart.items[index].quantity + data.quantity);
+    }
     const items = [...cart.items, data];
     const newCart = { items };
     setCart(newCart);
@@ -45,6 +53,17 @@ const CartStore = ({ children }: CartStoreType) => {
     const newCart = { items };
     setCart(newCart);
     addMessage("item Removed");
+    saveCart(newCart);
+  };
+
+  const onUpdate = (productId: number, quantity: number) => {
+    const index = cart.items.findIndex(({ item }) => {
+      return item.id === productId;
+    });
+    const newCart = { ...cart };
+    newCart.items[index].quantity = quantity;
+    setCart(newCart);
+    addMessage("item Updated");
     saveCart(newCart);
   };
 
@@ -65,7 +84,7 @@ const CartStore = ({ children }: CartStoreType) => {
   };
 
   return (
-    <CartContext.Provider value={{ cart, onAdd, onRemove }}>
+    <CartContext.Provider value={{ cart, onAdd, onRemove, onUpdate }}>
       {children}
     </CartContext.Provider>
   );

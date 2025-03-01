@@ -2,15 +2,16 @@ import { useNavigation } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
   ActivityIndicator,
-  Image,
   ScrollView,
   StyleSheet,
   Text,
+  View,
 } from "react-native";
 import FooterButton from "../components/FooterButton";
 import Layout from "../components/Layout";
 import NoStockMessage from "../components/NoStockMessage";
 import QuantityButtons from "../components/QuantityButtons";
+import CustomImage from "../components/common/CustomImage";
 import { useCartContext } from "../contexts/cartContext";
 import { useProductDetails } from "../hooks/useProductDetails";
 import { formatCurrency } from "../utils/formatCurrency";
@@ -35,7 +36,6 @@ const ProductScreen = ({ route }: any) => {
     onAdd({
       item: response,
       quantity: quantity,
-      subtotal: response.price.amount * quantity,
     });
     navigation.goBack();
   };
@@ -68,26 +68,31 @@ const ProductScreen = ({ route }: any) => {
 
   return (
     <Layout footerComponent={renderFooter()}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>{response.title}</Text>
-        <Image source={{ uri: response.image }} style={styles.image} />
-        <Text style={styles.price}>{formatCurrency(response.price)}</Text>
-        {response.stock >= 1 ? (
-          <>
-            <QuantityButtons
-              min={response.purchaseLimit?.min || 1}
-              max={maxPurchaseLimit}
-              value={quantity}
-              onChange={setQuantity}
-            />
-            <Text style={styles.stock}>{response.stock} Available</Text>
-          </>
-        ) : (
-          <NoStockMessage />
-        )}
-        <Text style={styles.descriptionTitle}>Description</Text>
-        <Text style={styles.description}>{response.description}</Text>
-      </ScrollView>
+      <View style={styles.container}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          <Text style={styles.title}>{response.title}</Text>
+          <CustomImage imageUrl={response.image} width={350} height={350} />
+          <Text style={styles.price}>{formatCurrency(response.price)}</Text>
+          {response.stock >= 1 ? (
+            <>
+              <QuantityButtons
+                min={response.purchaseLimit?.min || 1}
+                max={maxPurchaseLimit}
+                value={quantity}
+                onChange={setQuantity}
+              />
+              <Text style={styles.stock}>{response.stock} Available</Text>
+            </>
+          ) : (
+            <NoStockMessage />
+          )}
+          <Text style={styles.descriptionTitle}>Description</Text>
+          <Text style={styles.description}>{response.description}</Text>
+        </ScrollView>
+      </View>
     </Layout>
   );
 };
@@ -95,9 +100,10 @@ const ProductScreen = ({ route }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  scrollContainer: {
     alignItems: "center",
-    width: "100%",
-    height: "100%",
+    justifyContent: "center",
   },
   loader: {
     flex: 1,
@@ -107,11 +113,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 20,
     textAlign: "center",
-  },
-  image: {
-    width: 250,
-    height: 250,
-    marginTop: 20,
+    marginBottom: 20,
   },
   price: {
     fontSize: 24,

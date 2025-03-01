@@ -1,13 +1,16 @@
+import { NavigationProp } from "@react-navigation/native";
+import { useNavigation } from "expo-router";
 import React from "react";
-import { FlatList, StyleSheet, View } from "react-native";
-import CartItem from "../components/CartItem";
+import CartList from "../components/CartList";
 import EmptyCart from "../components/EmptyCart";
 import FooterButton from "../components/FooterButton";
 import Layout from "../components/Layout";
+import { RootStackParamList } from "../constants/types";
 import { useCartContext } from "../contexts/cartContext";
 
-const CartScreen = ({ navigation }: any) => {
+const CartScreen = () => {
   const { cart } = useCartContext();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const isCartEmpty = cart.items.length === 0;
 
   const handleRedirect = () => {
@@ -37,21 +40,9 @@ const CartScreen = ({ navigation }: any) => {
 
   return (
     <Layout footerComponent={renderFooter()}>
-      <View style={styles.container}>
-        <FlatList
-          data={cart.items}
-          renderItem={({ item }) => <CartItem data={item} />}
-        />
-      </View>
+      <CartList cartItems={cart.items} />
     </Layout>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: "100%",
-  },
-});
 
 export default CartScreen;

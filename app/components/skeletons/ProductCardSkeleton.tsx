@@ -1,4 +1,5 @@
 import { StyleSheet, View } from "react-native";
+import { colors } from "../../constants/colors";
 import SkeletonWrapper from "../common/SkeletonWrapper";
 
 export const ProductCardSkeleton = () => {
@@ -23,12 +24,12 @@ const styles = StyleSheet.create({
   },
   left: {
     width: "65%",
-    backgroundColor: "#adadad",
+    backgroundColor: colors.skeletonBackground,
     borderRadius: 10,
   },
   right: {
     width: "30%",
-    backgroundColor: "#adadad",
+    backgroundColor: colors.skeletonBackground,
     borderRadius: 10,
   },
 });

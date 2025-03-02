@@ -1,4 +1,5 @@
 import { Alert, StyleSheet, View } from "react-native";
+import { colors } from "../constants/colors";
 import { CartItemType } from "../constants/types";
 import { useCartContext } from "../contexts/CartContext";
 import ProductCard from "./ProductCard";
@@ -34,7 +35,7 @@ const CartItem = ({ data }: CartItemPropsType) => {
       </View>
       <CustomButton
         onPress={handleRemoveFromCart}
-        buttonComponent={<DeleteButton color="red" size={30} />}
+        buttonComponent={<DeleteButton color={colors.black} size={30} />}
       />
     </View>
   );

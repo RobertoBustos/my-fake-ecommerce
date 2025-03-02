@@ -6,6 +6,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { colors } from "../../constants/colors";
 
 export type CustomCardPropsType = PropsWithChildren & {
   onPress?: () => void;
@@ -32,13 +33,13 @@ const CustomCard = ({
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    backgroundColor: "white",
+    backgroundColor: colors.white,
     justifyContent: "space-between",
     marginVertical: 8,
     borderRadius: 8,
     padding: 8,
     //shadows
-    shadowColor: "#000",
+    shadowColor: colors.black,
     shadowOffset: {
       width: 0,
       height: 8,

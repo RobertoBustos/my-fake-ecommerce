@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
+import { colors } from "../constants/colors";
 import { useCartContext } from "../contexts/CartContext";
 import { formatCurrency } from "../utils/formatCurrency";
 import CustomCard from "./common/CustomCard";
@@ -62,11 +63,11 @@ export const OrderDetailsRow = ({ concept, value }: OrderDetailsRow) => {
 
 const styles = StyleSheet.create({
   headerText: {
-    color: "teal",
+    color: colors.primary,
     fontSize: 16,
     fontWeight: "500",
     borderBottomWidth: 3,
-    borderBottomColor: "teal",
+    borderBottomColor: colors.primary,
     marginBottom: 8,
   },
   rowContainer: {
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     borderBottomWidth: 1,
-    borderBottomColor: "lightgray",
+    borderBottomColor: colors.black,
   },
   rowText: {
     fontSize: 16,

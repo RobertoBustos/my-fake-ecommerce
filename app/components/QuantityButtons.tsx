@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
+import { colors } from "../constants/colors";
 import CustomButton from "./common/CustomButton";
 import { AddButton, SubstractButton } from "./common/IconButtons";
 
@@ -25,7 +26,7 @@ const QuantityButtons = ({ min, max, value, onChange }: AddToCartPropsType) => {
         disabled={value <= min}
         buttonComponent={
           <SubstractButton
-            color={value <= min ? "lightgray" : "teal"}
+            color={value <= min ? colors.dark : colors.primary}
             size={55}
           />
         }
@@ -35,7 +36,10 @@ const QuantityButtons = ({ min, max, value, onChange }: AddToCartPropsType) => {
         onPress={incrementQuantity}
         disabled={value >= max}
         buttonComponent={
-          <AddButton color={value >= max ? "lightgray" : "teal"} size={55} />
+          <AddButton
+            color={value >= max ? colors.dark : colors.primary}
+            size={55}
+          />
         }
       />
     </View>

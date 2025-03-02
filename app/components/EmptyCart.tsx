@@ -1,10 +1,11 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StyleSheet, Text, View } from "react-native";
+import { colors } from "../constants/colors";
 
 const EmptyCart = () => {
   return (
     <View style={styles.container}>
-      <Ionicons name="cart" size={200} color="lightgray" />
+      <Ionicons name="cart" size={200} color={colors.dark} />
       <Text style={styles.message}>There are no items in your cart</Text>
     </View>
   );
@@ -21,7 +22,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     textAlign: "center",
     marginTop: 24,
-    color: "gray",
+    color: colors.dark,
   },
 });
 

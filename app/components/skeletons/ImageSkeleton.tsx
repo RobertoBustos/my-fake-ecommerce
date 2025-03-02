@@ -1,4 +1,5 @@
 import { StyleSheet, View } from "react-native";
+import { colors } from "../../constants/colors";
 import SkeletonWrapper from "../common/SkeletonWrapper";
 
 export type ImageSkeletonPropsType = {
@@ -31,7 +32,7 @@ const styles = StyleSheet.create({
   },
   image: {
     flex: 1,
-    backgroundColor: "#adadad",
+    backgroundColor: colors.skeletonBackground,
     borderRadius: 10,
   },
 });

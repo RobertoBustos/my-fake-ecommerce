@@ -1,10 +1,11 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { StyleSheet, Text, View } from "react-native";
+import { colors } from "../constants/colors";
 
 const NoStockMessage = () => {
   return (
     <View style={styles.container}>
-      <FontAwesome6 name="face-frown-open" size={48} color="darkgray" />
+      <FontAwesome6 name="face-frown-open" size={48} color={colors.dark} />
       <Text style={styles.text}>
         This Product is out of stock or not available for now. Please try again
         later

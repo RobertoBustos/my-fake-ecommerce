@@ -12,6 +12,7 @@ import Layout from "../components/Layout";
 import NoStockMessage from "../components/NoStockMessage";
 import QuantityButtons from "../components/QuantityButtons";
 import CustomImage from "../components/common/CustomImage";
+import { colors } from "../constants/colors";
 import { useCartContext } from "../contexts/CartContext";
 import { useProductDetails } from "../hooks/useProductDetails";
 import { formatCurrency } from "../utils/formatCurrency";
@@ -119,7 +120,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginTop: 20,
-    color: "teal",
+    color: colors.primary,
   },
   descriptionTitle: {
     fontSize: 16,
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
   stock: {
     fontSize: 16,
     marginTop: 20,
-    color: "black",
+    color: colors.black,
   },
 });
 

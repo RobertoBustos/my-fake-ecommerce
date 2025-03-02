@@ -1,6 +1,7 @@
-import { useCheckoutContext } from "@/app/contexts/CheckoutContext";
 import { Controller, useForm } from "react-hook-form";
 import { StyleSheet, Text, TextInput, View } from "react-native";
+import { colors } from "../../constants/colors";
+import { useCheckoutContext } from "../../contexts/CheckoutContext";
 
 const UserDetailsForm = () => {
   const { userData, onAddUser } = useCheckoutContext();
@@ -45,7 +46,6 @@ const UserDetailsForm = () => {
       {errors.firstName && (
         <Text style={styles.errorText}>{errors.firstName.message}</Text>
       )}
-
       <Controller
         control={control}
         rules={{
@@ -69,8 +69,6 @@ const UserDetailsForm = () => {
       {errors.lastName && (
         <Text style={styles.errorText}>{errors.lastName.message}</Text>
       )}
-
-      {/* <Button title="Submit" onPress={handleSubmit(onSubmit)} /> */}
     </View>
   );
 };
@@ -84,12 +82,12 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 40,
     paddingHorizontal: 8,
-    backgroundColor: "#F9F9F9",
+    backgroundColor: colors.light,
     marginVertical: 4,
     fontSize: 16,
   },
   errorText: {
-    color: "red",
+    color: colors.errorText,
   },
 });
 

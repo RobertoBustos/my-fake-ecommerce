@@ -1,4 +1,5 @@
 import { StyleSheet, Text } from "react-native";
+import { colors } from "../constants/colors";
 import CustomCard from "./common/CustomCard";
 import UserDetailsForm from "./forms/UserDetailsForm";
 
@@ -13,11 +14,11 @@ const UserDetails = () => {
 
 const styles = StyleSheet.create({
   headerText: {
-    color: "teal",
+    color: colors.primary,
     fontSize: 16,
     fontWeight: "500",
     borderBottomWidth: 3,
-    borderBottomColor: "teal",
+    borderBottomColor: colors.primary,
     marginBottom: 8,
   },
 });

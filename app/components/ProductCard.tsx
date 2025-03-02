@@ -1,6 +1,7 @@
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { colors } from "../constants/colors";
 import { ProductType, RootStackParamList } from "../constants/types";
 import { formatCurrency } from "../utils/formatCurrency";
 import CustomCard from "./common/CustomCard";
@@ -22,7 +23,7 @@ const ProductCard = ({ data, disabled, quantity }: ProductCardPropsType) => {
 
   const priceStyles = { ...styles.price };
   if (quantity) {
-    priceStyles.color = "black";
+    priceStyles.color = colors.black;
   }
 
   return (
@@ -65,13 +66,13 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   price: {
-    color: "teal",
+    color: colors.primary,
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 16,
   },
   subtotal: {
-    color: "teal",
+    color: colors.primary,
     fontSize: 24,
   },
 });

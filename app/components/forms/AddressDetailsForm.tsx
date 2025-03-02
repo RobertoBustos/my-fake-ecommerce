@@ -1,6 +1,7 @@
-import { useCheckoutContext } from "@/app/contexts/CheckoutContext";
 import { Controller, useForm } from "react-hook-form";
 import { StyleSheet, Text, TextInput, View } from "react-native";
+import { colors } from "../../constants/colors";
+import { useCheckoutContext } from "../../contexts/CheckoutContext";
 
 const AddressDetailsForm = () => {
   const { addressData, onAddAddress } = useCheckoutContext();
@@ -86,12 +87,12 @@ const styles = StyleSheet.create({
     width: "100%",
     minHeight: 40,
     paddingHorizontal: 8,
-    backgroundColor: "#F9F9F9",
+    backgroundColor: colors.light,
     marginVertical: 4,
     fontSize: 16,
   },
   errorText: {
-    color: "red",
+    color: colors.errorText,
   },
 });
 

@@ -1,5 +1,6 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { colors } from "../../constants/colors";
 
 export type IconButtonPropsType = {
   size?: number;
@@ -8,7 +9,7 @@ export type IconButtonPropsType = {
 
 export const DeleteButton = ({
   size = 30,
-  color = "black",
+  color = colors.black,
 }: IconButtonPropsType) => {
   return (
     <AntDesign
@@ -22,7 +23,7 @@ export const DeleteButton = ({
 
 export const AddButton = ({
   size = 30,
-  color = "black",
+  color = colors.black,
 }: IconButtonPropsType) => {
   return <AntDesign name="pluscircle" size={size} color={color} />;
 };
@@ -47,12 +48,16 @@ export const DefaultButton = ({
 }: DefaultButtonPropsType) => {
   const mixedStyles = { ...styles.button };
   if (disabled || isLoading) {
-    mixedStyles.backgroundColor = "darkgray";
+    mixedStyles.backgroundColor = colors.black;
   }
   return (
     <View style={mixedStyles}>
       {isLoading ? (
-        <ActivityIndicator size="small" color={"white"} style={styles.loader} />
+        <ActivityIndicator
+          size="small"
+          color={colors.white}
+          style={styles.loader}
+        />
       ) : (
         <Text style={styles.buttonText}>{text}</Text>
       )}
@@ -66,11 +71,11 @@ const styles = StyleSheet.create({
     height: "100%",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "teal",
+    backgroundColor: colors.primary,
     borderRadius: 30,
   },
   buttonText: {
-    color: "white",
+    color: colors.white,
     fontWeight: "bold",
     fontSize: 16,
   },

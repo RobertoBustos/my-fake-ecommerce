@@ -5,7 +5,7 @@ import Layout from "../components/Layout";
 import ProductList from "../components/ProductList";
 import ProductListSkeleton from "../components/skeletons/ProductListSkeleton";
 import { RootStackParamList } from "../constants/types";
-import { useCartContext } from "../contexts/cartContext";
+import { useCartContext } from "../contexts/CartContext";
 import { useProducts } from "../hooks/useProducts";
 
 const HomeScreen = () => {

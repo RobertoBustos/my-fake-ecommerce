@@ -1,9 +1,8 @@
-import { ReactNode } from "react";
+import { PropsWithChildren, ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 import ToastMessage from "./common/ToastMessage";
 
-export type LayoutPropsType = {
-  children?: ReactNode;
+export type LayoutPropsType = PropsWithChildren & {
   footerComponent?: ReactNode;
 };
 

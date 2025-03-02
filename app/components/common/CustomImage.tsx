@@ -12,9 +12,7 @@ const CustomImage = ({ imageUrl, width, height }: CustomImagePropsType) => {
   const image = useImage(imageUrl, {
     maxHeight: height,
     maxWidth: width,
-    onError(error, retry) {
-      console.error("Loading failed:", error.message);
-    },
+    onError(error, retry) {},
   });
 
   if (!image) {

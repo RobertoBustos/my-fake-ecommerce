@@ -1,15 +1,12 @@
 import Skeleton, { SkeletonLoading } from "expo-skeleton-loading";
-import { FC, ReactNode } from "react";
+import { FC, PropsWithChildren } from "react";
 
-export type SkeletonWrapperPropsType = {
-  children: ReactNode;
+export type SkeletonWrapperPropsType = PropsWithChildren & {
   background?: string;
   highlight?: string;
 };
 
-export const Wrapper = Skeleton as FC<
-  SkeletonLoading & { children: ReactNode }
->;
+export const Wrapper = Skeleton as FC<PropsWithChildren & SkeletonLoading>;
 
 const SkeletonWrapper = ({
   children,

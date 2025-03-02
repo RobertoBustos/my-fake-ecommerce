@@ -1,9 +1,5 @@
-import { ReactNode, createContext, useContext, useState } from "react";
+import { PropsWithChildren, createContext, useContext, useState } from "react";
 import { RootSiblingParent } from "react-native-root-siblings";
-
-export type SiblingStoreType = {
-  children: ReactNode;
-};
 
 export type SiblingContextType = {
   message: string;
@@ -17,7 +13,7 @@ const SiblingContext = createContext<SiblingContextType>({
   onRemove: () => {},
 });
 
-const SiblingStore = ({ children }: SiblingStoreType) => {
+const SiblingStore = ({ children }: PropsWithChildren) => {
   const [message, setMessage] = useState<string>("");
 
   const onAdd = (message: string) => {

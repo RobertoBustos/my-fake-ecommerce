@@ -1,0 +1,96 @@
+import { useCheckoutContext } from "@/app/contexts/CheckoutContext";
+import { Controller, useForm } from "react-hook-form";
+import { StyleSheet, Text, TextInput, View } from "react-native";
+
+const UserDetailsForm = () => {
+  const { userData, onAddUser } = useCheckoutContext();
+  const {
+    control,
+    getValues,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+    },
+  });
+
+  const saveToContext = () => {
+    const values = getValues();
+    onAddUser(values);
+  };
+
+  return (
+    <View>
+      <Controller
+        control={control}
+        rules={{
+          required: true,
+          maxLength: 50,
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            placeholder="FIRST NAME"
+            onBlur={onBlur}
+            onChangeText={(e) => {
+              onChange(e);
+              saveToContext();
+            }}
+            value={value}
+            style={styles.input}
+          />
+        )}
+        name="firstName"
+      />
+      {errors.firstName && (
+        <Text style={styles.errorText}>{errors.firstName.message}</Text>
+      )}
+
+      <Controller
+        control={control}
+        rules={{
+          required: true,
+          maxLength: 50,
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            placeholder="LAST NAME"
+            onBlur={onBlur}
+            onChangeText={(e) => {
+              onChange(e);
+              saveToContext();
+            }}
+            value={value}
+            style={styles.input}
+          />
+        )}
+        name="lastName"
+      />
+      {errors.lastName && (
+        <Text style={styles.errorText}>{errors.lastName.message}</Text>
+      )}
+
+      {/* <Button title="Submit" onPress={handleSubmit(onSubmit)} /> */}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  input: {
+    alignItems: "center",
+    width: "100%",
+    height: 40,
+    paddingHorizontal: 8,
+    backgroundColor: "#F9F9F9",
+    marginVertical: 4,
+    fontSize: 16,
+  },
+  errorText: {
+    color: "red",
+  },
+});
+
+export default UserDetailsForm;

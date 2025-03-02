@@ -12,6 +12,7 @@ const CartList = ({ cartItems }: CartListPropsType) => {
       <FlatList
         data={cartItems}
         renderItem={({ item }) => <CartItemCard data={item} />}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );

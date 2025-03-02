@@ -8,12 +8,12 @@ export type FooterButtonPropsType = {
   isLoading?: boolean;
 };
 
-const FooterButton = ({
+const FooterButton: React.FC<FooterButtonPropsType> = ({
   text,
   onPress,
   disabled,
   isLoading,
-}: FooterButtonPropsType) => {
+}) => {
   return (
     <CustomButton
       onPress={onPress}

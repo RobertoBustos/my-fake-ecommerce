@@ -9,7 +9,7 @@ export async function getProductsService(): Promise<ProductType[] | Error> {
         }
         data.forEach((product: any) => {
             product.stock = Math.floor(Math.random() * 100)
-            product.price = { amount: product.price, currency: 'USD' }
+            product.price = { amount: product.price, currency: 'MXN' }
         })
         return data
     } catch (error) {
@@ -22,7 +22,7 @@ export async function getProductDetailsService(productId: number): Promise<Produ
         const response = await fetch(`https://fakestoreapi.com/products/${productId}`)
         const data = await response.json()
         data.stock = Math.floor(Math.random() * 100)
-        data.price = { amount: data.price, currency: 'USD' }
+        data.price = { amount: data.price, currency: 'MXN' }
         data.purchaseLimit = { min: Math.floor(Math.random() * 3), max: 10 }
         return data
     } catch (error) {

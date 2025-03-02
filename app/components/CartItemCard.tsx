@@ -1,6 +1,6 @@
 import { Alert, StyleSheet, View } from "react-native";
 import { CartItemType } from "../constants/types";
-import { useCartContext } from "../contexts/cartContext";
+import { useCartContext } from "../contexts/CartContext";
 import ProductCard from "./ProductCard";
 import CustomButton from "./common/CustomButton";
 import { DeleteButton } from "./common/IconButtons";

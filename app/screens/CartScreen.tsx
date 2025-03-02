@@ -6,7 +6,7 @@ import EmptyCart from "../components/EmptyCart";
 import FooterButton from "../components/FooterButton";
 import Layout from "../components/Layout";
 import { RootStackParamList } from "../constants/types";
-import { useCartContext } from "../contexts/cartContext";
+import { useCartContext } from "../contexts/CartContext";
 
 const CartScreen = () => {
   const { cart } = useCartContext();

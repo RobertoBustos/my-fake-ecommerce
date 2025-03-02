@@ -39,6 +39,28 @@ export type CartItemType = {
     quantity: number
 }
 
-export type OrderType = {
+export type CartSummaryType = {
+    details: CartSummaryItemType[]
+    subtotal: number
+    taxes: number
+    total: number
+    discount: number
+}
 
+export type CartSummaryItemType = {
+    quantity: number
+    unitPrice: number
+    taxes?: number
+    discount?: number
+    subTotal: number
+}
+
+export type UserType = {
+    firstName: string
+    lastName: string
+}
+
+export type AddressType = {
+    address: string
+    zipCode: number
 }

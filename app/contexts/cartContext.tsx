@@ -1,11 +1,11 @@
 import {
-  ReactNode,
+  PropsWithChildren,
   createContext,
   useContext,
   useEffect,
   useState,
 } from "react";
-import { CartItemType, CartType } from "../constants/types";
+import { CartItemType, CartSummaryType, CartType } from "../constants/types";
 import {
   getFromAsyncStorage,
   saveToAsyncStorage,
@@ -17,10 +17,7 @@ export type CartContextType = {
   onAdd: (data: CartItemType) => void;
   onUpdate: (productId: number, quantity: number) => void;
   onRemove: (productId: number) => void;
-};
-
-export type CartStoreType = {
-  children: ReactNode;
+  getCartSummary: () => CartSummaryType;
 };
 
 const CartContext = createContext<CartContextType>({
@@ -28,9 +25,12 @@ const CartContext = createContext<CartContextType>({
   onAdd: () => {},
   onUpdate: () => {},
   onRemove: () => {},
+  getCartSummary: () => {
+    return { details: [], subtotal: 0, total: 0, discount: 0, taxes: 0 };
+  },
 });
 
-const CartStore = ({ children }: CartStoreType) => {
+const CartStore = ({ children }: PropsWithChildren) => {
   const [cart, setCart] = useState<CartType>({ items: [] });
   const { onAdd: addMessage } = useSiblingContext();
 
@@ -67,6 +67,33 @@ const CartStore = ({ children }: CartStoreType) => {
     saveCart(newCart);
   };
 
+  const getCartSummary = () => {
+    const cartSummary: CartSummaryType = {
+      details: [],
+      subtotal: 0,
+      total: 0,
+      discount: 0,
+      taxes: 0,
+    };
+    const { items } = cart;
+
+    items.forEach((item) => {
+      const cartItem = {
+        unitPrice: item.item.price.amount,
+        quantity: item.quantity,
+        subTotal: item.item.price.amount * item.quantity,
+      };
+      cartSummary.details = [...cartSummary.details, cartItem];
+      cartSummary.subtotal += cartItem.subTotal;
+      cartSummary.taxes += cartItem.subTotal * 0.16;
+    });
+
+    cartSummary.total =
+      cartSummary.subtotal + cartSummary.taxes - cartSummary.discount;
+
+    return cartSummary;
+  };
+
   useEffect(() => {
     fetchCart();
   }, []);
@@ -84,7 +111,9 @@ const CartStore = ({ children }: CartStoreType) => {
   };
 
   return (
-    <CartContext.Provider value={{ cart, onAdd, onRemove, onUpdate }}>
+    <CartContext.Provider
+      value={{ cart, onAdd, onRemove, onUpdate, getCartSummary }}
+    >
       {children}
     </CartContext.Provider>
   );

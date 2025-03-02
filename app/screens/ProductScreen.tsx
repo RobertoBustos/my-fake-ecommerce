@@ -12,7 +12,7 @@ import Layout from "../components/Layout";
 import NoStockMessage from "../components/NoStockMessage";
 import QuantityButtons from "../components/QuantityButtons";
 import CustomImage from "../components/common/CustomImage";
-import { useCartContext } from "../contexts/cartContext";
+import { useCartContext } from "../contexts/CartContext";
 import { useProductDetails } from "../hooks/useProductDetails";
 import { formatCurrency } from "../utils/formatCurrency";
 

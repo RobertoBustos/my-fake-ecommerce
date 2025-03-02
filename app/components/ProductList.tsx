@@ -12,6 +12,7 @@ const ProductList = ({ products }: ProductListPropsType) => {
       <FlatList
         data={products}
         renderItem={({ item }) => <ProductCard data={item} />}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );

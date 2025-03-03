@@ -11,7 +11,7 @@ const ProductList = ({ products }: ProductListPropsType) => {
     <View style={styles.container}>
       <FlatList
         data={products}
-        renderItem={({ item }) => <ProductCard data={item} />}
+        renderItem={({ item }) => <ProductCard productId={item.id} />}
         showsVerticalScrollIndicator={false}
       />
     </View>

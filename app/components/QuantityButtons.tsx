@@ -1,16 +1,23 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 import { colors } from "../constants/colors";
 import CustomButton from "./common/CustomButton";
-import { AddButton, SubstractButton } from "./common/IconButtons";
+import { MinusButton, PlusButton } from "./common/IconButtons";
 
 export type AddToCartPropsType = {
   min: number;
   max: number;
   value: number;
   onChange: (quantity: number) => void;
+  showValue?: boolean;
 };
 
-const QuantityButtons = ({ min, max, value, onChange }: AddToCartPropsType) => {
+const QuantityButtons = ({
+  min,
+  max,
+  value,
+  onChange,
+  showValue = true,
+}: AddToCartPropsType) => {
   const incrementQuantity = () => {
     onChange(value + 1);
   };
@@ -25,20 +32,24 @@ const QuantityButtons = ({ min, max, value, onChange }: AddToCartPropsType) => {
         onPress={decrementQuantity}
         disabled={value <= min}
         buttonComponent={
-          <SubstractButton
-            color={value <= min ? colors.dark : colors.primary}
-            size={55}
+          <MinusButton
+            color={colors.light}
+            size={30}
+            backgroundColor={value <= min ? colors.dark : colors.primary}
           />
         }
       />
-      <Text style={styles.quantity}>{value.toString()}</Text>
+      {showValue ? (
+        <Text style={styles.quantity}>{value.toString()}</Text>
+      ) : null}
       <CustomButton
         onPress={incrementQuantity}
         disabled={value >= max}
         buttonComponent={
-          <AddButton
-            color={value >= max ? colors.dark : colors.primary}
-            size={55}
+          <PlusButton
+            color={colors.light}
+            size={30}
+            backgroundColor={value >= max ? colors.dark : colors.primary}
           />
         }
       />
@@ -49,15 +60,22 @@ const QuantityButtons = ({ min, max, value, onChange }: AddToCartPropsType) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    height: 100,
+    height: "auto",
     justifyContent: "center",
     alignItems: "center",
     marginTop: 20,
   },
   quantity: {
+    flex: 1,
     fontSize: 24,
-    width: 80,
+    height: "100%",
     textAlign: "center",
+    textAlignVertical: "center",
+    paddingVertical: Platform.OS === "ios" ? 7 : 0,
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
+    borderTopColor: colors.dark,
+    borderBottomColor: colors.dark,
   },
 });
 

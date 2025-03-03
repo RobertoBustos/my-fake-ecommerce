@@ -20,6 +20,7 @@ export type CartContextType = {
   cartSummary: CartSummaryType;
   createCartSummary: () => void;
   resetCart: () => void;
+  searchProductInCart: (productId: number) => CartItemType | undefined;
 };
 
 const CartContext = createContext<CartContextType>({
@@ -30,6 +31,7 @@ const CartContext = createContext<CartContextType>({
   cartSummary: { details: [], subtotal: 0, total: 0, discount: 0, taxes: 0 },
   createCartSummary: () => {},
   resetCart: () => {},
+  searchProductInCart: () => undefined,
 });
 
 const CartStore = ({ children }: PropsWithChildren) => {
@@ -103,6 +105,15 @@ const CartStore = ({ children }: PropsWithChildren) => {
     setCartSummary(cartSummary);
   };
 
+  const searchProductInCart = (productId: number): CartItemType | undefined => {
+    const cartIndex = cart.items.findIndex((product) => {
+      return product.item.id === productId;
+    });
+    if (cartIndex !== -1) {
+      return cart.items[cartIndex];
+    }
+  };
+
   const resetCart = () => {
     const newCart = { items: [] };
     setCart(newCart);
@@ -118,6 +129,7 @@ const CartStore = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     fetchCart();
+    return () => {};
   }, []);
 
   const fetchCart = async () => {
@@ -142,6 +154,7 @@ const CartStore = ({ children }: PropsWithChildren) => {
         cartSummary,
         createCartSummary,
         resetCart,
+        searchProductInCart,
       }}
     >
       {children}

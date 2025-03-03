@@ -1,56 +1,99 @@
 import { useMemo } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 import { colors } from "../constants/colors";
-import { ProductType } from "../constants/types";
+import { useCartContext } from "../contexts/CartContext";
 import { useAppNavigation } from "../hooks/useAppNavigation";
+import { useProducts } from "../hooks/useProducts";
 import { formatCurrency } from "../utils/formatCurrency";
+import CustomButton from "./common/CustomButton";
 import CustomCard from "./common/CustomCard";
 import CustomImage from "./common/CustomImage";
+import { DeleteButton } from "./common/IconButtons";
 
 export type ProductCardPropsType = {
-  data: ProductType;
+  productId: number;
   disabled?: boolean;
-  quantity?: number;
+  showCartUI?: boolean;
 };
 
-const ProductCard = ({ data, disabled, quantity }: ProductCardPropsType) => {
+const ProductCard = ({
+  productId,
+  disabled,
+  showCartUI = false,
+}: ProductCardPropsType) => {
   const navigation = useAppNavigation();
+  const { onRemove } = useCartContext();
+  const { searchProduct } = useProducts();
+  const { searchProductInCart } = useCartContext();
 
-  const getPriceText = useMemo(() => {
-    const quantityText = quantity ? `${quantity} X ` : "";
-    return quantityText + formatCurrency(data.price);
-  }, []);
+  const productData = searchProduct(productId);
+  const productDataInCart = searchProductInCart(productId);
+
+  const handleRemoveFromCart = () => {
+    Alert.alert("Remove this item from cart?", "", [
+      {
+        text: "OK",
+        onPress: () => onRemove(productId),
+        style: "default",
+      },
+      {
+        text: "Cancel",
+        onPress: () => {},
+        style: "cancel",
+      },
+    ]);
+  };
 
   const priceStyles = { ...styles.price };
-  if (quantity) {
+  if (productDataInCart) {
     priceStyles.color = colors.black;
   }
 
-  return (
+  const getPriceText = useMemo(() => {
+    if (productDataInCart && productData) {
+      return (
+        productDataInCart.quantity +
+        " X " +
+        formatCurrency(productDataInCart.item.price)
+      );
+    }
+
+    return productData ? formatCurrency(productData?.price) : "";
+  }, [productData, productDataInCart]);
+
+  return productData ? (
     <CustomCard
       orientation="horizontal"
       onPress={() =>
         navigation.navigate("Product", {
-          productId: data.id,
+          productId,
         })
       }
       disabled={disabled}
     >
       <View style={styles.description}>
-        <Text style={styles.title}>{data.title}</Text>
+        <Text style={styles.title}>{productData.title}</Text>
         <Text style={priceStyles}>{getPriceText}</Text>
-        {quantity ? (
+        {productDataInCart && showCartUI ? (
           <Text style={styles.subtotal}>
             {formatCurrency({
-              amount: data.price.amount * quantity,
-              currency: data.price.currency,
+              amount:
+                productDataInCart.item.price.amount *
+                productDataInCart.quantity,
+              currency: productDataInCart.item.price.currency,
             })}
           </Text>
         ) : null}
       </View>
-      <CustomImage imageUrl={data.image} width={120} height={120} />
+      <CustomImage imageUrl={productData.image} width={120} height={120} />
+      {productDataInCart && showCartUI ? (
+        <CustomButton
+          onPress={handleRemoveFromCart}
+          buttonComponent={<DeleteButton color={colors.errorText} size={30} />}
+        />
+      ) : null}
     </CustomCard>
-  );
+  ) : null;
 };
 
 const styles = StyleSheet.create({

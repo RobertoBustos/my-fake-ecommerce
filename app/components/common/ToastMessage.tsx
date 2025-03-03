@@ -13,6 +13,7 @@ const ToastMessage = () => {
     setTimeout(() => {
       onRemove();
     }, 2000);
+    return () => {};
   }, [message]);
 
   return message !== "" ? (

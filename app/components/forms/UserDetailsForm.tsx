@@ -24,6 +24,7 @@ const UserDetailsForm = () => {
 
   useEffect(() => {
     setIsValidUser(isValid);
+    return () => {};
   }, [isValid]);
 
   return (

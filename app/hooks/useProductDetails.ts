@@ -9,7 +9,6 @@ export const useProductDetails = (productId: number) => {
 
     useEffect(() => {
         fetchProduct()
-
         return () => { }
     }, [])
 

@@ -11,8 +11,10 @@ const ConfirmationScreen = () => {
   useEffect(() => {
     setTimeout(() => {
       resetCart();
-      navigation.navigate("Products");
-    }, 30000);
+      navigation.reset({ index: 0, routes: [{ name: "Products" }] });
+    }, 10000);
+
+    return () => {};
   }, []);
 
   return (

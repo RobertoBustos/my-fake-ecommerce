@@ -65,6 +65,7 @@ const CheckoutStore = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     fetchCheckout();
+    return () => {};
   }, []);
 
   const fetchCheckout = async () => {

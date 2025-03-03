@@ -1,38 +1,80 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../constants/colors";
 
 export type IconButtonPropsType = {
   size?: number;
   color?: string;
+  backgroundColor?: string;
 };
 
 export const DeleteButton = ({
   size = 30,
   color = colors.black,
+  backgroundColor = colors.white,
 }: IconButtonPropsType) => {
   return (
-    <AntDesign
-      name="delete"
-      size={size}
-      color={color}
-      style={styles.deleteButton}
-    />
+    <View
+      style={{
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: backgroundColor,
+      }}
+    >
+      <AntDesign
+        name="delete"
+        size={size}
+        color={color}
+        style={styles.deleteButton}
+      />
+    </View>
   );
 };
 
-export const AddButton = ({
+export const PlusButton = ({
   size = 30,
   color = colors.black,
+  backgroundColor = colors.white,
 }: IconButtonPropsType) => {
-  return <AntDesign name="pluscircle" size={size} color={color} />;
+  return (
+    <View
+      style={{
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: backgroundColor,
+        width: 100,
+        height: 50,
+        borderTopRightRadius: 30,
+        borderBottomRightRadius: 30,
+      }}
+    >
+      <FontAwesome name="plus" size={size} color={color} />
+    </View>
+  );
 };
 
-export const SubstractButton = ({
+export const MinusButton = ({
   size = 30,
-  color = "black",
+  color = colors.black,
+  backgroundColor = colors.white,
 }: IconButtonPropsType) => {
-  return <AntDesign name="minuscircle" size={size} color={color} />;
+  return (
+    <View
+      style={{
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: backgroundColor,
+        width: 100,
+        height: 50,
+        borderTopLeftRadius: 30,
+        borderBottomLeftRadius: 30,
+      }}
+    >
+      <FontAwesome name="minus" size={size} color={color} />
+    </View>
+  );
 };
 
 export type DefaultButtonPropsType = {

@@ -17,7 +17,9 @@ export type CartContextType = {
   onAdd: (data: CartItemType) => void;
   onUpdate: (productId: number, quantity: number) => void;
   onRemove: (productId: number) => void;
-  getCartSummary: () => CartSummaryType;
+  cartSummary: CartSummaryType;
+  createCartSummary: () => void;
+  resetCart: () => void;
 };
 
 const CartContext = createContext<CartContextType>({
@@ -25,13 +27,20 @@ const CartContext = createContext<CartContextType>({
   onAdd: () => {},
   onUpdate: () => {},
   onRemove: () => {},
-  getCartSummary: () => {
-    return { details: [], subtotal: 0, total: 0, discount: 0, taxes: 0 };
-  },
+  cartSummary: { details: [], subtotal: 0, total: 0, discount: 0, taxes: 0 },
+  createCartSummary: () => {},
+  resetCart: () => {},
 });
 
 const CartStore = ({ children }: PropsWithChildren) => {
   const [cart, setCart] = useState<CartType>({ items: [] });
+  const [cartSummary, setCartSummary] = useState<CartSummaryType>({
+    details: [],
+    subtotal: 0,
+    total: 0,
+    discount: 0,
+    taxes: 0,
+  });
   const { onAdd: addMessage } = useSiblingContext();
 
   const onAdd = (data: CartItemType) => {
@@ -67,7 +76,7 @@ const CartStore = ({ children }: PropsWithChildren) => {
     saveCart(newCart);
   };
 
-  const getCartSummary = () => {
+  const createCartSummary = () => {
     const cartSummary: CartSummaryType = {
       details: [],
       subtotal: 0,
@@ -85,13 +94,26 @@ const CartStore = ({ children }: PropsWithChildren) => {
       };
       cartSummary.details = [...cartSummary.details, cartItem];
       cartSummary.subtotal += cartItem.subTotal;
-      cartSummary.taxes += cartItem.subTotal * 0.16;
+      cartSummary.taxes += Math.floor(cartItem.subTotal * 0.16);
     });
 
     cartSummary.total =
       cartSummary.subtotal + cartSummary.taxes - cartSummary.discount;
 
-    return cartSummary;
+    setCartSummary(cartSummary);
+  };
+
+  const resetCart = () => {
+    const newCart = { items: [] };
+    setCart(newCart);
+    saveCart(newCart);
+    setCartSummary({
+      details: [],
+      subtotal: 0,
+      total: 0,
+      discount: 0,
+      taxes: 0,
+    });
   };
 
   useEffect(() => {
@@ -112,7 +134,15 @@ const CartStore = ({ children }: PropsWithChildren) => {
 
   return (
     <CartContext.Provider
-      value={{ cart, onAdd, onRemove, onUpdate, getCartSummary }}
+      value={{
+        cart,
+        onAdd,
+        onRemove,
+        onUpdate,
+        cartSummary,
+        createCartSummary,
+        resetCart,
+      }}
     >
       {children}
     </CartContext.Provider>

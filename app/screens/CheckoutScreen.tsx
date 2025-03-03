@@ -1,4 +1,5 @@
-import { Alert, Platform, StyleSheet, View } from "react-native";
+import React from "react";
+import { Platform, StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import AddressDetails from "../components/AddressDetails";
 import CheckoutHeader from "../components/CheckoutHeader";
@@ -6,25 +7,57 @@ import FooterButton from "../components/FooterButton";
 import Layout from "../components/Layout";
 import OrderDetails from "../components/OrderDetails";
 import UserDetails from "../components/UserDetails";
-import { useCartContext } from "../contexts/CartContext";
+import { useCheckoutContext } from "../contexts/CheckoutContext";
+import { useStripeContext } from "../contexts/StripeContext";
+import { useAppNavigation } from "../hooks/useAppNavigation";
 import { useKeyboardStatus } from "../hooks/useKeyboardStatus";
+import { useOrder } from "../hooks/useOrder";
 import { formatCurrency } from "../utils/formatCurrency";
 
 const CheckoutScreen = () => {
-  const { getCartSummary } = useCartContext();
-  const { total } = getCartSummary();
   const { keyboardStatus } = useKeyboardStatus();
+  const {
+    isLoading,
+    isPaymentSheetReady,
+    initializePaymentSheet,
+    confirmPayment,
+  } = useStripeContext();
+  const { isValidUser } = useCheckoutContext();
+  const { createOrder } = useOrder();
+  const navigation = useAppNavigation();
 
   const renderFooter = () => {
-    return (
+    if (isPaymentSheetReady) {
+      const handleConfirmPayment = () => {
+        confirmPayment().then(() => {
+          navigation.navigate("Confirmation");
+        });
+      };
+      return (
+        <FooterButton
+          text={`Complete Payment Info`}
+          disabled={isLoading}
+          onPress={handleConfirmPayment}
+          isLoading={isLoading}
+        />
+      );
+    }
+
+    const order = createOrder();
+    const handlePaymentIntentCreation = () => {
+      initializePaymentSheet(order);
+    };
+    return order ? (
       <FooterButton
-        text={`Confirm payment for ${formatCurrency({
-          amount: total,
+        text={`Prepare Payment for  ${formatCurrency({
+          amount: order.payment!.amount,
           currency: "MXN",
         })}`}
-        onPress={() => Alert.alert("i will pay")}
+        disabled={!isPaymentSheetReady && !isValidUser}
+        onPress={handlePaymentIntentCreation}
+        isLoading={isLoading}
       />
-    );
+    ) : null;
   };
 
   return (

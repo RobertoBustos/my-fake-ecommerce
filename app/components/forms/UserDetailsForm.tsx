@@ -1,14 +1,15 @@
+import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { colors } from "../../constants/colors";
 import { useCheckoutContext } from "../../contexts/CheckoutContext";
 
 const UserDetailsForm = () => {
-  const { userData, onAddUser } = useCheckoutContext();
+  const { userData, onAddUser, setIsValidUser } = useCheckoutContext();
   const {
     control,
     getValues,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm({
     defaultValues: {
       firstName: userData.firstName,
@@ -20,6 +21,10 @@ const UserDetailsForm = () => {
     const values = getValues();
     onAddUser(values);
   };
+
+  useEffect(() => {
+    setIsValidUser(isValid);
+  }, [isValid]);
 
   return (
     <View>

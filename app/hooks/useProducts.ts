@@ -3,7 +3,7 @@ import { ProductType } from "../constants/types";
 import { getProductsService } from "../services/productServices";
 
 export const useProducts = () => {
-    const [response, setResponse] = useState<ProductType[]>([]);
+    const [products, setProducts] = useState<ProductType[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<Error>()
 
@@ -22,7 +22,7 @@ export const useProducts = () => {
                 setError(response as Error);
                 return
             }
-            setResponse(response);
+            setProducts(response);
         } catch (error: unknown) {
             setError(error as Error);
         } finally {
@@ -30,5 +30,5 @@ export const useProducts = () => {
         }
     }, [])
 
-    return { response, isLoading, error }
+    return { products, isLoading, error }
 }

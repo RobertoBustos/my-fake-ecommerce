@@ -16,6 +16,10 @@ export type CheckoutContextType = {
   addressData: AddressType;
   onAddUser: (user: UserType) => void;
   onAddAddress: (address: AddressType) => void;
+  isValidUser: boolean;
+  isValidAddress: boolean;
+  setIsValidUser: (isValid: boolean) => void;
+  setIsValidAddress: (isValid: boolean) => void;
 };
 
 const CheckoutContext = createContext<CheckoutContextType>({
@@ -23,6 +27,10 @@ const CheckoutContext = createContext<CheckoutContextType>({
   addressData: { address: "", zipCode: 0 },
   onAddUser: () => {},
   onAddAddress: () => {},
+  isValidUser: false,
+  isValidAddress: false,
+  setIsValidUser: () => {},
+  setIsValidAddress: () => {},
 });
 
 const CheckoutStore = ({ children }: PropsWithChildren) => {
@@ -34,6 +42,8 @@ const CheckoutStore = ({ children }: PropsWithChildren) => {
     address: "",
     zipCode: 0,
   });
+  const [isValidUser, setIsValidUser] = useState<boolean>(false);
+  const [isValidAddress, setIsValidAddress] = useState<boolean>(false);
 
   const onAddUser = (user: UserType) => {
     setUserData(user);
@@ -60,19 +70,36 @@ const CheckoutStore = ({ children }: PropsWithChildren) => {
   const fetchCheckout = async () => {
     getFromAsyncStorage("userData").then((response) => {
       if (response !== null) {
-        setUserData(JSON.parse(response));
+        const userData = JSON.parse(response) as UserType;
+        setUserData(userData);
+        if (userData.firstName !== "" && userData.lastName !== "") {
+          setIsValidUser(true);
+        }
       }
     });
     getFromAsyncStorage("addressData").then((response) => {
       if (response !== null) {
-        setAddressData(JSON.parse(response));
+        const addressData = JSON.parse(response) as AddressType;
+        setAddressData(addressData);
+        if (addressData.address !== "" && addressData.zipCode !== 9999) {
+          setIsValidAddress(true);
+        }
       }
     });
   };
 
   return (
     <CheckoutContext.Provider
-      value={{ userData, addressData, onAddAddress, onAddUser }}
+      value={{
+        userData,
+        addressData,
+        onAddAddress,
+        onAddUser,
+        isValidAddress,
+        isValidUser,
+        setIsValidAddress,
+        setIsValidUser,
+      }}
     >
       {children}
     </CheckoutContext.Provider>

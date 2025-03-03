@@ -1,8 +1,8 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { colors } from "../constants/colors";
-import { ProductType, RootStackParamList } from "../constants/types";
+import { ProductType } from "../constants/types";
+import { useAppNavigation } from "../hooks/useAppNavigation";
 import { formatCurrency } from "../utils/formatCurrency";
 import CustomCard from "./common/CustomCard";
 import CustomImage from "./common/CustomImage";
@@ -14,7 +14,7 @@ export type ProductCardPropsType = {
 };
 
 const ProductCard = ({ data, disabled, quantity }: ProductCardPropsType) => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const navigation = useAppNavigation();
 
   const getPriceText = useMemo(() => {
     const quantityText = quantity ? `${quantity} X ` : "";

@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../constants/types";
 import CartScreen from "../screens/CartScreen";
 import CheckoutScreen from "../screens/CheckoutScreen";
+import ConfirmationScreen from "../screens/ConfirmationScreen";
 import HomeScreen from "../screens/HomeScreen";
 import ProductScreen from "../screens/ProductScreen";
 
@@ -36,6 +37,13 @@ const RootStack = () => {
           component={CheckoutScreen}
           options={({ route }) => ({
             title: `Checkout`,
+          })}
+        />
+        <Stack.Screen
+          name="Confirmation"
+          component={ConfirmationScreen}
+          options={({ route }) => ({
+            title: `Order Complete`,
           })}
         />
       </Stack.Navigator>

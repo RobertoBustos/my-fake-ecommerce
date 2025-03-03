@@ -1,4 +1,3 @@
-import { useNavigation } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -14,11 +13,12 @@ import QuantityButtons from "../components/QuantityButtons";
 import CustomImage from "../components/common/CustomImage";
 import { colors } from "../constants/colors";
 import { useCartContext } from "../contexts/CartContext";
+import { useAppNavigation } from "../hooks/useAppNavigation";
 import { useProductDetails } from "../hooks/useProductDetails";
 import { formatCurrency } from "../utils/formatCurrency";
 
 const ProductScreen = ({ route }: any) => {
-  const navigation = useNavigation();
+  const navigation = useAppNavigation();
   const { isLoading, response } = useProductDetails(route.params.productId);
   const { onAdd } = useCartContext();
   const [quantity, setQuantity] = useState<number>(1);

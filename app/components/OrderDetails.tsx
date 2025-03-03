@@ -5,33 +5,32 @@ import { formatCurrency } from "../utils/formatCurrency";
 import CustomCard from "./common/CustomCard";
 
 const OrderDetails = () => {
-  const { getCartSummary } = useCartContext();
-  const data = getCartSummary();
+  const { cartSummary } = useCartContext();
 
   return (
     <CustomCard>
       <Text style={styles.headerText}>Order Summary</Text>
       <OrderDetailsRow
-        concept={`${data.details.length} items`}
+        concept={`${cartSummary.details.length} items`}
         value={formatCurrency({
-          amount: data.subtotal,
+          amount: cartSummary.subtotal,
           currency: "MXN",
         })}
       />
-      {data.taxes ? (
+      {cartSummary.taxes ? (
         <OrderDetailsRow
           concept={`Taxes`}
           value={formatCurrency({
-            amount: data.taxes,
+            amount: cartSummary.taxes,
             currency: "MXN",
           })}
         />
       ) : null}
-      {data.discount ? (
+      {cartSummary.discount ? (
         <OrderDetailsRow
           concept={`Discount`}
           value={formatCurrency({
-            amount: data.discount,
+            amount: cartSummary.discount,
             currency: "MXN",
           })}
         />
@@ -39,7 +38,7 @@ const OrderDetails = () => {
       <OrderDetailsRow
         concept={`Total`}
         value={formatCurrency({
-          amount: data.total,
+          amount: cartSummary.total,
           currency: "MXN",
         })}
       />

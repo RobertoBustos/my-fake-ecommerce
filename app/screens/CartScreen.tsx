@@ -1,16 +1,14 @@
-import { NavigationProp } from "@react-navigation/native";
-import { useNavigation } from "expo-router";
 import React from "react";
 import CartList from "../components/CartList";
 import EmptyCart from "../components/EmptyCart";
 import FooterButton from "../components/FooterButton";
 import Layout from "../components/Layout";
-import { RootStackParamList } from "../constants/types";
 import { useCartContext } from "../contexts/CartContext";
+import { useAppNavigation } from "../hooks/useAppNavigation";
 
 const CartScreen = () => {
-  const { cart } = useCartContext();
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { cart, cartSummary, createCartSummary } = useCartContext();
+  const navigation = useAppNavigation();
   const isCartEmpty = cart.items.length === 0;
 
   const handleRedirect = () => {
@@ -18,6 +16,10 @@ const CartScreen = () => {
       navigation.goBack();
       return;
     }
+    if (!cartSummary) {
+      return;
+    }
+    createCartSummary();
     navigation.navigate("Checkout");
   };
 

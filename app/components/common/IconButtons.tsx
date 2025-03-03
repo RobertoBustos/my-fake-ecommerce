@@ -48,7 +48,7 @@ export const DefaultButton = ({
 }: DefaultButtonPropsType) => {
   const mixedStyles = { ...styles.button };
   if (disabled || isLoading) {
-    mixedStyles.backgroundColor = colors.black;
+    mixedStyles.backgroundColor = colors.dark;
   }
   return (
     <View style={mixedStyles}>

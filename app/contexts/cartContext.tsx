@@ -24,7 +24,7 @@ export type CartContextType = {
 };
 
 const CartContext = createContext<CartContextType>({
-  cart: { items: [] },
+  cart: [],
   onAdd: () => {},
   onUpdate: () => {},
   onRemove: () => {},
@@ -35,7 +35,7 @@ const CartContext = createContext<CartContextType>({
 });
 
 const CartStore = ({ children }: PropsWithChildren) => {
-  const [cart, setCart] = useState<CartType>({ items: [] });
+  const [cart, setCart] = useState<CartItemType[]>([]);
   const [cartSummary, setCartSummary] = useState<CartSummaryType>({
     details: [],
     subtotal: 0,
@@ -46,33 +46,34 @@ const CartStore = ({ children }: PropsWithChildren) => {
   const { onAdd: addMessage } = useSiblingContext();
 
   const onAdd = (data: CartItemType) => {
-    const index = cart.items.findIndex(({ item }) => {
-      return item.id === data.item.id;
+    const index = cart.findIndex((item) => {
+      return item.id === data.id;
     });
-    if (index !== -1) {
-      return onUpdate(data.item.id, cart.items[index].quantity + data.quantity);
+    if (index !== -1 && data.quantity) {
+      const newQuantity = cart[index].quantity
+        ? cart[index].quantity + data.quantity
+        : data.quantity;
+      return onUpdate(data.id, newQuantity);
     }
-    const items = [...cart.items, data];
-    const newCart = { items };
+    const newCart = [...cart, data];
     setCart(newCart);
     addMessage("item Added");
     saveCart(newCart);
   };
 
   const onRemove = (productId: number) => {
-    const items = cart.items.filter((item) => item.item.id !== productId);
-    const newCart = { items };
+    const newCart = cart.filter((item) => item.id !== productId);
     setCart(newCart);
     addMessage("item Removed");
     saveCart(newCart);
   };
 
   const onUpdate = (productId: number, quantity: number) => {
-    const index = cart.items.findIndex(({ item }) => {
+    const index = cart.findIndex((item) => {
       return item.id === productId;
     });
     const newCart = { ...cart };
-    newCart.items[index].quantity = quantity;
+    newCart[index].quantity = quantity;
     setCart(newCart);
     addMessage("item Updated");
     saveCart(newCart);
@@ -86,13 +87,12 @@ const CartStore = ({ children }: PropsWithChildren) => {
       discount: 0,
       taxes: 0,
     };
-    const { items } = cart;
 
-    items.forEach((item) => {
+    cart.forEach((item) => {
       const cartItem = {
-        unitPrice: item.item.price.amount,
+        unitPrice: item.price.amount,
         quantity: item.quantity,
-        subTotal: item.item.price.amount * item.quantity,
+        subTotal: item.price.amount * item.quantity,
       };
       cartSummary.details = [...cartSummary.details, cartItem];
       cartSummary.subtotal += cartItem.subTotal;
@@ -108,16 +108,16 @@ const CartStore = ({ children }: PropsWithChildren) => {
   const findProductByIdInCart = (
     productId: number
   ): CartItemType | undefined => {
-    const cartIndex = cart.items.findIndex((product) => {
-      return product.item.id === productId;
+    const index = cart.findIndex((item) => {
+      return item.id === productId;
     });
-    if (cartIndex !== -1) {
-      return cart.items[cartIndex];
+    if (index !== -1) {
+      return cart[index];
     }
   };
 
   const resetCart = () => {
-    const newCart = { items: [] };
+    const newCart: CartType = [];
     setCart(newCart);
     saveCart(newCart);
     setCartSummary({

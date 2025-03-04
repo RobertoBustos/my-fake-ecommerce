@@ -6,9 +6,7 @@ const CartHeader = () => {
   return (
     <View style={styles.container}>
       <FontAwesome5 name="file-invoice" size={150} color={colors.primary} />
-      <Text style={styles.text}>
-        This is your order. Did you found what you needed?
-      </Text>
+      <Text style={styles.text}>These are the items in your shopping cart</Text>
     </View>
   );
 };

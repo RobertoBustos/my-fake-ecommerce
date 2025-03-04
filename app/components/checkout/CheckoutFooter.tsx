@@ -4,6 +4,7 @@ import { useAppNavigation } from "@/app/hooks/useAppNavigation";
 import { useOrder } from "@/app/hooks/useOrder";
 import { formatCurrency } from "@/app/utils/formatCurrency";
 import FooterButton from "../FooterButton";
+import CustomFooter from "../common/CustomFooter";
 
 const CheckoutFooter = () => {
   const {
@@ -16,19 +17,21 @@ const CheckoutFooter = () => {
   const { createOrder } = useOrder();
   const navigation = useAppNavigation();
 
-  if (!isPaymentSheetReady) {
+  if (isPaymentSheetReady) {
     const handleConfirmPayment = () => {
       confirmPayment().then(() => {
         navigation.navigate("Confirmation");
       });
     };
     return (
-      <FooterButton
-        text={`Complete Payment Info`}
-        disabled={isLoading}
-        onPress={handleConfirmPayment}
-        isLoading={isLoading}
-      />
+      <CustomFooter>
+        <FooterButton
+          text={`Complete Payment Info`}
+          disabled={isLoading}
+          onPress={handleConfirmPayment}
+          isLoading={isLoading}
+        />
+      </CustomFooter>
     );
   }
 
@@ -38,15 +41,17 @@ const CheckoutFooter = () => {
   };
 
   return order ? (
-    <FooterButton
-      text={`Prepare Payment for  ${formatCurrency({
-        amount: order.payment!.amount,
-        currency: "MXN",
-      })}`}
-      disabled={!isPaymentSheetReady && !isValidUser}
-      onPress={handlePaymentIntentCreation}
-      isLoading={isLoading}
-    />
+    <CustomFooter>
+      <FooterButton
+        text={`Prepare Payment for  ${formatCurrency({
+          amount: order.payment!.amount,
+          currency: "MXN",
+        })}`}
+        disabled={!isPaymentSheetReady && !isValidUser}
+        onPress={handlePaymentIntentCreation}
+        isLoading={isLoading}
+      />
+    </CustomFooter>
   ) : null;
 };
 

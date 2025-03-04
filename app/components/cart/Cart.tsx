@@ -5,13 +5,13 @@ import CartHeader from "./CartHeader";
 
 const Cart = () => {
   const { cart } = useCartContext();
-  const isCartEmpty = cart.items.length === 0;
+  const isCartEmpty = cart.length === 0;
   return isCartEmpty ? (
     <EmptyCart />
   ) : (
     <>
       <CartHeader />
-      <CartList cartItems={cart.items} />
+      <CartList cartItems={cart} />
     </>
   );
 };

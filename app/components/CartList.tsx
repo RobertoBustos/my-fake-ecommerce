@@ -1,6 +1,6 @@
 import { FlatList, StyleSheet, View } from "react-native";
 import { CartItemType } from "../constants/types";
-import ProductCard from "./ProductCard";
+import CartItemCard from "./CartItemCard";
 
 export type CartListPropsType = {
   cartItems: CartItemType[];
@@ -11,9 +11,7 @@ const CartList = ({ cartItems }: CartListPropsType) => {
     <View style={styles.container}>
       <FlatList
         data={cartItems}
-        renderItem={({ item }) => (
-          <ProductCard productId={item.item.id} showCartUI disabled />
-        )}
+        renderItem={({ item }) => <CartItemCard data={item} disabled />}
         showsVerticalScrollIndicator={false}
       />
     </View>

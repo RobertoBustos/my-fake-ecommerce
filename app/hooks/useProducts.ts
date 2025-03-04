@@ -7,11 +7,6 @@ export const useProducts = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<Error>()
 
-    useEffect(() => {
-        fetchProducts()
-        return () => { }
-    }, [])
-
     const fetchProducts = useCallback(async () => {
         setIsLoading(true);
         try {
@@ -36,6 +31,11 @@ export const useProducts = () => {
             return products[productIndex];
         }
     }
+
+    useEffect(() => {
+        fetchProducts()
+        return () => { }
+    }, [fetchProducts])
 
     return { products, isLoading, error, findProductById }
 }

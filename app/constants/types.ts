@@ -31,13 +31,12 @@ export type PurchaseLimitType = {
     max: number;
 }
 
-export type CartType = {
-    items: CartItemType[]
-}
+export type CartType = CartItemType[]
 
-export type CartItemType = {
-    item: ProductType
+export type CartItemType = ProductType & {
+    cartItemId: number
     quantity: number
+    subtotal: number
 }
 
 export type CartSummaryType = {

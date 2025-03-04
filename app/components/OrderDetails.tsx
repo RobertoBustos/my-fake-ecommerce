@@ -46,12 +46,15 @@ const OrderDetails = () => {
   );
 };
 
-export type OrderDetailsRow = {
+export type OrderDetailsRowPropsType = {
   concept: string;
   value: string;
 };
 
-export const OrderDetailsRow = ({ concept, value }: OrderDetailsRow) => {
+export const OrderDetailsRow = ({
+  concept,
+  value,
+}: OrderDetailsRowPropsType) => {
   return (
     <View style={styles.rowContainer}>
       <Text style={styles.rowText}>{concept}</Text>

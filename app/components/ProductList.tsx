@@ -9,7 +9,7 @@ const ProductList = () => {
     <View style={styles.container}>
       <FlatList
         data={products}
-        renderItem={({ item }) => <ProductCard productId={item.id} />}
+        renderItem={({ item }) => <ProductCard data={item} />}
         showsVerticalScrollIndicator={false}
       />
     </View>

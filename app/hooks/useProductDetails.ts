@@ -7,12 +7,7 @@ export const useProductDetails = (productId: number) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<Error>()
 
-    useEffect(() => {
-        fetchProduct()
-        return () => { }
-    }, [])
-
-    const fetchProduct = useCallback(async () => {
+    const fetchProduct = useCallback(async (productId: number) => {
         setIsLoading(true);
         try {
             //await fakeDelayPromise(2000)
@@ -28,6 +23,11 @@ export const useProductDetails = (productId: number) => {
             setIsLoading(false);
         }
     }, [])
+
+    useEffect(() => {
+        fetchProduct(productId)
+        return () => { }
+    }, [fetchProduct, productId])
 
     return { response, isLoading, error }
 }

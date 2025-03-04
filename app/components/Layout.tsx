@@ -11,9 +11,7 @@ const Layout = ({ children, footerComponent }: LayoutPropsType) => {
     <View style={styles.container}>
       <ToastMessage />
       {children}
-      {footerComponent && footerComponent !== null ? (
-        <View style={styles.footer}>{footerComponent}</View>
-      ) : null}
+      {footerComponent}
     </View>
   );
 };
@@ -24,11 +22,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     paddingHorizontal: 16,
-  },
-  footer: {
-    width: "100%",
-    height: 70,
-    paddingVertical: 8,
   },
 });
 

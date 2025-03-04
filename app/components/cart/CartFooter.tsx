@@ -1,4 +1,5 @@
 import FooterButton from "../FooterButton";
+import CustomFooter from "../common/CustomFooter";
 
 export type CartFooterPropsType = {
   text: string;
@@ -6,7 +7,11 @@ export type CartFooterPropsType = {
 };
 
 const CartFooter = ({ text, onClick }: CartFooterPropsType) => {
-  return <FooterButton text={text} onPress={onClick} />;
+  return (
+    <CustomFooter>
+      <FooterButton text={text} onPress={onClick} />
+    </CustomFooter>
+  );
 };
 
 export default CartFooter;

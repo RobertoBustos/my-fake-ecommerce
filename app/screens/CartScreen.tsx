@@ -8,7 +8,7 @@ import { useAppNavigation } from "../hooks/useAppNavigation";
 const CartScreen = () => {
   const { cart, cartSummary, createCartSummary } = useCartContext();
   const navigation = useAppNavigation();
-  const isCartEmpty = cart.items.length === 0;
+  const isCartEmpty = cart.length === 0;
 
   const handleRedirect = () => {
     if (isCartEmpty) {

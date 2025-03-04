@@ -14,7 +14,7 @@ const ToastMessage = () => {
       onRemove();
     }, 2000);
     return () => {};
-  }, [message]);
+  }, [onRemove]);
 
   return message !== "" ? (
     <Toast

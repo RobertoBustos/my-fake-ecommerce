@@ -31,39 +31,42 @@ const StipeStore = ({ children }: StripeStorePropsType) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { initPaymentSheet, presentPaymentSheet } = usePaymentSheet();
 
-  const initializePaymentSheet = useCallback(async (order: OrderType) => {
-    setIsLoading(true);
-    try {
-      if (order.user === null || order.payment === null) {
-        throw new Error("Error getting order information");
-      }
-      const response = await fetchPaymentSheetParams(order);
-      if ("message" in response) {
-        throw new Error(response.message);
-      }
-      const { error } = await initPaymentSheet({
-        customerId: response.customer,
-        customerEphemeralKeySecret: response.ephemeralKey,
-        paymentIntentClientSecret: response.paymentIntent,
-        merchantDisplayName: "My Fake Ecommerce",
-        allowsDelayedPaymentMethods: true,
-        returnURL: "stripe-example://stripe-redirect",
-        defaultBillingDetails: {
-          name: `${order.user.firstName} ${order.user.lastName}`,
-        },
-      });
+  const initializePaymentSheet = useCallback(
+    async (order: OrderType) => {
+      setIsLoading(true);
+      try {
+        if (order.user === null || order.payment === null) {
+          throw new Error("Error getting order information");
+        }
+        const response = await fetchPaymentSheetParams(order);
+        if ("message" in response) {
+          throw new Error(response.message);
+        }
+        const { error } = await initPaymentSheet({
+          customerId: response.customer,
+          customerEphemeralKeySecret: response.ephemeralKey,
+          paymentIntentClientSecret: response.paymentIntent,
+          merchantDisplayName: "My Fake Ecommerce",
+          allowsDelayedPaymentMethods: true,
+          returnURL: "stripe-example://stripe-redirect",
+          defaultBillingDetails: {
+            name: `${order.user.firstName} ${order.user.lastName}`,
+          },
+        });
 
-      if (error) {
-        Alert.alert(`Error code: ${error.code}`, error.message);
-        return;
+        if (error) {
+          Alert.alert(`Error code: ${error.code}`, error.message);
+          return;
+        }
+        setIsPaymentSheetReady(true);
+      } catch (error) {
+        Alert.alert((error as Error).message);
+      } finally {
+        setIsLoading(false);
       }
-      setIsPaymentSheetReady(true);
-    } catch (error) {
-      Alert.alert((error as Error).message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    },
+    [initPaymentSheet]
+  );
 
   const confirmPayment = useCallback(async () => {
     try {
@@ -76,7 +79,7 @@ const StipeStore = ({ children }: StripeStorePropsType) => {
     } catch (error) {
       return error as Error;
     }
-  }, []);
+  }, [presentPaymentSheet]);
 
   if (!PUBLISHABLE_KEY) {
     return children;

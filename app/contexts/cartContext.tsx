@@ -20,7 +20,7 @@ export type CartContextType = {
   cartSummary: CartSummaryType;
   createCartSummary: () => void;
   resetCart: () => void;
-  searchProductInCart: (productId: number) => CartItemType | undefined;
+  findProductByIdInCart: (productId: number) => CartItemType | undefined;
 };
 
 const CartContext = createContext<CartContextType>({
@@ -31,7 +31,7 @@ const CartContext = createContext<CartContextType>({
   cartSummary: { details: [], subtotal: 0, total: 0, discount: 0, taxes: 0 },
   createCartSummary: () => {},
   resetCart: () => {},
-  searchProductInCart: () => undefined,
+  findProductByIdInCart: () => undefined,
 });
 
 const CartStore = ({ children }: PropsWithChildren) => {
@@ -105,7 +105,9 @@ const CartStore = ({ children }: PropsWithChildren) => {
     setCartSummary(cartSummary);
   };
 
-  const searchProductInCart = (productId: number): CartItemType | undefined => {
+  const findProductByIdInCart = (
+    productId: number
+  ): CartItemType | undefined => {
     const cartIndex = cart.items.findIndex((product) => {
       return product.item.id === productId;
     });
@@ -154,7 +156,7 @@ const CartStore = ({ children }: PropsWithChildren) => {
         cartSummary,
         createCartSummary,
         resetCart,
-        searchProductInCart,
+        findProductByIdInCart,
       }}
     >
       {children}

@@ -15,7 +15,6 @@ export const useProducts = () => {
     const fetchProducts = useCallback(async () => {
         setIsLoading(true);
         try {
-            //await fakeDelayPromise(2000)
             const response = await getProductsService();
             if ("message" in response) {
                 setError(response as Error);
@@ -29,7 +28,7 @@ export const useProducts = () => {
         }
     }, [])
 
-    const searchProduct = (productId: number): ProductType | undefined => {
+    const findProductById = (productId: number): ProductType | undefined => {
         const productIndex = products.findIndex((product) => {
             return product.id === productId;
         });
@@ -38,5 +37,5 @@ export const useProducts = () => {
         }
     }
 
-    return { products, isLoading, error, searchProduct }
+    return { products, isLoading, error, findProductById }
 }

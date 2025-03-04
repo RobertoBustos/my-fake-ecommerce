@@ -1,11 +1,11 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { StyleSheet, Text, View } from "react-native";
 import { colors } from "../constants/colors";
 
 const EmptyCart = () => {
   return (
     <View style={styles.container}>
-      <Ionicons name="cart" size={200} color={colors.dark} />
+      <FontAwesome name="shopping-cart" size={200} color={colors.dark} />
       <Text style={styles.message}>There are no items in your cart</Text>
     </View>
   );

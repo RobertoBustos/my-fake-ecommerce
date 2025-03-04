@@ -1,4 +1,3 @@
-import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../constants/colors";
@@ -20,15 +19,11 @@ export const DeleteButton = ({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
+        paddingHorizontal: 16,
         backgroundColor: backgroundColor,
       }}
     >
-      <AntDesign
-        name="delete"
-        size={size}
-        color={color}
-        style={styles.deleteButton}
-      />
+      <FontAwesome name="remove" size={size} color={color} />
     </View>
   );
 };

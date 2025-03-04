@@ -1,25 +1,32 @@
 import { useEffect } from "react";
-import { Text } from "react-native";
 import Layout from "../components/Layout";
+import Confirmation from "../components/confirmation/Confirmation";
+import ConfirmationFooter from "../components/confirmation/ConfirmationFooter";
 import { useCartContext } from "../contexts/CartContext";
 import { useAppNavigation } from "../hooks/useAppNavigation";
 
 const ConfirmationScreen = () => {
-  const { resetCart } = useCartContext();
   const navigation = useAppNavigation();
+  const { resetCart } = useCartContext();
+
+  const handleReturnHome = () => {
+    resetCart();
+    navigation.reset({ index: 0, routes: [{ name: "Products" }] });
+  };
 
   useEffect(() => {
-    setTimeout(() => {
-      resetCart();
-      navigation.reset({ index: 0, routes: [{ name: "Products" }] });
+    const resetAction = setTimeout(() => {
+      handleReturnHome();
     }, 10000);
 
-    return () => {};
+    return () => {
+      clearTimeout(resetAction);
+    };
   }, []);
 
   return (
-    <Layout>
-      <Text>CONFIRMATION SCREEN</Text>
+    <Layout footerComponent={<ConfirmationFooter onClick={handleReturnHome} />}>
+      <Confirmation />
     </Layout>
   );
 };

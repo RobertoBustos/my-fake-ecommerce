@@ -1,4 +1,4 @@
-import { ProductCardSkeleton } from "./ProductCardSkeleton";
+import ProductCardSkeleton from "./ProductCardSkeleton";
 
 const ProductListSkeleton = () => {
   return Array.from({ length: 8 }).map((_, index) => {

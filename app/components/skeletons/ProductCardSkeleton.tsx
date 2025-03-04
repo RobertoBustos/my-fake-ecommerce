@@ -2,7 +2,7 @@ import { StyleSheet, View } from "react-native";
 import { colors } from "../../constants/colors";
 import SkeletonWrapper from "../common/SkeletonWrapper";
 
-export const ProductCardSkeleton = () => {
+const ProductCardSkeleton = () => {
   return (
     <SkeletonWrapper>
       <View style={styles.container}>
@@ -33,3 +33,5 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 });
+
+export default ProductCardSkeleton;

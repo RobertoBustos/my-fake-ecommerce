@@ -9,6 +9,7 @@ import CustomButton from "./common/CustomButton";
 import CustomCard from "./common/CustomCard";
 import CustomImage from "./common/CustomImage";
 import { DeleteButton } from "./common/IconButtons";
+import ProductCardSkeleton from "./skeletons/ProductCardSkeleton";
 
 export type ProductCardPropsType = {
   productId: number;
@@ -23,11 +24,11 @@ const ProductCard = ({
 }: ProductCardPropsType) => {
   const navigation = useAppNavigation();
   const { onRemove } = useCartContext();
-  const { searchProduct } = useProducts();
-  const { searchProductInCart } = useCartContext();
+  const { findProductById } = useProducts();
+  const { findProductByIdInCart } = useCartContext();
 
-  const productData = searchProduct(productId);
-  const productDataInCart = searchProductInCart(productId);
+  const productData = findProductById(productId);
+  const productDataInCart = findProductByIdInCart(productId);
 
   const handleRemoveFromCart = () => {
     Alert.alert("Remove this item from cart?", "", [
@@ -93,7 +94,9 @@ const ProductCard = ({
         />
       ) : null}
     </CustomCard>
-  ) : null;
+  ) : (
+    <ProductCardSkeleton />
+  );
 };
 
 const styles = StyleSheet.create({
@@ -119,4 +122,5 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
 });
+
 export default ProductCard;

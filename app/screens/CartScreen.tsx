@@ -1,8 +1,7 @@
 import React from "react";
-import CartList from "../components/CartList";
-import EmptyCart from "../components/EmptyCart";
-import FooterButton from "../components/FooterButton";
 import Layout from "../components/Layout";
+import Cart from "../components/cart/Cart";
+import CartFooter from "../components/cart/CartFooter";
 import { useCartContext } from "../contexts/CartContext";
 import { useAppNavigation } from "../hooks/useAppNavigation";
 
@@ -23,26 +22,15 @@ const CartScreen = () => {
     navigation.navigate("Checkout");
   };
 
-  const renderFooter = () => {
-    return (
-      <FooterButton
-        text={isCartEmpty ? "Return to Products" : "Proceed to Payment"}
-        onPress={handleRedirect}
-      />
-    );
-  };
-
-  if (isCartEmpty) {
-    return (
-      <Layout footerComponent={renderFooter()}>
-        <EmptyCart />
-      </Layout>
-    );
-  }
+  const footerText = isCartEmpty ? "Return to Products" : "Proceed to Payment";
 
   return (
-    <Layout footerComponent={renderFooter()}>
-      <CartList cartItems={cart.items} />
+    <Layout
+      footerComponent={
+        <CartFooter text={footerText} onClick={handleRedirect} />
+      }
+    >
+      <Cart />
     </Layout>
   );
 };

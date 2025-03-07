@@ -1,8 +1,8 @@
-import { useKeyboardStatus } from "@/app/hooks/useKeyboardStatus";
 import { Platform, StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useKeyboardStatus } from "../../hooks/useKeyboardStatus";
 import AddressDetails from "../AddressDetails";
-import OrderDetails from "../OrderDetails";
+import OrderSummary from "../OrderSummary";
 import UserDetails from "../UserDetails";
 import CheckoutFooter from "./CheckoutFooter";
 import CheckoutHeader from "./CheckoutHeader";
@@ -16,7 +16,7 @@ const Checkout = () => {
       showsVerticalScrollIndicator={false}
     >
       <CheckoutHeader />
-      <OrderDetails />
+      <OrderSummary />
       <UserDetails />
       <AddressDetails />
       {keyboardStatus === "shown" && Platform.OS === "ios" ? (

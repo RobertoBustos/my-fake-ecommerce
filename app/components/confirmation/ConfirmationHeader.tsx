@@ -1,6 +1,6 @@
-import { colors } from "@/app/constants/colors";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { StyleSheet, Text, View } from "react-native";
+import { colors } from "../../constants/colors";
 
 const ConfirmationHeader = () => {
   return (

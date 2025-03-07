@@ -1,10 +1,17 @@
-import { colors } from "@/app/constants/colors";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { StyleSheet, Text, View } from "react-native";
+import { colors } from "../../constants/colors";
+import { useAppSelector } from "../../redux/hooks";
+import { selectOrderData } from "../../redux/order/selectors";
 
 const CheckoutHeader = () => {
+  const orderData = useAppSelector(selectOrderData);
+
   return (
     <View style={styles.container}>
+      {orderData?.orderId ? (
+        <Text style={styles.text}>{`Order Number ${orderData.orderId}`}</Text>
+      ) : null}
       <FontAwesome5
         name="file-invoice-dollar"
         size={150}
@@ -22,13 +29,13 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-    marginVertical: 20,
+    marginVertical: 10,
   },
   text: {
     fontSize: 16,
     fontWeight: "600",
     textAlign: "center",
-    marginTop: 8,
+    marginVertical: 8,
   },
 });
 

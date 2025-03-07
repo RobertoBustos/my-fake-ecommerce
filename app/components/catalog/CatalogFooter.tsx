@@ -1,5 +1,5 @@
-import { useCartContext } from "@/app/contexts/CartContext";
-import { useAppNavigation } from "@/app/hooks/useAppNavigation";
+import { useCartContext } from "../../contexts/CartContext";
+import { useAppNavigation } from "../../hooks/useAppNavigation";
 import FooterButton from "../FooterButton";
 import CustomFooter from "../common/CustomFooter";
 

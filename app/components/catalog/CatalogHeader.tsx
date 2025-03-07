@@ -1,13 +1,7 @@
-import { StyleSheet, View } from "react-native";
+import PendingOrderMessage from "../PendingOrderMessage";
 
 const CatalogHeader = () => {
-  return <View style={styles.container}>{/**TODO search bar */}</View>;
+  return <PendingOrderMessage />;
 };
-
-const styles = StyleSheet.create({
-  container: {
-    height: 0,
-  },
-});
 
 export default CatalogHeader;

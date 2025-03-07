@@ -1,42 +1,56 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { StyleSheet, Text, TextInput, View } from "react-native";
+import { ZodType, z } from "zod";
 import { colors } from "../../constants/colors";
-import { useCheckoutContext } from "../../contexts/CheckoutContext";
+import { AddressType } from "../../constants/types";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { setShippingData } from "../../redux/order/reducer";
+import { selectShippingData } from "../../redux/order/selectors";
+
+const validationSchema: ZodType<AddressType> = z.object({
+  address: z.string().min(1, { message: "Address required" }),
+  zipCode: z
+    .string()
+    .min(5, { message: "Zipcode must contain exact 5 characters" })
+    .max(5, { message: "Zipcode must contain exact 5 characters" }),
+});
 
 const AddressDetailsForm = () => {
-  const { addressData, onAddAddress } = useCheckoutContext();
+  const dispatch = useAppDispatch();
+  const shippingData = useAppSelector(selectShippingData());
+
   const {
     control,
     getValues,
     formState: { errors },
-  } = useForm({
-    defaultValues: {
-      address: addressData.address,
-      zipCode: addressData.zipCode,
-    },
+  } = useForm<AddressType>({
+    defaultValues: shippingData,
+    resolver: zodResolver(validationSchema),
+    mode: "all",
   });
 
-  const saveToContext = () => {
+  const saveToStore = () => {
     const values = getValues();
-    onAddAddress(values);
+    dispatch(setShippingData(values));
   };
 
   return (
     <View>
       <Controller
         control={control}
+        name="address"
         rules={{
           required: true,
-          maxLength: 50,
         }}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
-            editable
+            inputMode="text"
             placeholder="STREET NAME  NUMBER"
             onBlur={onBlur}
             onChangeText={(e) => {
               onChange(e);
-              saveToContext();
+              saveToStore();
             }}
             value={value}
             style={styles.input}
@@ -44,32 +58,27 @@ const AddressDetailsForm = () => {
             numberOfLines={4}
           />
         )}
-        name="address"
       />
       {errors.address && (
         <Text style={styles.errorText}>{errors.address.message}</Text>
       )}
       <Controller
         control={control}
-        rules={{
-          required: true,
-          maxLength: 50,
-        }}
+        name="zipCode"
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
+            inputMode="numeric"
+            keyboardType="numeric"
             placeholder="ZIP CODE"
             onBlur={onBlur}
             onChangeText={(e) => {
               onChange(e);
-              saveToContext();
+              saveToStore();
             }}
-            value={value === 0 ? "" : value.toString()}
+            value={value}
             style={styles.input}
-            keyboardType="numeric"
-            maxLength={5}
           />
         )}
-        name="zipCode"
       />
       {errors.zipCode && (
         <Text style={styles.errorText}>{errors.zipCode.message}</Text>

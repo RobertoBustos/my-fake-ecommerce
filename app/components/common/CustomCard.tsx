@@ -12,6 +12,7 @@ export type CustomCardPropsType = PropsWithChildren & {
   onPress?: () => void;
   disabled?: boolean;
   orientation?: "vertical" | "horizontal";
+  variant?: "warning" | "error" | "info";
 };
 
 const CustomCard = ({
@@ -19,9 +20,14 @@ const CustomCard = ({
   onPress,
   disabled,
   orientation = "vertical",
+  variant,
 }: CustomCardPropsType) => {
   const mixedStyles: StyleProp<ViewStyle> = { ...styles.container };
   mixedStyles.flexDirection = orientation === "vertical" ? "column" : "row";
+
+  if (variant === "warning") {
+    mixedStyles.backgroundColor = colors.warning;
+  }
 
   return (
     <TouchableWithoutFeedback onPress={onPress} disabled={disabled}>

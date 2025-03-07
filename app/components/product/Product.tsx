@@ -1,8 +1,8 @@
-import { colors } from "@/app/constants/colors";
-import { ProductType } from "@/app/constants/types";
-import { formatCurrency } from "@/app/utils/formatCurrency";
 import { useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { colors } from "../../constants/colors";
+import { ProductType } from "../../constants/types";
+import { formatCurrency } from "../../utils/formatCurrency";
 import NoStockMessage from "../NoStockMessage";
 import QuantityButtons from "../QuantityButtons";
 import CustomImage from "../common/CustomImage";

@@ -1,14 +1,13 @@
 import { StripeProvider, usePaymentSheet } from "@stripe/stripe-react-native";
 import { createContext, useCallback, useContext, useState } from "react";
-import { Alert } from "react-native";
 import { MERCHANT_ID, PUBLISHABLE_KEY } from "../constants/config";
-import { OrderType } from "../constants/types";
-import { fetchPaymentSheetParams } from "../services/paymentServices";
+import { useAppSelector } from "../redux/hooks";
+import { selectOrderData } from "../redux/order/selectors";
 
 export type StripeContextType = {
   isLoading: boolean;
   isPaymentSheetReady: boolean;
-  initializePaymentSheet: (order: OrderType) => Promise<void>;
+  initializePaymentSheet: () => Promise<void>;
   confirmPayment: () => Promise<boolean | Error>;
 };
 
@@ -30,43 +29,41 @@ const StipeStore = ({ children }: StripeStorePropsType) => {
     useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { initPaymentSheet, presentPaymentSheet } = usePaymentSheet();
+  const order = useAppSelector(selectOrderData);
 
-  const initializePaymentSheet = useCallback(
-    async (order: OrderType) => {
-      setIsLoading(true);
-      try {
-        if (order.user === null || order.payment === null) {
-          throw new Error("Error getting order information");
-        }
-        const response = await fetchPaymentSheetParams(order);
-        if ("message" in response) {
-          throw new Error(response.message);
-        }
-        const { error } = await initPaymentSheet({
-          customerId: response.customer,
-          customerEphemeralKeySecret: response.ephemeralKey,
-          paymentIntentClientSecret: response.paymentIntent,
-          merchantDisplayName: "My Fake Ecommerce",
-          allowsDelayedPaymentMethods: true,
-          returnURL: "stripe-example://stripe-redirect",
-          defaultBillingDetails: {
-            name: `${order.user.firstName} ${order.user.lastName}`,
-          },
-        });
-
-        if (error) {
-          Alert.alert(`Error code: ${error.code}`, error.message);
-          return;
-        }
-        setIsPaymentSheetReady(true);
-      } catch (error) {
-        Alert.alert((error as Error).message);
-      } finally {
-        setIsLoading(false);
+  const initializePaymentSheet = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      if (
+        order === null ||
+        order.customerData === null ||
+        order.paymentIntent === null
+      ) {
+        throw new Error("Error getting order information");
       }
-    },
-    [initPaymentSheet]
-  );
+
+      const { error } = await initPaymentSheet({
+        customerId: order.customerData.customerId,
+        customerEphemeralKeySecret: order.paymentIntent.ephemeralKey,
+        paymentIntentClientSecret: order.paymentIntent.clientSecret,
+        merchantDisplayName: "My Fake Ecommerce",
+        allowsDelayedPaymentMethods: true,
+        returnURL: "stripe-example://stripe-redirect",
+        defaultBillingDetails: {
+          name: order.customerData.userName,
+          email: order.customerData.email,
+        },
+      });
+      if (error) {
+        throw new Error(error.message);
+      }
+      setIsPaymentSheetReady(true);
+    } catch (error) {
+      throw error as Error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [initPaymentSheet, order]);
 
   const confirmPayment = useCallback(async () => {
     try {
@@ -77,7 +74,7 @@ const StipeStore = ({ children }: StripeStorePropsType) => {
       }
       return true as boolean;
     } catch (error) {
-      return error as Error;
+      throw error as Error;
     }
   }, [presentPaymentSheet]);
 

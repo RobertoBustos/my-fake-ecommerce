@@ -1,36 +1,37 @@
 import { StyleSheet, Text, View } from "react-native";
 import { colors } from "../constants/colors";
-import { useCartContext } from "../contexts/CartContext";
+import { useAppSelector } from "../redux/hooks";
+import { selectOrderSummaryData } from "../redux/order/selectors";
 import { formatCurrency } from "../utils/formatCurrency";
 import CustomCard from "./common/CustomCard";
 
-const OrderDetails = () => {
-  const { cartSummary } = useCartContext();
+const OrderSummary = () => {
+  const orderSumaryData = useAppSelector(selectOrderSummaryData);
 
-  return (
+  return orderSumaryData ? (
     <CustomCard>
       <Text style={styles.headerText}>Order Summary</Text>
       <OrderDetailsRow
-        concept={`${cartSummary.details.length} items`}
+        concept={`${orderSumaryData.details.length} items`}
         value={formatCurrency({
-          amount: cartSummary.subtotal,
+          amount: orderSumaryData.subtotal,
           currency: "MXN",
         })}
       />
-      {cartSummary.taxes ? (
+      {orderSumaryData.taxes ? (
         <OrderDetailsRow
           concept={`Taxes`}
           value={formatCurrency({
-            amount: cartSummary.taxes,
+            amount: orderSumaryData.taxes,
             currency: "MXN",
           })}
         />
       ) : null}
-      {cartSummary.discount ? (
+      {orderSumaryData.discount ? (
         <OrderDetailsRow
           concept={`Discount`}
           value={formatCurrency({
-            amount: cartSummary.discount,
+            amount: orderSumaryData.discount,
             currency: "MXN",
           })}
         />
@@ -38,12 +39,12 @@ const OrderDetails = () => {
       <OrderDetailsRow
         concept={`Total`}
         value={formatCurrency({
-          amount: cartSummary.total,
+          amount: orderSumaryData.total,
           currency: "MXN",
         })}
       />
     </CustomCard>
-  );
+  ) : null;
 };
 
 export type OrderDetailsRowPropsType = {
@@ -85,4 +86,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default OrderDetails;
+export default OrderSummary;

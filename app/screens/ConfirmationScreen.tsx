@@ -1,20 +1,24 @@
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import Layout from "../components/Layout";
 import Confirmation from "../components/confirmation/Confirmation";
 import ConfirmationFooter from "../components/confirmation/ConfirmationFooter";
 import { useCartContext } from "../contexts/CartContext";
 import { useAppNavigation } from "../hooks/useAppNavigation";
+import { useAppDispatch } from "../redux/hooks";
+import { clearOrderCompleted } from "../redux/order/reducer";
 
 const ConfirmationScreen = () => {
   const navigation = useAppNavigation();
+  const dispatch = useAppDispatch();
   const { resetCart } = useCartContext();
 
   const handleReturnHome = useCallback(() => {
     resetCart();
+    dispatch(clearOrderCompleted());
     navigation.reset({ index: 0, routes: [{ name: "Products" }] });
-  }, [navigation, resetCart]);
+  }, [dispatch, navigation, resetCart]);
 
-  useEffect(() => {
+  /*   useEffect(() => {
     const resetAction = setTimeout(() => {
       handleReturnHome();
     }, 10000);
@@ -22,7 +26,7 @@ const ConfirmationScreen = () => {
     return () => {
       clearTimeout(resetAction);
     };
-  }, [handleReturnHome]);
+  }, [handleReturnHome]); */
 
   return (
     <Layout footerComponent={<ConfirmationFooter onClick={handleReturnHome} />}>

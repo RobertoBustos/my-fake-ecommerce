@@ -1,79 +1,81 @@
-import { useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { StyleSheet, Text, TextInput, View } from "react-native";
+import { ZodType, z } from "zod";
 import { colors } from "../../constants/colors";
-import { useCheckoutContext } from "../../contexts/CheckoutContext";
+import { UserType } from "../../constants/types";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { setCustomerData } from "../../redux/order/reducer";
+import { selectCustomerData } from "../../redux/order/selectors";
+
+const validationSchema: ZodType<UserType> = z.object({
+  email: z.string().email({ message: "Invalid email" }).toLowerCase(),
+  userName: z
+    .string()
+    .min(4, { message: "Your name must contain from 4 up to 60 characters" })
+    .max(60, { message: "Your name must contain from 4 up to 60 characters" }),
+});
 
 const UserDetailsForm = () => {
-  const { userData, onAddUser, setIsValidUser } = useCheckoutContext();
+  const dispatch = useAppDispatch();
+  const customerData = useAppSelector(selectCustomerData());
+
   const {
     control,
     getValues,
-    formState: { errors, isValid },
-  } = useForm({
-    defaultValues: {
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-    },
+    formState: { errors },
+  } = useForm<UserType>({
+    defaultValues: customerData,
+    resolver: zodResolver(validationSchema),
+    mode: "all",
   });
 
-  const saveToContext = () => {
+  const saveToStore = () => {
     const values = getValues();
-    onAddUser(values);
+    dispatch(setCustomerData(values));
   };
-
-  useEffect(() => {
-    setIsValidUser(isValid);
-    return () => {};
-  }, [isValid, setIsValidUser]);
 
   return (
     <View>
       <Controller
         control={control}
-        rules={{
-          required: true,
-          maxLength: 50,
-        }}
-        render={({ field: { onChange, onBlur, value } }) => (
+        name="email"
+        render={({ field: { onChange, onBlur, value, name } }) => (
           <TextInput
-            placeholder="FIRST NAME"
+            inputMode="email"
+            placeholder="EMAIL"
             onBlur={onBlur}
             onChangeText={(e) => {
               onChange(e);
-              saveToContext();
+              saveToStore();
             }}
             value={value}
             style={styles.input}
           />
         )}
-        name="firstName"
       />
-      {errors.firstName && (
-        <Text style={styles.errorText}>{errors.firstName.message}</Text>
+      {errors.email && (
+        <Text style={styles.errorText}>{errors.email?.message}</Text>
       )}
       <Controller
         control={control}
-        rules={{
-          required: true,
-          maxLength: 50,
-        }}
+        name="userName"
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
-            placeholder="LAST NAME"
+            inputMode="text"
+            placeholder="FIRST NAME, LAST NAME"
             onBlur={onBlur}
             onChangeText={(e) => {
               onChange(e);
-              saveToContext();
+              saveToStore();
             }}
             value={value}
             style={styles.input}
           />
         )}
-        name="lastName"
       />
-      {errors.lastName && (
-        <Text style={styles.errorText}>{errors.lastName.message}</Text>
+      {errors.userName && (
+        <Text style={styles.errorText}>{errors.userName.message}</Text>
       )}
     </View>
   );

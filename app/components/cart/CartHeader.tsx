@@ -1,6 +1,6 @@
-import { colors } from "@/app/constants/colors";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { StyleSheet, Text, View } from "react-native";
+import { colors } from "../../constants/colors";
 
 const CartHeader = () => {
   return (

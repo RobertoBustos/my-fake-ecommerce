@@ -6,6 +6,8 @@ export type RootStackParamList = {
     Confirmation: undefined
 }
 
+export type RequestType<T> = T
+
 export type ProductType = {
     category: string;
     description: string;
@@ -56,23 +58,62 @@ export type CartSummaryItemType = {
 }
 
 export type UserType = {
-    firstName: string
-    lastName: string
+    email: string
+    userName: string
 }
 
 export type AddressType = {
     address: string
-    zipCode: number
-}
-
-export type PaymentRequestType = {
-    amount: number
-    currency: string
+    zipCode: string
 }
 
 export type OrderType = {
-    orderId: string | null
-    user: UserType | null
-    address: AddressType | null
-    payment: PaymentRequestType | null
+    orderId: number | null
+    customerData: CustomerType | null
+    shippingData: ShippingType | null
+    items: CartType | null
+    summary: CartSummaryType | null
+    paymentIntent: PaymentType | null
+    status: "incomplete" | "payment_pending" | "complete" | "cancelled"
+}
+
+export type CustomerType = UserType & { customerId: string }
+
+export type ShippingType = AddressType
+
+export type CreateOrderRequestType = {
+    items: CartType,
+    summary: CartSummaryType
+}
+
+export type UpdateOrderRequestType = CreateOrderRequestType & {
+    orderId: number
+    customerData: UserType | null
+}
+
+export type UpdateOrderCustomerDataType = {
+    orderId: number
+    customerData: UserType
+}
+
+export type UpdateCustomerShippingDataType = {
+    orderId: number
+    shippingData: AddressType
+}
+
+export type StripeCustomerType = {
+    id: string
+    name: string
+    email: string
+}
+
+export type CreatePaymentType = {
+    amount: number
+    currency: string
+    customerId: string
+}
+
+export type PaymentType = {
+    clientSecret: string
+    ephemeralKey: string
 }

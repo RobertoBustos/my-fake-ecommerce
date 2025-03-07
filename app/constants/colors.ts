@@ -5,5 +5,6 @@ export const colors = {
     light: "#EEEEEE",
     dark: "#A3A3A3",
     skeletonBackground: "#ADADAD",
-    errorText: "#FF0000"
+    errorText: "#FF0000",
+    warning: "#ffc107"
 }

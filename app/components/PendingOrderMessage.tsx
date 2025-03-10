@@ -1,37 +1,25 @@
-import { useEffect } from "react";
 import { StyleSheet, Text } from "react-native";
 import { colors } from "../constants/colors";
 import { useAppNavigation } from "../hooks/useAppNavigation";
-import { fetchCart, setCartFromOrder } from "../redux/cart/reducer";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { fetchOrder } from "../redux/order/reducer";
-import { selectOrderData } from "../redux/order/selectors";
+import { useAppSelector } from "../redux/hooks";
+import { selectIncompleteOrders } from "../redux/order/selectors";
 import CustomCard from "./common/CustomCard";
 
 const PendingOrderMessage = () => {
-  const dispatch = useAppDispatch();
   const navigation = useAppNavigation();
-  const orderData = useAppSelector(selectOrderData);
+  const incompleteOrders = useAppSelector(selectIncompleteOrders);
 
   const handleRedirect = () => {
-    navigation.navigate("Checkout");
+    navigation.navigate("Checkout", {
+      orderId: incompleteOrders[3].orderId,
+    });
   };
 
-  useEffect(() => {
-    dispatch(fetchOrder())
-      .unwrap()
-      .then((response) => {
-        if (response && response.items) {
-          return dispatch(setCartFromOrder(response.items));
-        }
-        dispatch(fetchCart());
-      });
-    return () => {};
-  }, [dispatch]);
-
-  return orderData ? (
+  return incompleteOrders.length > 0 ? (
     <CustomCard onPress={handleRedirect} variant="warning">
-      <Text style={styles.text}>Complete your last order</Text>
+      <Text
+        style={styles.text}
+      >{`You have ${incompleteOrders.length} incomplete orders`}</Text>
     </CustomCard>
   ) : null;
 };

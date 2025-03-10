@@ -3,10 +3,10 @@ import Layout from "../components/Layout";
 import Checkout from "../components/checkout/Checkout";
 import CheckoutFooter from "../components/checkout/CheckoutFooter";
 
-const CheckoutScreen = () => {
+const CheckoutScreen = ({ route }: any) => {
   return (
     <Layout footerComponent={<CheckoutFooter />}>
-      <Checkout />
+      <Checkout orderId={route.params.orderId} />
     </Layout>
   );
 };

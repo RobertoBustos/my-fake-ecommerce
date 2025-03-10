@@ -2,11 +2,12 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { initPaymentSheet } from "@stripe/stripe-react-native";
 import { Alert } from "react-native";
 import { AddressType, CartType, OrderType, UserType } from "../../constants/types";
-import { createOrderService, fetchOrderService, saveOrderData, updateCompleteOrderService, updateOrderCustomerDataService, updateOrderItemsService } from "../../services/orderServices";
+import { createOrderService, fetchIncompleteOrdersService, fetchOrderService, saveOrderData, updateCompleteOrderService, updateOrderCustomerDataService, updateOrderItemsService } from "../../services/orderServices";
 import { createPaymentService, preparePaymentSheetService, searchPaymentService, updatePaymentAmountService, updatePaymentService } from "../../services/paymentServices";
 import { OrderStateType, RootStateType } from "../types";
 
 const initialState: OrderStateType = {
+    incompleteOrders: [],
     orderData: null,
     isLoading: false,
     customerData: null,
@@ -36,13 +37,21 @@ const orderSlice = createSlice({
         }
     },
     extraReducers: (builder) => {
+        builder.addCase(fetchIncompleteOrders.pending, (state, action) => {
+            state.isLoading = true
+        })
+        builder.addCase(fetchIncompleteOrders.fulfilled, (state, action) => {
+            state.incompleteOrders = action.payload
+            state.isLoading = false
+        })
+        builder.addCase(fetchIncompleteOrders.rejected, (state, action) => {
+            state.isLoading = false
+            Alert.alert(action.payload as string)
+        })
         builder.addCase(fetchOrder.pending, (state, action) => {
             state.isLoading = true
         })
         builder.addCase(fetchOrder.fulfilled, (state, action) => {
-            state.orderData = action.payload
-            state.customerData = action.payload.customerData
-            state.shippingData = action.payload.shippingData
             state.isLoading = false
         })
         builder.addCase(fetchOrder.rejected, (state, action) => {
@@ -125,13 +134,21 @@ const orderSlice = createSlice({
     }
 });
 
-export const fetchOrder = createAsyncThunk("order/fetchOrder", async (_, { rejectWithValue }) => {
-    const response = await fetchOrderService()
+export const fetchIncompleteOrders = createAsyncThunk("order/fetchIncompleteOrders", async (payload: string, { rejectWithValue }) => {
+    const response = await fetchIncompleteOrdersService(payload)
     if (response.error) {
         return rejectWithValue(response.error.message)
     }
     if (!response.data) {
         return rejectWithValue("Error fetching orders")
+    }
+    return response.data
+})
+
+export const fetchOrder = createAsyncThunk("order/fetchOrder", async (payload: number, { rejectWithValue }) => {
+    const response = await fetchOrderService(payload)
+    if (response.error) {
+        return rejectWithValue(response.error.message)
     }
     return response.data
 })
@@ -247,12 +264,8 @@ export const updateOrderComplete = createAsyncThunk("order/updateOrderComplete",
     return { ...order.orderData, status: "complete" } as OrderType
 })
 
-export const fetchOrderPayment = createAsyncThunk("order/searchPayment", async (_, { getState, rejectWithValue }) => {
-    const { order } = getState() as RootStateType
-    if (order.orderData === null || order.orderData.paymentIntent === null) {
-        return rejectWithValue("Request Failed")
-    }
-    const response = await searchPaymentService({ paymentId: order.orderData.paymentIntent.paymentId, orderId: order.orderData.orderId })
+export const fetchOrderPayment = createAsyncThunk("order/searchPayment", async (payload: { orderId: number, paymentId: string }, { rejectWithValue }) => {
+    const response = await searchPaymentService(payload)
     if (response.error) {
         return rejectWithValue(response.error.message)
     }

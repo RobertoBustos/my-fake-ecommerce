@@ -1,9 +1,9 @@
 export type RootStackParamList = {
     Products: undefined;
     Product: { productId: number };
-    Cart: undefined;
-    Checkout: undefined;
-    Confirmation: undefined
+    Cart: { orderId: number | undefined };
+    Checkout: { orderId: number };
+    Confirmation: { orderId: number }
 }
 
 export type RequestType<T> = T

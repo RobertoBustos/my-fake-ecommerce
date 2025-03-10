@@ -1,20 +1,22 @@
-import { useAppSelector } from "../redux/hooks";
-import {
-  selectCustomerData,
-  selectIsOrderLoading,
-} from "../redux/order/selectors";
+import { CustomerType } from "../constants/types";
 import CustomCard from "./common/CustomCard";
 import SummaryCardRow from "./common/SummaryCardRow";
 
-const CustomerSummary = () => {
-  const customerData = useAppSelector(selectCustomerData());
-  const isLoading = useAppSelector(selectIsOrderLoading);
+export type CustomerSummaryPropsType = {
+  data: CustomerType | null;
+  isLoading: boolean;
+};
+
+const CustomerSummary = ({ data, isLoading }: CustomerSummaryPropsType) => {
+  if (data === null) {
+    return null;
+  }
 
   return (
     <CustomCard headerText="Customer Information" isLoading={isLoading}>
-      <SummaryCardRow concept={"Customer Id"} value={customerData.customerId} />
-      <SummaryCardRow concept={"Email"} value={customerData.email} />
-      <SummaryCardRow concept={"Full Name"} value={customerData.userName} />
+      <SummaryCardRow concept={"Customer Id"} value={data.customerId} />
+      <SummaryCardRow concept={"Email"} value={data.email} />
+      <SummaryCardRow concept={"Full Name"} value={data.userName} />
     </CustomCard>
   );
 };

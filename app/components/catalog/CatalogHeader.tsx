@@ -1,7 +1,5 @@
-import PendingOrderMessage from "../PendingOrderMessage";
-
 const CatalogHeader = () => {
-  return <PendingOrderMessage />;
+  return null;
 };
 
 export default CatalogHeader;

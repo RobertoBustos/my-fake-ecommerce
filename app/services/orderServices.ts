@@ -2,13 +2,32 @@ import { CreateOrderRequestType, OrderType, RequestType, ResponseType, UpdateOrd
 import { fakeDelayPromise } from "../utils/fakeDelayPromise"
 import { getFromAsyncStorage, saveToAsyncStorage } from "../utils/saveToAsyncStorage"
 
-export async function fetchOrderService(): ResponseType<OrderType | undefined> {
+export async function fetchIncompleteOrdersService(request: RequestType<string>): ResponseType<OrderType[]> {
+    // the request is the user id
     try {
+        const response = await getFromAsyncStorage("orderData")
+        if (response === null) {
+            return { data: [] }
+        }
+        return { data: JSON.parse(response) as OrderType[] }
+    } catch (error) {
+        return { data: [], error: error as Error }
+    }
+}
+
+export async function fetchOrderService(request: RequestType<number>): ResponseType<OrderType | undefined> {
+    // the request is the order id
+    try {
+        await fakeDelayPromise(3000)
         const response = await getFromAsyncStorage("orderData")
         if (response === null) {
             return { data: undefined }
         }
-        return { data: JSON.parse(response) as OrderType }
+        const orders = JSON.parse(response) as OrderType[]
+        const orderData = orders.find((order) => {
+            return order.orderId === request
+        });
+        return { data: orderData }
     } catch (error) {
         return { data: undefined, error: error as Error }
     }

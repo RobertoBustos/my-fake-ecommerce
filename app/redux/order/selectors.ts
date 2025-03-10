@@ -47,3 +47,5 @@ export const selectIsShippingDataValid = () => {
 export const selectIsOrderComplete = (state: RootStateType) => state.order.orderData?.status === "complete"
 
 export const selectPaymentData = (state: RootStateType) => state.order.paymentData
+
+export const selectIncompleteOrders = (state: RootStateType) => state.order.incompleteOrders

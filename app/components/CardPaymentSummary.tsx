@@ -1,8 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import Svg, { NumberProp, Path } from "react-native-svg";
 import { colors } from "../constants/colors";
-import { useAppSelector } from "../redux/hooks";
-import { selectIsOrderLoading } from "../redux/order/selectors";
 import CustomCard from "./common/CustomCard";
 
 export type CardPaymentSummaryPropsType = {
@@ -11,6 +9,7 @@ export type CardPaymentSummaryPropsType = {
   expMonth: number;
   expYear: number;
   autorization: string;
+  isLoading: boolean;
 };
 
 const CardPaymentSummary = ({
@@ -19,9 +18,8 @@ const CardPaymentSummary = ({
   expMonth,
   expYear,
   autorization,
+  isLoading,
 }: CardPaymentSummaryPropsType) => {
-  const isLoading = useAppSelector(selectIsOrderLoading);
-
   return (
     <CustomCard isLoading={isLoading} orientation="horizontal">
       <VisaCardIcon height={size} width={size} />

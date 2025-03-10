@@ -6,10 +6,7 @@ import { colors } from "../../constants/colors";
 import { AddressType } from "../../constants/types";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setShippingData } from "../../redux/order/reducer";
-import {
-  selectIsOrderComplete,
-  selectShippingData,
-} from "../../redux/order/selectors";
+import { selectIsOrderComplete } from "../../redux/order/selectors";
 import CustomCard from "../common/CustomCard";
 
 const validationSchema: ZodType<AddressType> = z.object({
@@ -20,9 +17,16 @@ const validationSchema: ZodType<AddressType> = z.object({
     .max(5, { message: "Zipcode must contain exact 5 characters" }),
 });
 
-const AddressDetailsForm = () => {
+export type AddressDetailsFormPropsType = {
+  data: { address: string; zipCode: string };
+  isLoading: boolean;
+};
+
+const AddressDetailsForm = ({
+  data,
+  isLoading,
+}: AddressDetailsFormPropsType) => {
   const dispatch = useAppDispatch();
-  const shippingData = useAppSelector(selectShippingData());
   const isOrderComplete = useAppSelector(selectIsOrderComplete);
 
   const {
@@ -30,7 +34,10 @@ const AddressDetailsForm = () => {
     getValues,
     formState: { errors },
   } = useForm<AddressType>({
-    defaultValues: shippingData,
+    defaultValues: {
+      address: data.address,
+      zipCode: data.zipCode,
+    },
     resolver: zodResolver(validationSchema),
     mode: "all",
   });
@@ -41,7 +48,7 @@ const AddressDetailsForm = () => {
   };
 
   return (
-    <CustomCard headerText="Address Details">
+    <CustomCard headerText="Address Details" isLoading={isLoading}>
       <Controller
         control={control}
         name="address"

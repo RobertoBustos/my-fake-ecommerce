@@ -7,7 +7,7 @@ import { resetCart } from "../redux/cart/reducer";
 import { useAppDispatch } from "../redux/hooks";
 import { clearOrderCompleted } from "../redux/order/reducer";
 
-const ConfirmationScreen = () => {
+const ConfirmationScreen = ({ route }: any) => {
   const navigation = useAppNavigation();
   const dispatch = useAppDispatch();
 
@@ -29,7 +29,7 @@ const ConfirmationScreen = () => {
 
   return (
     <Layout footerComponent={<ConfirmationFooter onClick={handleReturnHome} />}>
-      <Confirmation />
+      <Confirmation orderId={route.params.orderId} />
     </Layout>
   );
 };

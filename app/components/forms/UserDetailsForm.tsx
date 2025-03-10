@@ -6,10 +6,7 @@ import { colors } from "../../constants/colors";
 import { UserType } from "../../constants/types";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setCustomerData } from "../../redux/order/reducer";
-import {
-  selectCustomerData,
-  selectIsOrderComplete,
-} from "../../redux/order/selectors";
+import { selectIsOrderComplete } from "../../redux/order/selectors";
 import CustomCard from "../common/CustomCard";
 
 const validationSchema: ZodType<UserType> = z.object({
@@ -20,9 +17,13 @@ const validationSchema: ZodType<UserType> = z.object({
     .max(60, { message: "Your name must contain from 4 up to 60 characters" }),
 });
 
-const UserDetailsForm = () => {
+export type UserDetailsFormPropsType = {
+  data: { email: string; userName: string };
+  isLoading: boolean;
+};
+
+const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
   const dispatch = useAppDispatch();
-  const customerData = useAppSelector(selectCustomerData());
   const isOrderComplete = useAppSelector(selectIsOrderComplete);
 
   const {
@@ -30,7 +31,10 @@ const UserDetailsForm = () => {
     getValues,
     formState: { errors },
   } = useForm<UserType>({
-    defaultValues: customerData,
+    defaultValues: {
+      email: data.email,
+      userName: data.userName,
+    },
     resolver: zodResolver(validationSchema),
     mode: "all",
   });
@@ -41,7 +45,7 @@ const UserDetailsForm = () => {
   };
 
   return (
-    <CustomCard headerText="User Details">
+    <CustomCard headerText="User Details" isLoading={isLoading}>
       <Controller
         control={control}
         name="email"

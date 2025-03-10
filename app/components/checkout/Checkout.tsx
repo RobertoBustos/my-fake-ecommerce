@@ -1,3 +1,5 @@
+import { useOrder } from "@/app/hooks/useOrder";
+import { useMemo } from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useKeyboardStatus } from "../../hooks/useKeyboardStatus";
@@ -7,18 +9,41 @@ import UserDetailsForm from "../forms/UserDetailsForm";
 import CheckoutFooter from "./CheckoutFooter";
 import CheckoutHeader from "./CheckoutHeader";
 
-const Checkout = () => {
+export type CheckoutPropsType = {
+  orderId: number;
+};
+
+const Checkout = ({ orderId }: CheckoutPropsType) => {
   const { keyboardStatus } = useKeyboardStatus();
+  const { orderData, isLoading } = useOrder(orderId);
+
+  const userData = useMemo(() => {
+    return {
+      email: orderData?.customerData?.email || "",
+      userName: orderData?.customerData?.userName || "",
+    };
+  }, [orderData]);
+
+  const addressData = useMemo(() => {
+    return {
+      address: orderData?.shippingData?.address || "",
+      zipCode: orderData?.shippingData?.zipCode || "",
+    };
+  }, [orderData]);
 
   return (
     <KeyboardAwareScrollView
       style={styles.container}
       showsVerticalScrollIndicator={false}
     >
-      <CheckoutHeader />
-      <OrderSummary />
-      <UserDetailsForm />
-      <AddressDetailsForm />
+      {!orderData ? null : (
+        <>
+          <CheckoutHeader orderId={orderId.toString()} />
+          <OrderSummary data={orderData.summary} isLoading={isLoading} />
+          <UserDetailsForm data={userData} isLoading={isLoading} />
+          <AddressDetailsForm data={addressData} isLoading={isLoading} />
+        </>
+      )}
       {keyboardStatus === "shown" && Platform.OS === "ios" ? (
         <View style={styles.footer}>{<CheckoutFooter />}</View>
       ) : null}

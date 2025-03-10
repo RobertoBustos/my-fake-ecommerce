@@ -1,11 +1,8 @@
+import { useOrder } from "@/app/hooks/useOrder";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { useEffect } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../constants/colors";
 import { CartItemType } from "../../constants/types";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { fetchOrderPayment } from "../../redux/order/reducer";
-import { selectOrderData } from "../../redux/order/selectors";
 import { formatCurrency } from "../../utils/formatCurrency";
 import AddressSummary from "../AddressSummary";
 import CustomerSummary from "../CustomerSummary";
@@ -14,14 +11,12 @@ import PaymentSummary from "../PaymentSummary";
 import CustomImage from "../common/CustomImage";
 import ConfirmationHeader from "./ConfirmationHeader";
 
-const Confirmation = () => {
-  const dispatch = useAppDispatch();
-  const order = useAppSelector(selectOrderData);
+export type ConfirmationPropsType = {
+  orderId: number;
+};
 
-  useEffect(() => {
-    dispatch(fetchOrderPayment());
-    return () => {};
-  }, [dispatch]);
+const Confirmation = ({ orderId }: ConfirmationPropsType) => {
+  const { orderData, isLoading, paymentData } = useOrder(orderId);
 
   return (
     <View style={styles.container}>
@@ -29,15 +24,24 @@ const Confirmation = () => {
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
-        <ConfirmationHeader />
-        {order &&
-          order.items?.map((item) => {
-            return <OrderConfirmationItem data={item} key={item.id} />;
-          })}
-        <PaymentSummary />
-        <OrderSummary />
-        <CustomerSummary />
-        <AddressSummary />
+        {!orderData ? null : (
+          <>
+            <ConfirmationHeader orderId={orderId.toString()} />
+            {orderData.items?.map((item) => {
+              return <OrderConfirmationItem data={item} key={item.id} />;
+            })}
+            <PaymentSummary data={paymentData} isLoading={isLoading} />
+            <OrderSummary data={orderData.summary} isLoading={isLoading} />
+            <CustomerSummary
+              data={orderData.customerData}
+              isLoading={isLoading}
+            />
+            <AddressSummary
+              data={orderData.shippingData}
+              isLoading={isLoading}
+            />
+          </>
+        )}
       </ScrollView>
     </View>
   );

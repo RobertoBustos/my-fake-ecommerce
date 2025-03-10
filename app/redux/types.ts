@@ -22,6 +22,7 @@ export type AppThunk<ThunkReturnType = void> = ThunkAction<
 >;
 
 export type OrderStateType = {
+    incompleteOrders: OrderType[],
     orderData: OrderType | null
     isLoading: boolean
     customerData: CustomerType | null

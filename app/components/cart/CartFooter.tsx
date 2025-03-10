@@ -1,9 +1,10 @@
 import { Alert } from "react-native";
-import { useCartContext } from "../../contexts/CartContext";
 import { useAppNavigation } from "../../hooks/useAppNavigation";
+import { selectIsCartEmpty } from "../../redux/cart/selectors";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { createOrder } from "../../redux/order/reducer";
+import { createOrder, updateOrderItems } from "../../redux/order/reducer";
 import {
+  selectIsOrderComplete,
   selectIsOrderLoading,
   selectOrderData,
 } from "../../redux/order/selectors";
@@ -14,31 +15,44 @@ const CartFooter = () => {
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(selectIsOrderLoading);
   const orderData = useAppSelector(selectOrderData);
-  const { cart, cartSummary, createCartSummary } = useCartContext();
   const navigation = useAppNavigation();
-  const isCartEmpty = cart.length === 0;
+  const isCartEmpty = useAppSelector(selectIsCartEmpty);
+  const isOrderComplete = useAppSelector(selectIsOrderComplete);
 
   const handleRedirect = () => {
     if (isCartEmpty) {
       navigation.goBack();
       return;
     }
-    createCartSummary();
-    if (orderData === null || orderData.orderId === null) {
-      dispatch(createOrder({ items: cart, summary: cartSummary }))
+    if (orderData === null) {
+      dispatch(createOrder())
         .unwrap()
         .then(() => {
           navigation.navigate("Checkout");
+          return;
         })
         .catch(() => {
           Alert.alert("Unable to process order");
+          return;
         });
-      return;
     }
-    navigation.navigate("Checkout");
+    if (isOrderComplete) {
+      navigation.navigate("Checkout");
+    }
+    dispatch(updateOrderItems())
+      .unwrap()
+      .then((result) => {
+        if (result) {
+          navigation.navigate("Checkout");
+        }
+      });
   };
 
-  const footerText = isCartEmpty ? "Return to Products" : "Proceed to Payment";
+  const footerText = isCartEmpty
+    ? "Return to Products"
+    : isOrderComplete
+    ? "Go to Checkout"
+    : "Proceed to Payment";
 
   return (
     <CustomFooter>

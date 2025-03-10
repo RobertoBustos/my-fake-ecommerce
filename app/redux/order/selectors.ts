@@ -12,6 +12,7 @@ export const selectOrderSummaryData = (state: RootStateType) => state.order.orde
 export const selectCustomerData = () => {
     return createSelector([selectOrderState], (orderState) => {
         return {
+            customerId: orderState.customerData?.customerId || "",
             email: orderState.customerData?.email || "",
             userName: orderState.customerData?.userName || ""
         }
@@ -25,8 +26,6 @@ export const selectIsCustomerDataValid = () => {
     }
     );
 }
-
-export const selectIsLoadingCustomer = (state: RootStateType) => state.order.isLoadingCustomer
 
 export const selectShippingData = () => {
     return createSelector([selectOrderState], (orderState) => {
@@ -45,4 +44,6 @@ export const selectIsShippingDataValid = () => {
     );
 }
 
-export const selectIsLoadingShipping = (state: RootStateType) => state.order.isLoadingShipping
+export const selectIsOrderComplete = (state: RootStateType) => state.order.orderData?.status === "complete"
+
+export const selectPaymentData = (state: RootStateType) => state.order.paymentData

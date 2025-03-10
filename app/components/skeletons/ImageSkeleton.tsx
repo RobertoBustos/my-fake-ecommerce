@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { colors } from "../../constants/colors";
 import SkeletonWrapper from "../common/SkeletonWrapper";
 
@@ -7,8 +7,11 @@ export type ImageSkeletonPropsType = {
   height: number;
 };
 
-const ImageSkeleton = ({ height, width }: ImageSkeletonPropsType) => {
-  const mixedStyles = { ...styles.container };
+const ImageSkeleton = ({
+  height = 140,
+  width = 140,
+}: ImageSkeletonPropsType) => {
+  const mixedStyles: StyleProp<ViewStyle> = { ...styles.container };
 
   mixedStyles.height = height;
   mixedStyles.width = width;
@@ -24,8 +27,6 @@ const ImageSkeleton = ({ height, width }: ImageSkeletonPropsType) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: 140,
-    height: 140,
     flexDirection: "row",
     justifyContent: "center",
     paddingVertical: 16,

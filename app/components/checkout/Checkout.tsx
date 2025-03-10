@@ -1,9 +1,9 @@
 import { Platform, StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useKeyboardStatus } from "../../hooks/useKeyboardStatus";
-import AddressDetails from "../AddressDetails";
 import OrderSummary from "../OrderSummary";
-import UserDetails from "../UserDetails";
+import AddressDetailsForm from "../forms/AddressDetailsForm";
+import UserDetailsForm from "../forms/UserDetailsForm";
 import CheckoutFooter from "./CheckoutFooter";
 import CheckoutHeader from "./CheckoutHeader";
 
@@ -17,8 +17,8 @@ const Checkout = () => {
     >
       <CheckoutHeader />
       <OrderSummary />
-      <UserDetails />
-      <AddressDetails />
+      <UserDetailsForm />
+      <AddressDetailsForm />
       {keyboardStatus === "shown" && Platform.OS === "ios" ? (
         <View style={styles.footer}>{<CheckoutFooter />}</View>
       ) : null}

@@ -1,42 +1,46 @@
-import { StyleSheet, Text, View } from "react-native";
-import { colors } from "../constants/colors";
 import { useAppSelector } from "../redux/hooks";
-import { selectOrderSummaryData } from "../redux/order/selectors";
+import {
+  selectIsOrderLoading,
+  selectOrderData,
+  selectOrderSummaryData,
+} from "../redux/order/selectors";
 import { formatCurrency } from "../utils/formatCurrency";
 import CustomCard from "./common/CustomCard";
+import SummaryCardRow from "./common/SummaryCardRow";
 
 const OrderSummary = () => {
+  const orderData = useAppSelector(selectOrderData);
   const orderSumaryData = useAppSelector(selectOrderSummaryData);
+  const isLoading = useAppSelector(selectIsOrderLoading);
 
-  return orderSumaryData ? (
-    <CustomCard>
-      <Text style={styles.headerText}>Order Summary</Text>
-      <OrderDetailsRow
+  return orderSumaryData && orderSumaryData !== null && orderData !== null ? (
+    <CustomCard headerText="Order Summary" isLoading={isLoading}>
+      <SummaryCardRow
+        concept={`Order id`}
+        value={orderData.orderId.toString()}
+      />
+      <SummaryCardRow
         concept={`${orderSumaryData.details.length} items`}
         value={formatCurrency({
           amount: orderSumaryData.subtotal,
           currency: "MXN",
         })}
       />
-      {orderSumaryData.taxes ? (
-        <OrderDetailsRow
-          concept={`Taxes`}
-          value={formatCurrency({
-            amount: orderSumaryData.taxes,
-            currency: "MXN",
-          })}
-        />
-      ) : null}
-      {orderSumaryData.discount ? (
-        <OrderDetailsRow
-          concept={`Discount`}
-          value={formatCurrency({
-            amount: orderSumaryData.discount,
-            currency: "MXN",
-          })}
-        />
-      ) : null}
-      <OrderDetailsRow
+      <SummaryCardRow
+        concept={`Taxes`}
+        value={formatCurrency({
+          amount: orderSumaryData.taxes,
+          currency: "MXN",
+        })}
+      />
+      <SummaryCardRow
+        concept={`Discount`}
+        value={formatCurrency({
+          amount: orderSumaryData.discount,
+          currency: "MXN",
+        })}
+      />
+      <SummaryCardRow
         concept={`Total`}
         value={formatCurrency({
           amount: orderSumaryData.total,
@@ -46,44 +50,5 @@ const OrderSummary = () => {
     </CustomCard>
   ) : null;
 };
-
-export type OrderDetailsRowPropsType = {
-  concept: string;
-  value: string;
-};
-
-export const OrderDetailsRow = ({
-  concept,
-  value,
-}: OrderDetailsRowPropsType) => {
-  return (
-    <View style={styles.rowContainer}>
-      <Text style={styles.rowText}>{concept}</Text>
-      <Text style={styles.rowText}>{value}</Text>
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
-  headerText: {
-    color: colors.primary,
-    fontSize: 16,
-    fontWeight: "500",
-    borderBottomWidth: 3,
-    borderBottomColor: colors.primary,
-    marginBottom: 8,
-  },
-  rowContainer: {
-    paddingVertical: 4,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    borderBottomWidth: 1,
-    borderBottomColor: colors.black,
-  },
-  rowText: {
-    fontSize: 16,
-  },
-});
 
 export default OrderSummary;

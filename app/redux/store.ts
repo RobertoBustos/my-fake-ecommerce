@@ -1,12 +1,14 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import { orderReducer } from "./order/reducer";
+import cartReducer from "./cart/reducer";
+import orderReducer from "./order/reducer";
 import { AppStore, PreloadState } from "./types";
 
-export const rootReducer = combineReducers({
+const rootReducer = combineReducers({
+    cart: cartReducer,
     order: orderReducer
 })
 
-export const setupStore = (preloadedState?: PreloadState) => {
+const setupStore = (preloadedState?: PreloadState) => {
     return configureStore({
         reducer: rootReducer,
         preloadedState,
@@ -14,4 +16,6 @@ export const setupStore = (preloadedState?: PreloadState) => {
     })
 }
 
-export const store: AppStore = setupStore()
+const store: AppStore = setupStore()
+
+export default store

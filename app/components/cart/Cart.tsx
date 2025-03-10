@@ -1,17 +1,19 @@
-import { useCartContext } from "../../contexts/CartContext";
+import { selectCartItems, selectIsCartEmpty } from "../../redux/cart/selectors";
+import { useAppSelector } from "../../redux/hooks";
 import CartList from "../CartList";
 import EmptyCart from "../EmptyCart";
 import CartHeader from "./CartHeader";
 
 const Cart = () => {
-  const { cart } = useCartContext();
-  const isCartEmpty = cart.length === 0;
+  const items = useAppSelector(selectCartItems);
+  const isCartEmpty = useAppSelector(selectIsCartEmpty);
+
   return isCartEmpty ? (
     <EmptyCart />
   ) : (
     <>
       <CartHeader />
-      <CartList cartItems={cart} />
+      <CartList cartItems={items} />
     </>
   );
 };

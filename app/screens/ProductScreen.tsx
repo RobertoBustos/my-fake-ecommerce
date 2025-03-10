@@ -3,24 +3,27 @@ import { ActivityIndicator, StyleSheet, Text } from "react-native";
 import Layout from "../components/Layout";
 import Product from "../components/product/Product";
 import ProductFooter from "../components/product/ProductFooter";
-import { useCartContext } from "../contexts/CartContext";
 import { useAppNavigation } from "../hooks/useAppNavigation";
 import { useProductDetails } from "../hooks/useProductDetails";
+import { addItemToCart } from "../redux/cart/reducer";
+import { useAppDispatch } from "../redux/hooks";
 
 const ProductScreen = ({ route }: any) => {
+  const dispatch = useAppDispatch();
   const navigation = useAppNavigation();
   const { isLoading, response } = useProductDetails(route.params.productId);
-  const { onAdd } = useCartContext();
   const [quantity, setQuantity] = useState<number>(1);
 
   const handleAddToCart = (quantity: number) => {
     if (!response) return;
-    onAdd({
-      ...response,
-      cartItemId: response.id,
-      quantity: quantity,
-      subtotal: response.price.amount * quantity,
-    });
+    dispatch(
+      addItemToCart({
+        ...response,
+        cartItemId: response.id,
+        quantity: quantity,
+        subtotal: response.price.amount * quantity,
+      })
+    );
     navigation.goBack();
   };
 

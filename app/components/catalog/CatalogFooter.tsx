@@ -1,18 +1,18 @@
-import { useCartContext } from "../../contexts/CartContext";
 import { useAppNavigation } from "../../hooks/useAppNavigation";
+import { selectIsCartEmpty } from "../../redux/cart/selectors";
+import { useAppSelector } from "../../redux/hooks";
 import FooterButton from "../FooterButton";
 import CustomFooter from "../common/CustomFooter";
 
 const CatalogFooter = () => {
   const navigation = useAppNavigation();
-  const { cart, createCartSummary } = useCartContext();
+  const isCartEmpty = useAppSelector(selectIsCartEmpty);
 
-  return cart && cart.length > 0 ? (
+  return !isCartEmpty ? (
     <CustomFooter>
       <FooterButton
         text={"View Cart"}
         onPress={() => {
-          createCartSummary();
           navigation.navigate("Cart");
         }}
       />

@@ -1,8 +1,9 @@
 import { Action, EnhancedStore, StoreEnhancer, ThunkAction, ThunkDispatch, Tuple, UnknownAction } from "@reduxjs/toolkit";
-import { AddressType, OrderType, UserType } from "../constants/types";
+import { AddressType, CartItemType, CartSummaryType, CustomerType, OrderType, PaymentMethodType } from "../constants/types";
 
 export type RootStateType = {
     order: OrderStateType
+    cart: CartStateType
 }
 
 export type AppStore = EnhancedStore<RootStateType, UnknownAction, Tuple<[StoreEnhancer<{
@@ -23,8 +24,12 @@ export type AppThunk<ThunkReturnType = void> = ThunkAction<
 export type OrderStateType = {
     orderData: OrderType | null
     isLoading: boolean
-    customerData: UserType | null
-    isLoadingCustomer: boolean
+    customerData: CustomerType | null
     shippingData: AddressType | null
-    isLoadingShipping: boolean
+    paymentData: PaymentMethodType | null
+}
+
+export type CartStateType = {
+    items: CartItemType[]
+    summary: CartSummaryType
 }

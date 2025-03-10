@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { StyleSheet, Text } from "react-native";
 import { colors } from "../constants/colors";
 import { useAppNavigation } from "../hooks/useAppNavigation";
+import { fetchCart, setCartFromOrder } from "../redux/cart/reducer";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { fetchOrder } from "../redux/order/reducer";
 import { selectOrderData } from "../redux/order/selectors";
@@ -17,7 +18,14 @@ const PendingOrderMessage = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchOrder());
+    dispatch(fetchOrder())
+      .unwrap()
+      .then((response) => {
+        if (response && response.items) {
+          return dispatch(setCartFromOrder(response.items));
+        }
+        dispatch(fetchCart());
+      });
     return () => {};
   }, [dispatch]);
 

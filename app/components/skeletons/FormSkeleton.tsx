@@ -1,16 +1,20 @@
-import { StyleSheet, View } from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { colors } from "../../constants/colors";
 import SkeletonWrapper from "../common/SkeletonWrapper";
 
 export type FormSkeletonPropsType = {
   rows?: number;
+  rowHeight?: number;
 };
 
-const FormSkeleton = ({ rows = 1 }: FormSkeletonPropsType) => {
+const FormSkeleton = ({ rows = 1, rowHeight = 45 }: FormSkeletonPropsType) => {
   return Array.from({ length: rows }).map((_, index) => {
+    const mixedStyles: StyleProp<ViewStyle> = { ...styles.container };
+    mixedStyles.height = rowHeight;
+
     return (
       <SkeletonWrapper key={index}>
-        <View style={styles.container}>
+        <View style={mixedStyles}>
           <View style={styles.content} />
         </View>
       </SkeletonWrapper>
@@ -21,7 +25,6 @@ const FormSkeleton = ({ rows = 1 }: FormSkeletonPropsType) => {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    height: 45,
     flexDirection: "row",
     justifyContent: "center",
     marginVertical: 4,

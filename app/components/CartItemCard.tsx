@@ -2,8 +2,10 @@ import { useMemo } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { colors } from "../constants/colors";
 import { CartItemType } from "../constants/types";
-import { useCartContext } from "../contexts/CartContext";
 import { useAppNavigation } from "../hooks/useAppNavigation";
+import { removeItemFromCart } from "../redux/cart/reducer";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { selectIsOrderComplete } from "../redux/order/selectors";
 import { formatCurrency } from "../utils/formatCurrency";
 import CustomButton from "./common/CustomButton";
 import CustomCard from "./common/CustomCard";
@@ -16,15 +18,16 @@ export type CartItemCardPropsType = {
 };
 
 const CartItemCard = ({ data, disabled }: CartItemCardPropsType) => {
+  const dispatch = useAppDispatch();
   const navigation = useAppNavigation();
-  const { onRemove } = useCartContext();
   const isProductInCart = data.cartItemId !== undefined;
+  const isOrderComplete = useAppSelector(selectIsOrderComplete);
 
   const handleRemoveFromCart = () => {
     Alert.alert("Remove this item from cart?", "", [
       {
         text: "OK",
-        onPress: () => onRemove(data.cartItemId),
+        onPress: () => dispatch(removeItemFromCart(data.cartItemId)),
         style: "default",
       },
       {
@@ -65,10 +68,12 @@ const CartItemCard = ({ data, disabled }: CartItemCardPropsType) => {
         </Text>
       </View>
       <CustomImage imageUrl={data.image} width={120} height={120} />
-      <CustomButton
-        onPress={handleRemoveFromCart}
-        buttonComponent={<DeleteButton color={colors.errorText} size={30} />}
-      />
+      {!isOrderComplete ? (
+        <CustomButton
+          onPress={handleRemoveFromCart}
+          buttonComponent={<DeleteButton color={colors.errorText} size={30} />}
+        />
+      ) : null}
     </CustomCard>
   );
 };

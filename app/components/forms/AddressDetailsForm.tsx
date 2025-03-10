@@ -1,12 +1,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, TextInput } from "react-native";
 import { ZodType, z } from "zod";
 import { colors } from "../../constants/colors";
 import { AddressType } from "../../constants/types";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setShippingData } from "../../redux/order/reducer";
-import { selectShippingData } from "../../redux/order/selectors";
+import {
+  selectIsOrderComplete,
+  selectShippingData,
+} from "../../redux/order/selectors";
+import CustomCard from "../common/CustomCard";
 
 const validationSchema: ZodType<AddressType> = z.object({
   address: z.string().min(1, { message: "Address required" }),
@@ -19,6 +23,7 @@ const validationSchema: ZodType<AddressType> = z.object({
 const AddressDetailsForm = () => {
   const dispatch = useAppDispatch();
   const shippingData = useAppSelector(selectShippingData());
+  const isOrderComplete = useAppSelector(selectIsOrderComplete);
 
   const {
     control,
@@ -36,7 +41,7 @@ const AddressDetailsForm = () => {
   };
 
   return (
-    <View>
+    <CustomCard headerText="Address Details">
       <Controller
         control={control}
         name="address"
@@ -54,6 +59,7 @@ const AddressDetailsForm = () => {
             }}
             value={value}
             style={styles.input}
+            editable={!isOrderComplete}
             multiline={true}
             numberOfLines={4}
           />
@@ -77,13 +83,14 @@ const AddressDetailsForm = () => {
             }}
             value={value}
             style={styles.input}
+            editable={!isOrderComplete}
           />
         )}
       />
       {errors.zipCode && (
         <Text style={styles.errorText}>{errors.zipCode.message}</Text>
       )}
-    </View>
+    </CustomCard>
   );
 };
 

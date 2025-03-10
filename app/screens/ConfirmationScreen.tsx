@@ -2,21 +2,20 @@ import { useCallback } from "react";
 import Layout from "../components/Layout";
 import Confirmation from "../components/confirmation/Confirmation";
 import ConfirmationFooter from "../components/confirmation/ConfirmationFooter";
-import { useCartContext } from "../contexts/CartContext";
 import { useAppNavigation } from "../hooks/useAppNavigation";
+import { resetCart } from "../redux/cart/reducer";
 import { useAppDispatch } from "../redux/hooks";
 import { clearOrderCompleted } from "../redux/order/reducer";
 
 const ConfirmationScreen = () => {
   const navigation = useAppNavigation();
   const dispatch = useAppDispatch();
-  const { resetCart } = useCartContext();
 
   const handleReturnHome = useCallback(() => {
-    resetCart();
+    dispatch(resetCart());
     dispatch(clearOrderCompleted());
     navigation.reset({ index: 0, routes: [{ name: "Products" }] });
-  }, [dispatch, navigation, resetCart]);
+  }, [dispatch, navigation]);
 
   /*   useEffect(() => {
     const resetAction = setTimeout(() => {

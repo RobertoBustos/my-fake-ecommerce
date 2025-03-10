@@ -8,6 +8,11 @@ export type RootStackParamList = {
 
 export type RequestType<T> = T
 
+export type ResponseType<T> = Promise<{
+    data: T
+    error?: Error
+}>
+
 export type ProductType = {
     category: string;
     description: string;
@@ -54,7 +59,7 @@ export type CartSummaryItemType = {
     unitPrice: number
     taxes?: number
     discount?: number
-    subTotal: number
+    subtotal: number
 }
 
 export type UserType = {
@@ -68,12 +73,12 @@ export type AddressType = {
 }
 
 export type OrderType = {
-    orderId: number | null
+    orderId: number
     customerData: CustomerType | null
     shippingData: ShippingType | null
+    paymentIntent: PaymentType | null
     items: CartType | null
     summary: CartSummaryType | null
-    paymentIntent: PaymentType | null
     status: "incomplete" | "payment_pending" | "complete" | "cancelled"
 }
 
@@ -81,39 +86,42 @@ export type CustomerType = UserType & { customerId: string }
 
 export type ShippingType = AddressType
 
+export type PaymentType = {
+    paymentId: string
+    customer: string
+    amount: number
+}
+
 export type CreateOrderRequestType = {
     items: CartType,
     summary: CartSummaryType
 }
 
-export type UpdateOrderRequestType = CreateOrderRequestType & {
-    orderId: number
-    customerData: UserType | null
-}
-
 export type UpdateOrderCustomerDataType = {
     orderId: number
-    customerData: UserType
-}
-
-export type UpdateCustomerShippingDataType = {
-    orderId: number
+    paymentId: string
+    customerData: CustomerType
     shippingData: AddressType
 }
 
-export type StripeCustomerType = {
+export type UpdateOrderItemsType = {
+    paymentId: string
+    orderId: number
+    items: CartType,
+    summary: CartSummaryType
+}
+
+export type PaymentMethodType = {
     id: string
-    name: string
-    email: string
+    type: string
+    card?: CardType
 }
 
-export type CreatePaymentType = {
-    amount: number
-    currency: string
-    customerId: string
-}
-
-export type PaymentType = {
-    clientSecret: string
-    ephemeralKey: string
+export type CardType = {
+    brand: string
+    display_brand: string
+    exp_month: number
+    exp_year: number
+    last4: string
+    fingerprint: string
 }

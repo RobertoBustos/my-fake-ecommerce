@@ -1,14 +1,16 @@
-import { PropsWithChildren } from "react";
-import CartStore from "./CartContext";
 import SiblingStore from "./SiblingContext";
 import StripeStore from "./StripeContext";
 
-export const RootContext = ({ children }: PropsWithChildren) => {
+export type RootContextType = {
+  children: React.JSX.Element;
+};
+
+const RootContext = ({ children }: RootContextType) => {
   return (
     <SiblingStore>
-      <StripeStore>
-        <CartStore>{children}</CartStore>
-      </StripeStore>
+      <StripeStore>{children}</StripeStore>
     </SiblingStore>
   );
 };
+
+export default RootContext;

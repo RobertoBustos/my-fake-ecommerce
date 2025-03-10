@@ -1,53 +1,97 @@
 import { BASE_URL } from "../constants/config";
-import { CreatePaymentType, PaymentType, RequestType, StripeCustomerType, UserType } from "../constants/types";
+import { OrderType, PaymentMethodType, PaymentType, RequestType, ResponseType, UpdateOrderCustomerDataType, UpdateOrderItemsType } from "../constants/types";
 
-export async function fetchPaymentSheetParams(request: RequestType<CreatePaymentType>): Promise<PaymentType | Error> {
+export async function searchPaymentService(request: RequestType<{ paymentId: string, orderId: number }>): ResponseType<PaymentMethodType | undefined> {
+    try {
+        const response = await fetch(BASE_URL + "/search-payment-intent", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(request),
+        });
+        const data = await response.json();
+        if (data.error) {
+            throw new Error(data.error.message)
+        }
+        return { data }
+    } catch (error) {
+        return { data: undefined, error: error as Error }
+    }
+}
+
+export async function createPaymentService(request: RequestType<OrderType>): ResponseType<PaymentType | undefined> {
     try {
         const response = await fetch(BASE_URL + "/create-payment-intent", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ amount: request.amount, currency: request.currency, customerId: request.customerId }),
+            body: JSON.stringify({ order: JSON.stringify(request) }),
         });
         const data = await response.json();
-        if ("error" in data) {
+        if (data.error) {
             throw new Error(data.error.message)
         }
-        return data
+        return { data }
     } catch (error) {
-        return error as Error
+        return { data: undefined, error: error as Error }
     }
 }
 
-export async function getCustomerService(request: RequestType<UserType>): Promise<StripeCustomerType | Error> {
+export async function updatePaymentService(request: RequestType<UpdateOrderCustomerDataType>): ResponseType<PaymentType | undefined> {
     try {
-        const response = await fetch(BASE_URL + "/getCustomer", {
+        const response = await fetch(BASE_URL + "/update-payment-intent", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(request)
-        })
+            body: JSON.stringify(request),
+        });
         const data = await response.json();
-        return data.data as StripeCustomerType
+        if (data.error) {
+            throw new Error(data.error.message)
+        }
+        return { data }
     } catch (error) {
-        return error as Error
+        return { data: undefined, error: error as Error }
     }
 }
 
-export async function createEphimeralKeyService(request: RequestType<string>): Promise<string | Error> {
+export async function updatePaymentAmountService(request: RequestType<UpdateOrderItemsType>): ResponseType<PaymentType | undefined> {
     try {
-        const response = await fetch(BASE_URL + "/createEphimeralKey", {
+        const response = await fetch(BASE_URL + "/update-payment-intent-amount", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ customerId: request })
-        })
+            body: JSON.stringify({ paymentId: request.paymentId, amount: request.summary.total }),
+        });
         const data = await response.json();
-        return data.ephemeralKey as string
+        if (data.error) {
+            throw new Error(data.error.message)
+        }
+        return { data }
     } catch (error) {
-        return error as Error
+        return { data: undefined, error: error as Error }
+    }
+}
+
+export async function preparePaymentSheetService(request: RequestType<{ paymentId: string, customerId: string }>): ResponseType<{ clientSecret: string, ephemeralKey: string } | undefined> {
+    try {
+        const response = await fetch(BASE_URL + "/prepare-payment-sheet", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(request),
+        });
+        const data = await response.json();
+        if (data.error) {
+            throw new Error(data.error.message)
+        }
+        return { data }
+    } catch (error) {
+        return { data: undefined, error: error as Error }
     }
 }

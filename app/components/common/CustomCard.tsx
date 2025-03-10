@@ -2,17 +2,21 @@ import { PropsWithChildren } from "react";
 import {
   StyleProp,
   StyleSheet,
+  Text,
   TouchableWithoutFeedback,
   View,
   ViewStyle,
 } from "react-native";
 import { colors } from "../../constants/colors";
+import FormSkeleton from "../skeletons/FormSkeleton";
 
 export type CustomCardPropsType = PropsWithChildren & {
   onPress?: () => void;
   disabled?: boolean;
   orientation?: "vertical" | "horizontal";
   variant?: "warning" | "error" | "info";
+  headerText?: string;
+  isLoading?: boolean;
 };
 
 const CustomCard = ({
@@ -21,17 +25,26 @@ const CustomCard = ({
   disabled,
   orientation = "vertical",
   variant,
+  headerText,
+  isLoading,
 }: CustomCardPropsType) => {
   const mixedStyles: StyleProp<ViewStyle> = { ...styles.container };
-  mixedStyles.flexDirection = orientation === "vertical" ? "column" : "row";
+  const direction = orientation === "vertical" ? "column" : "row";
 
   if (variant === "warning") {
     mixedStyles.backgroundColor = colors.warning;
   }
 
-  return (
+  return isLoading ? (
+    <FormSkeleton rows={1} rowHeight={80} />
+  ) : (
     <TouchableWithoutFeedback onPress={onPress} disabled={disabled}>
-      <View style={mixedStyles}>{children}</View>
+      <View style={mixedStyles}>
+        {headerText ? (
+          <Text style={styles.headerText}>{headerText}</Text>
+        ) : null}
+        <View style={{ flexDirection: direction }}>{children}</View>
+      </View>
     </TouchableWithoutFeedback>
   );
 };
@@ -53,6 +66,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 8,
+  },
+  headerText: {
+    color: colors.primary,
+    fontSize: 16,
+    fontWeight: "500",
+    borderBottomWidth: 3,
+    borderBottomColor: colors.primary,
+    marginBottom: 8,
   },
 });
 

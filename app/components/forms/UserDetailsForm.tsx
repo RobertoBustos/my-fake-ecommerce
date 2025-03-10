@@ -1,12 +1,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, TextInput } from "react-native";
 import { ZodType, z } from "zod";
 import { colors } from "../../constants/colors";
 import { UserType } from "../../constants/types";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setCustomerData } from "../../redux/order/reducer";
-import { selectCustomerData } from "../../redux/order/selectors";
+import {
+  selectCustomerData,
+  selectIsOrderComplete,
+} from "../../redux/order/selectors";
+import CustomCard from "../common/CustomCard";
 
 const validationSchema: ZodType<UserType> = z.object({
   email: z.string().email({ message: "Invalid email" }).toLowerCase(),
@@ -19,6 +23,7 @@ const validationSchema: ZodType<UserType> = z.object({
 const UserDetailsForm = () => {
   const dispatch = useAppDispatch();
   const customerData = useAppSelector(selectCustomerData());
+  const isOrderComplete = useAppSelector(selectIsOrderComplete);
 
   const {
     control,
@@ -36,7 +41,7 @@ const UserDetailsForm = () => {
   };
 
   return (
-    <View>
+    <CustomCard headerText="User Details">
       <Controller
         control={control}
         name="email"
@@ -51,6 +56,7 @@ const UserDetailsForm = () => {
             }}
             value={value}
             style={styles.input}
+            editable={!isOrderComplete}
           />
         )}
       />
@@ -71,13 +77,14 @@ const UserDetailsForm = () => {
             }}
             value={value}
             style={styles.input}
+            editable={!isOrderComplete}
           />
         )}
       />
       {errors.userName && (
         <Text style={styles.errorText}>{errors.userName.message}</Text>
       )}
-    </View>
+    </CustomCard>
   );
 };
 

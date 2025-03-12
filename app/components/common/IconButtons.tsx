@@ -1,5 +1,13 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  ColorValue,
+  StyleProp,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+} from "react-native";
 import { colors } from "../../constants/colors";
 
 export type IconButtonPropsType = {
@@ -76,14 +84,21 @@ export type DefaultButtonPropsType = {
   text: string;
   disabled?: boolean;
   isLoading?: boolean;
+  backgroundColor?: ColorValue;
 };
 
-export const DefaultButton = ({
+const DefaultButton = ({
   text,
   disabled,
   isLoading,
+  backgroundColor,
 }: DefaultButtonPropsType) => {
-  const mixedStyles = { ...styles.button };
+  const mixedStyles: StyleProp<ViewStyle> = { ...styles.button };
+
+  if (backgroundColor) {
+    mixedStyles.backgroundColor = backgroundColor;
+  }
+
   if (disabled || isLoading) {
     mixedStyles.backgroundColor = colors.dark;
   }
@@ -109,7 +124,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: colors.primary,
-    borderRadius: 30,
+    borderRadius: 10,
   },
   buttonText: {
     color: colors.white,
@@ -123,3 +138,5 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+export default DefaultButton;

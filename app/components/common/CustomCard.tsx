@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     justifyContent: "space-between",
     marginVertical: 8,
-    borderRadius: 8,
+    borderRadius: 10,
     padding: 8,
     //shadows
     shadowColor: colors.black,

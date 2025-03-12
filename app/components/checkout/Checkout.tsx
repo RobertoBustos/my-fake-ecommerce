@@ -1,8 +1,9 @@
 import { useMemo } from "react";
-import { Alert, Platform, StyleSheet, Text, View } from "react-native";
+import { Alert, Platform, StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useOrderContext } from "../../contexts/OrderContext";
 import { useKeyboardStatus } from "../../hooks/useKeyboardStatus";
+import CheckoutButtons from "../CheckoutButtons";
 import OrderSummary from "../OrderSummary";
 import AddressDetailsForm from "../forms/AddressDetailsForm";
 import UserDetailsForm from "../forms/UserDetailsForm";
@@ -70,14 +71,16 @@ const Checkout = () => {
       <>
         <CheckoutHeader orderId={orderId} />
         <OrderSummary data={orderData.summary} />
-        {orderData.status !== "complete" && orderData.status !== "cancelled" ? (
-          <>
-            <Text onPress={handleReturnOrderToCart}>EDIT ORDER</Text>
-            <Text onPress={handleCancelOrder}>CANCEL ORDER</Text>
-          </>
-        ) : null}
         <UserDetailsForm data={userData} />
         <AddressDetailsForm data={addressData} />
+        {orderData.status !== "complete" && orderData.status !== "cancelled" ? (
+          <CheckoutButtons
+            editOrderLabel="Edit Order"
+            cancelOrderLabel="Cancel Order"
+            onCancelOrder={handleCancelOrder}
+            onEditOrder={handleReturnOrderToCart}
+          />
+        ) : null}
       </>
       {keyboardStatus === "shown" && Platform.OS === "ios" ? (
         <View style={styles.footer}>{<CheckoutFooter />}</View>

@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     backgroundColor: colors.skeletonBackground,
-    borderRadius: 8,
+    borderRadius: 10,
   },
 });
 export default FormSkeleton;

@@ -68,7 +68,7 @@ const CartItemCard = ({ data, disabled }: CartItemCardPropsType) => {
       <CustomImage imageUrl={data.image} width={120} height={120} />
       <CustomButton
         onPress={handleRemoveFromCart}
-        buttonComponent={<DeleteButton color={colors.errorText} size={30} />}
+        buttonComponent={<DeleteButton color={colors.error} size={30} />}
       />
     </CustomCard>
   );

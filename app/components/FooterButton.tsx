@@ -1,5 +1,5 @@
 import CustomButton from "./common/CustomButton";
-import { DefaultButton } from "./common/IconButtons";
+import DefaultButton from "./common/IconButtons";
 
 export type FooterButtonPropsType = {
   text: string;

@@ -4,9 +4,8 @@ import { StyleSheet, Text, TextInput } from "react-native";
 import { ZodType, z } from "zod";
 import { colors } from "../../constants/colors";
 import { AddressType } from "../../constants/types";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { useAppDispatch } from "../../redux/hooks";
 import { setShippingData } from "../../redux/order/reducer";
-import { selectIsOrderComplete } from "../../redux/order/selectors";
 import CustomCard from "../common/CustomCard";
 
 const validationSchema: ZodType<AddressType> = z.object({
@@ -19,7 +18,7 @@ const validationSchema: ZodType<AddressType> = z.object({
 
 export type AddressDetailsFormPropsType = {
   data: { address: string; zipCode: string };
-  isLoading: boolean;
+  isLoading?: boolean;
 };
 
 const AddressDetailsForm = ({
@@ -27,7 +26,6 @@ const AddressDetailsForm = ({
   isLoading,
 }: AddressDetailsFormPropsType) => {
   const dispatch = useAppDispatch();
-  const isOrderComplete = useAppSelector(selectIsOrderComplete);
 
   const {
     control,
@@ -66,7 +64,6 @@ const AddressDetailsForm = ({
             }}
             value={value}
             style={styles.input}
-            editable={!isOrderComplete}
             multiline={true}
             numberOfLines={4}
           />
@@ -90,7 +87,6 @@ const AddressDetailsForm = ({
             }}
             value={value}
             style={styles.input}
-            editable={!isOrderComplete}
           />
         )}
       />

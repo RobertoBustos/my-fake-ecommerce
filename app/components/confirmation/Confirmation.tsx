@@ -1,8 +1,8 @@
-import { useOrder } from "@/app/hooks/useOrder";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../constants/colors";
 import { CartItemType } from "../../constants/types";
+import { useOrderContext } from "../../contexts/OrderContext";
 import { formatCurrency } from "../../utils/formatCurrency";
 import AddressSummary from "../AddressSummary";
 import CustomerSummary from "../CustomerSummary";
@@ -11,12 +11,13 @@ import PaymentSummary from "../PaymentSummary";
 import CustomImage from "../common/CustomImage";
 import ConfirmationHeader from "./ConfirmationHeader";
 
-export type ConfirmationPropsType = {
-  orderId: number;
-};
+const Confirmation = () => {
+  const { orderId, orderData, paymentData, isLoadingPayment } =
+    useOrderContext();
 
-const Confirmation = ({ orderId }: ConfirmationPropsType) => {
-  const { orderData, isLoading, paymentData } = useOrder(orderId);
+  if (!orderData) {
+    return null;
+  }
 
   return (
     <View style={styles.container}>
@@ -24,24 +25,18 @@ const Confirmation = ({ orderId }: ConfirmationPropsType) => {
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
-        {!orderData ? null : (
-          <>
-            <ConfirmationHeader orderId={orderId.toString()} />
-            {orderData.items?.map((item) => {
-              return <OrderConfirmationItem data={item} key={item.id} />;
-            })}
-            <PaymentSummary data={paymentData} isLoading={isLoading} />
-            <OrderSummary data={orderData.summary} isLoading={isLoading} />
-            <CustomerSummary
-              data={orderData.customerData}
-              isLoading={isLoading}
-            />
-            <AddressSummary
-              data={orderData.shippingData}
-              isLoading={isLoading}
-            />
-          </>
-        )}
+        <>
+          <ConfirmationHeader orderId={orderId} />
+          {orderData.items?.map((item) => {
+            return <OrderConfirmationItem data={item} key={item.id} />;
+          })}
+          {paymentData ? (
+            <PaymentSummary data={paymentData} isLoading={isLoadingPayment} />
+          ) : null}
+          <OrderSummary data={orderData.summary} />
+          <CustomerSummary data={orderData.customerData} />
+          <AddressSummary data={orderData.shippingData} />
+        </>
       </ScrollView>
     </View>
   );

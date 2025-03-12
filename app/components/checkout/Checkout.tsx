@@ -1,7 +1,7 @@
-import { useOrder } from "@/app/hooks/useOrder";
 import { useMemo } from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import { Alert, Platform, StyleSheet, Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useOrderContext } from "../../contexts/OrderContext";
 import { useKeyboardStatus } from "../../hooks/useKeyboardStatus";
 import OrderSummary from "../OrderSummary";
 import AddressDetailsForm from "../forms/AddressDetailsForm";
@@ -9,13 +9,10 @@ import UserDetailsForm from "../forms/UserDetailsForm";
 import CheckoutFooter from "./CheckoutFooter";
 import CheckoutHeader from "./CheckoutHeader";
 
-export type CheckoutPropsType = {
-  orderId: number;
-};
-
-const Checkout = ({ orderId }: CheckoutPropsType) => {
+const Checkout = () => {
   const { keyboardStatus } = useKeyboardStatus();
-  const { orderData, isLoading } = useOrder(orderId);
+  const { orderId, orderData, setOrderForEdition, cancelIncompleteOrder } =
+    useOrderContext();
 
   const userData = useMemo(() => {
     return {
@@ -31,19 +28,57 @@ const Checkout = ({ orderId }: CheckoutPropsType) => {
     };
   }, [orderData]);
 
+  const handleReturnOrderToCart = () => {
+    Alert.alert("Do you wish to modify this order?", "", [
+      {
+        text: "OK",
+        onPress: () => setOrderForEdition(),
+        style: "default",
+      },
+      {
+        text: "Cancel",
+        onPress: () => {},
+        style: "cancel",
+      },
+    ]);
+  };
+
+  const handleCancelOrder = () => {
+    Alert.alert("Cancel this order?", "", [
+      {
+        text: "OK",
+        onPress: () => cancelIncompleteOrder(),
+        style: "default",
+      },
+      {
+        text: "Cancel",
+        onPress: () => {},
+        style: "cancel",
+      },
+    ]);
+  };
+
+  if (!orderData) {
+    return null;
+  }
+
   return (
     <KeyboardAwareScrollView
       style={styles.container}
       showsVerticalScrollIndicator={false}
     >
-      {!orderData ? null : (
-        <>
-          <CheckoutHeader orderId={orderId.toString()} />
-          <OrderSummary data={orderData.summary} isLoading={isLoading} />
-          <UserDetailsForm data={userData} isLoading={isLoading} />
-          <AddressDetailsForm data={addressData} isLoading={isLoading} />
-        </>
-      )}
+      <>
+        <CheckoutHeader orderId={orderId} />
+        <OrderSummary data={orderData.summary} />
+        {orderData.status !== "complete" && orderData.status !== "cancelled" ? (
+          <>
+            <Text onPress={handleReturnOrderToCart}>EDIT ORDER</Text>
+            <Text onPress={handleCancelOrder}>CANCEL ORDER</Text>
+          </>
+        ) : null}
+        <UserDetailsForm data={userData} />
+        <AddressDetailsForm data={addressData} />
+      </>
       {keyboardStatus === "shown" && Platform.OS === "ios" ? (
         <View style={styles.footer}>{<CheckoutFooter />}</View>
       ) : null}

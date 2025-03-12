@@ -5,7 +5,7 @@ import EmptyCart from "../EmptyCart";
 import CartHeader from "./CartHeader";
 
 const Cart = () => {
-  const items = useAppSelector(selectCartItems);
+  const cartItems = useAppSelector(selectCartItems);
   const isCartEmpty = useAppSelector(selectIsCartEmpty);
 
   return isCartEmpty ? (
@@ -13,7 +13,7 @@ const Cart = () => {
   ) : (
     <>
       <CartHeader />
-      <CartList cartItems={items} />
+      <CartList cartItems={cartItems} />
     </>
   );
 };

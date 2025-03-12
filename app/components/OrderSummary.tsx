@@ -5,7 +5,7 @@ import SummaryCardRow from "./common/SummaryCardRow";
 
 export type OrderSummaryPropsType = {
   data: CartSummaryType | null;
-  isLoading: boolean;
+  isLoading?: boolean;
 };
 
 const OrderSummary = ({ data, isLoading }: OrderSummaryPropsType) => {

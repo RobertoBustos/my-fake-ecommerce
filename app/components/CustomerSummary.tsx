@@ -4,7 +4,7 @@ import SummaryCardRow from "./common/SummaryCardRow";
 
 export type CustomerSummaryPropsType = {
   data: CustomerType | null;
-  isLoading: boolean;
+  isLoading?: boolean;
 };
 
 const CustomerSummary = ({ data, isLoading }: CustomerSummaryPropsType) => {

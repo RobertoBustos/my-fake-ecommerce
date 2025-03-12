@@ -1,7 +1,10 @@
+import { initPaymentSheet } from "@stripe/stripe-react-native";
 import { BASE_URL } from "../constants/config";
-import { OrderType, PaymentMethodType, PaymentType, RequestType, ResponseType, UpdateOrderCustomerDataType, UpdateOrderItemsType } from "../constants/types";
+import { PaymentMethodType, PaymentType } from "../constants/types";
+import { searchOrderInAsyncStorage } from "./orderServices";
+import { CancelPayment, CreatePayment, PreparePaymentSheet, RequestType, ResponseType, SearchPayment, UpdatePaymentAmount, UpdatePaymentCustomer } from "./serviceTypes";
 
-export async function searchPaymentService(request: RequestType<{ paymentId: string, orderId: number }>): ResponseType<PaymentMethodType | undefined> {
+export async function searchPaymentService(request: RequestType<SearchPayment>): ResponseType<PaymentMethodType | undefined> {
     try {
         const response = await fetch(BASE_URL + "/search-payment-intent", {
             method: "POST",
@@ -20,14 +23,14 @@ export async function searchPaymentService(request: RequestType<{ paymentId: str
     }
 }
 
-export async function createPaymentService(request: RequestType<OrderType>): ResponseType<PaymentType | undefined> {
+export async function createPaymentService(request: RequestType<CreatePayment>): ResponseType<PaymentType | undefined> {
     try {
         const response = await fetch(BASE_URL + "/create-payment-intent", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ order: JSON.stringify(request) }),
+            body: JSON.stringify(request),
         });
         const data = await response.json();
         if (data.error) {
@@ -39,7 +42,7 @@ export async function createPaymentService(request: RequestType<OrderType>): Res
     }
 }
 
-export async function updatePaymentService(request: RequestType<UpdateOrderCustomerDataType>): ResponseType<PaymentType | undefined> {
+export async function updatePaymentCustomerService(request: RequestType<UpdatePaymentCustomer>): ResponseType<PaymentType | undefined> {
     try {
         const response = await fetch(BASE_URL + "/update-payment-intent", {
             method: "POST",
@@ -58,28 +61,9 @@ export async function updatePaymentService(request: RequestType<UpdateOrderCusto
     }
 }
 
-export async function updatePaymentAmountService(request: RequestType<UpdateOrderItemsType>): ResponseType<PaymentType | undefined> {
+export async function updatePaymentAmountService(request: RequestType<UpdatePaymentAmount>): ResponseType<PaymentType | undefined> {
     try {
         const response = await fetch(BASE_URL + "/update-payment-intent-amount", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ paymentId: request.paymentId, amount: request.summary.total }),
-        });
-        const data = await response.json();
-        if (data.error) {
-            throw new Error(data.error.message)
-        }
-        return { data }
-    } catch (error) {
-        return { data: undefined, error: error as Error }
-    }
-}
-
-export async function preparePaymentSheetService(request: RequestType<{ paymentId: string, customerId: string }>): ResponseType<{ clientSecret: string, ephemeralKey: string } | undefined> {
-    try {
-        const response = await fetch(BASE_URL + "/prepare-payment-sheet", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -93,5 +77,69 @@ export async function preparePaymentSheetService(request: RequestType<{ paymentI
         return { data }
     } catch (error) {
         return { data: undefined, error: error as Error }
+    }
+}
+
+export async function preparePaymentSheetService(request: RequestType<PreparePaymentSheet>): ResponseType<boolean> {
+    try {
+        const orderData = await searchOrderInAsyncStorage(request.orderId)
+        if (!orderData) {
+            throw new Error("Order Not Found")
+        }
+        if (orderData.customerData === null || orderData.customerData.customerId === "") {
+            throw new Error("Customer Not Found")
+        }
+        if (orderData.paymentIntent === null || orderData.paymentIntent.paymentId === null) {
+            throw new Error("Payment Not Found")
+        }
+        const response = await fetch(BASE_URL + "/prepare-payment-sheet", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ paymentId: orderData.paymentIntent.paymentId, customerId: orderData.customerData.customerId }),
+        });
+        const data = await response.json();
+        if (data.error) {
+            throw new Error(data.error.message)
+        }
+        const { clientSecret, ephemeralKey } = data
+        const paymentSheetResponse = await initPaymentSheet({
+            customerId: orderData.customerData.customerId,
+            customerEphemeralKeySecret: ephemeralKey,
+            paymentIntentClientSecret: clientSecret,
+            merchantDisplayName: "My Fake Ecommerce",
+            allowsDelayedPaymentMethods: true,
+            returnURL: "stripe-example://stripe-redirect",
+            defaultBillingDetails: {
+                name: orderData.customerData.userName,
+                email: orderData.customerData.email,
+            },
+        });
+        if (paymentSheetResponse.error) {
+            throw new Error(paymentSheetResponse.error.message)
+        }
+        return { data: true }
+    } catch (error) {
+        return { data: false, error: error as Error }
+    }
+}
+
+export async function cancelPaymentService(request: RequestType<CancelPayment>): ResponseType<boolean> {
+    try {
+        const response = await fetch(BASE_URL + "/cancel-payment-intent", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(request),
+        });
+        const data = await response.json();
+        if (data.error) {
+            throw new Error(data.error.message)
+        }
+        return { data: true }
+    } catch (error) {
+        return { data: false, error: error as Error }
     }
 }

@@ -4,9 +4,8 @@ import { StyleSheet, Text, TextInput } from "react-native";
 import { ZodType, z } from "zod";
 import { colors } from "../../constants/colors";
 import { UserType } from "../../constants/types";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { useAppDispatch } from "../../redux/hooks";
 import { setCustomerData } from "../../redux/order/reducer";
-import { selectIsOrderComplete } from "../../redux/order/selectors";
 import CustomCard from "../common/CustomCard";
 
 const validationSchema: ZodType<UserType> = z.object({
@@ -19,12 +18,11 @@ const validationSchema: ZodType<UserType> = z.object({
 
 export type UserDetailsFormPropsType = {
   data: { email: string; userName: string };
-  isLoading: boolean;
+  isLoading?: boolean;
 };
 
 const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
   const dispatch = useAppDispatch();
-  const isOrderComplete = useAppSelector(selectIsOrderComplete);
 
   const {
     control,
@@ -60,7 +58,6 @@ const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
             }}
             value={value}
             style={styles.input}
-            editable={!isOrderComplete}
           />
         )}
       />
@@ -81,7 +78,6 @@ const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
             }}
             value={value}
             style={styles.input}
-            editable={!isOrderComplete}
           />
         )}
       />

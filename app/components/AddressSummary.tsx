@@ -4,7 +4,7 @@ import SummaryCardRow from "./common/SummaryCardRow";
 
 export type AddressSummaryPropsType = {
   data: ShippingType | null;
-  isLoading: boolean;
+  isLoading?: boolean;
 };
 
 const AddressSummary = ({ data, isLoading }: AddressSummaryPropsType) => {

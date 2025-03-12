@@ -1,13 +1,15 @@
-import React from "react";
 import Layout from "../components/Layout";
 import Checkout from "../components/checkout/Checkout";
 import CheckoutFooter from "../components/checkout/CheckoutFooter";
+import OrderStore from "../contexts/OrderContext";
 
-const CheckoutScreen = ({ route }: any) => {
+const CheckoutScreen = () => {
   return (
-    <Layout footerComponent={<CheckoutFooter />}>
-      <Checkout orderId={route.params.orderId} />
-    </Layout>
+    <OrderStore>
+      <Layout footerComponent={<CheckoutFooter />}>
+        <Checkout />
+      </Layout>
+    </OrderStore>
   );
 };
 

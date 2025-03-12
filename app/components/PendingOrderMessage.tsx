@@ -1,36 +1,39 @@
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { colors } from "../constants/colors";
 import { useAppNavigation } from "../hooks/useAppNavigation";
-import { useAppSelector } from "../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { setSelectedOrderId } from "../redux/order/reducer";
 import { selectIncompleteOrders } from "../redux/order/selectors";
 import CustomCard from "./common/CustomCard";
 
 const PendingOrderMessage = () => {
+  const dispatch = useAppDispatch();
   const navigation = useAppNavigation();
   const incompleteOrders = useAppSelector(selectIncompleteOrders);
 
-  const handleRedirect = () => {
-    navigation.navigate("Checkout", {
-      orderId: incompleteOrders[3].orderId,
-    });
+  const handleRedirect = (orderId: string) => {
+    dispatch(setSelectedOrderId(orderId));
+    navigation.navigate("Checkout");
   };
 
-  return incompleteOrders.length > 0 ? (
-    <CustomCard onPress={handleRedirect} variant="warning">
-      <Text
-        style={styles.text}
-      >{`You have ${incompleteOrders.length} incomplete orders`}</Text>
-    </CustomCard>
-  ) : null;
+  return incompleteOrders.map((order, index) => {
+    return (
+      <CustomCard
+        variant="warning"
+        key={index}
+        onPress={() => handleRedirect(order.orderId)}
+      >
+        <View style={{ width: "100%", height: 30 }}>
+          <Text
+            style={styles.text}
+          >{`Complete order number ${order.orderId} for $${order.summary?.total}`}</Text>
+        </View>
+      </CustomCard>
+    );
+  });
 };
 
 const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    height: 70,
-    backgroundColor: colors.warning,
-    borderRadius: 10,
-  },
   text: {
     fontSize: 16,
     textAlign: "center",

@@ -4,8 +4,7 @@ import { colors } from "../constants/colors";
 import { CartItemType } from "../constants/types";
 import { useAppNavigation } from "../hooks/useAppNavigation";
 import { removeItemFromCart } from "../redux/cart/reducer";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { selectIsOrderComplete } from "../redux/order/selectors";
+import { useAppDispatch } from "../redux/hooks";
 import { formatCurrency } from "../utils/formatCurrency";
 import CustomButton from "./common/CustomButton";
 import CustomCard from "./common/CustomCard";
@@ -21,7 +20,6 @@ const CartItemCard = ({ data, disabled }: CartItemCardPropsType) => {
   const dispatch = useAppDispatch();
   const navigation = useAppNavigation();
   const isProductInCart = data.cartItemId !== undefined;
-  const isOrderComplete = useAppSelector(selectIsOrderComplete);
 
   const handleRemoveFromCart = () => {
     Alert.alert("Remove this item from cart?", "", [
@@ -68,12 +66,10 @@ const CartItemCard = ({ data, disabled }: CartItemCardPropsType) => {
         </Text>
       </View>
       <CustomImage imageUrl={data.image} width={120} height={120} />
-      {!isOrderComplete ? (
-        <CustomButton
-          onPress={handleRemoveFromCart}
-          buttonComponent={<DeleteButton color={colors.errorText} size={30} />}
-        />
-      ) : null}
+      <CustomButton
+        onPress={handleRemoveFromCart}
+        buttonComponent={<DeleteButton color={colors.errorText} size={30} />}
+      />
     </CustomCard>
   );
 };

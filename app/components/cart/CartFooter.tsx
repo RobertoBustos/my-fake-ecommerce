@@ -1,58 +1,43 @@
-import { Alert } from "react-native";
 import { useAppNavigation } from "../../hooks/useAppNavigation";
-import { selectIsCartEmpty } from "../../redux/cart/selectors";
+import { resetCart } from "../../redux/cart/reducer";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { createOrder, updateOrderItems } from "../../redux/order/reducer";
 import {
-  selectIsOrderComplete,
   selectIsOrderLoading,
-  selectOrderData,
+  selectSelectedOrderId,
 } from "../../redux/order/selectors";
 import FooterButton from "../FooterButton";
 import CustomFooter from "../common/CustomFooter";
 
 const CartFooter = () => {
   const dispatch = useAppDispatch();
-  const isLoading = useAppSelector(selectIsOrderLoading);
-  const orderData = useAppSelector(selectOrderData);
   const navigation = useAppNavigation();
-  const isCartEmpty = useAppSelector(selectIsCartEmpty);
-  const isOrderComplete = useAppSelector(selectIsOrderComplete);
+  const orderId = useAppSelector(selectSelectedOrderId);
+  const isLoading = useAppSelector(selectIsOrderLoading);
 
   const handleRedirect = () => {
-    if (isCartEmpty) {
-      navigation.goBack();
-      return;
-    }
-    if (orderData === null) {
+    if (!orderId) {
       dispatch(createOrder())
         .unwrap()
-        .then(() => {
+        .then((response) => {
+          dispatch(resetCart());
           navigation.navigate("Checkout");
-          return;
-        })
-        .catch(() => {
-          Alert.alert("Unable to process order");
           return;
         });
+      return;
     }
-    if (isOrderComplete) {
-      navigation.navigate("Checkout");
+    if (orderId) {
+      dispatch(updateOrderItems(orderId))
+        .unwrap()
+        .then((result) => {
+          if (result) {
+            navigation.navigate("Checkout");
+          }
+        });
     }
-    dispatch(updateOrderItems())
-      .unwrap()
-      .then((result) => {
-        if (result) {
-          navigation.navigate("Checkout");
-        }
-      });
   };
 
-  const footerText = isCartEmpty
-    ? "Return to Products"
-    : isOrderComplete
-    ? "Go to Checkout"
-    : "Proceed to Payment";
+  const footerText = orderId ? "Update Order" : "Go to Checkout";
 
   return (
     <CustomFooter>
@@ -60,6 +45,7 @@ const CartFooter = () => {
         text={footerText}
         onPress={handleRedirect}
         isLoading={isLoading}
+        disabled={isLoading}
       />
     </CustomFooter>
   );

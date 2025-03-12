@@ -1,17 +1,10 @@
 export type RootStackParamList = {
-    Products: undefined;
+    Products: undefined
     Product: { productId: number };
-    Cart: { orderId: number | undefined };
-    Checkout: { orderId: number };
-    Confirmation: { orderId: number }
+    Cart: undefined
+    Checkout: undefined
+    Confirmation: undefined
 }
-
-export type RequestType<T> = T
-
-export type ResponseType<T> = Promise<{
-    data: T
-    error?: Error
-}>
 
 export type ProductType = {
     category: string;
@@ -37,8 +30,6 @@ export type PurchaseLimitType = {
     min: number;
     max: number;
 }
-
-export type CartType = CartItemType[]
 
 export type CartItemType = ProductType & {
     cartItemId: number
@@ -73,11 +64,11 @@ export type AddressType = {
 }
 
 export type OrderType = {
-    orderId: number
+    orderId: string
     customerData: CustomerType | null
     shippingData: ShippingType | null
     paymentIntent: PaymentType | null
-    items: CartType | null
+    items: CartItemType[] | null
     summary: CartSummaryType | null
     status: "incomplete" | "payment_pending" | "complete" | "cancelled"
 }
@@ -90,25 +81,6 @@ export type PaymentType = {
     paymentId: string
     customer: string
     amount: number
-}
-
-export type CreateOrderRequestType = {
-    items: CartType,
-    summary: CartSummaryType
-}
-
-export type UpdateOrderCustomerDataType = {
-    orderId: number
-    paymentId: string
-    customerData: CustomerType
-    shippingData: AddressType
-}
-
-export type UpdateOrderItemsType = {
-    paymentId: string
-    orderId: number
-    items: CartType,
-    summary: CartSummaryType
 }
 
 export type PaymentMethodType = {

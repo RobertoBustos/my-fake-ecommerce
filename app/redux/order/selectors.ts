@@ -3,11 +3,11 @@ import { RootStateType } from "../types";
 
 export const selectOrderState = (state: RootStateType) => state.order
 
-export const selectOrderData = (state: RootStateType) => state.order.orderData
-
 export const selectIsOrderLoading = (state: RootStateType) => state.order.isLoading
 
-export const selectOrderSummaryData = (state: RootStateType) => state.order.orderData?.summary
+export const selectIsPaymentLoading = (state: RootStateType) => state.order.isLoadingPayment
+
+export const selectIsUpdating = (state: RootStateType) => state.order.isUpdating
 
 export const selectCustomerData = () => {
     return createSelector([selectOrderState], (orderState) => {
@@ -44,8 +44,6 @@ export const selectIsShippingDataValid = () => {
     );
 }
 
-export const selectIsOrderComplete = (state: RootStateType) => state.order.orderData?.status === "complete"
-
-export const selectPaymentData = (state: RootStateType) => state.order.paymentData
-
 export const selectIncompleteOrders = (state: RootStateType) => state.order.incompleteOrders
+
+export const selectSelectedOrderId = (state: RootStateType) => state.order.selectedOrderId

@@ -1,7 +1,7 @@
 import { initPaymentSheet } from "@stripe/stripe-react-native";
 import { BASE_URL } from "../constants/config";
 import { PaymentMethodType, PaymentType } from "../constants/types";
-import { searchOrderInAsyncStorage } from "./orderServices";
+import { searchObjectInAsyncStorage } from "../utils/asyncStorageUtils";
 import { CancelPayment, CreatePayment, PreparePaymentSheet, RequestType, ResponseType, SearchPayment, UpdatePaymentAmount, UpdatePaymentCustomer } from "./serviceTypes";
 
 export async function searchPaymentService(request: RequestType<SearchPayment>): ResponseType<PaymentMethodType | undefined> {
@@ -82,7 +82,7 @@ export async function updatePaymentAmountService(request: RequestType<UpdatePaym
 
 export async function preparePaymentSheetService(request: RequestType<PreparePaymentSheet>): ResponseType<boolean> {
     try {
-        const orderData = await searchOrderInAsyncStorage(request.orderId)
+        const orderData = await searchObjectInAsyncStorage("orderData", "orderId", request.orderId)
         if (!orderData) {
             throw new Error("Order Not Found")
         }

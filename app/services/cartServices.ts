@@ -1,5 +1,5 @@
 import { CartItemType, } from "../constants/types";
-import { getFromAsyncStorage, saveToAsyncStorage } from "../utils/saveToAsyncStorage";
+import { getFromAsyncStorage, saveToAsyncStorage } from "../utils/asyncStorageUtils";
 import { RequestType, ResponseType } from "./serviceTypes";
 
 export async function fetchCartService(): ResponseType<CartItemType[] | undefined> {

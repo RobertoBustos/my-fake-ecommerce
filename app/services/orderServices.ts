@@ -1,20 +1,12 @@
 import { OrderType } from "../constants/types"
+import { getFromAsyncStorage, saveToAsyncStorage, searchObjectInAsyncStorage } from "../utils/asyncStorageUtils"
 import { createCartSummary } from "../utils/createCartSummary"
 import { fakeDelayPromise } from "../utils/fakeDelayPromise"
-import { getFromAsyncStorage, saveToAsyncStorage } from "../utils/saveToAsyncStorage"
 import { cancelPaymentService, updatePaymentCustomerService } from "./paymentServices"
 import { CancelOrder, ChangeOrderToComplete, ChangeOrderToIncomplete, CreateOrder, FetchIncompleteOrders, FetchOrder, RequestType, ResponseType, UpdateOrderCustomer, UpdateOrderItems } from "./serviceTypes"
 
-export const searchOrderInAsyncStorage = async (orderId: string): Promise<OrderType | undefined> => {
-    const response = await getFromAsyncStorage("orderData")
-    if (response === null) {
-        return undefined
-    }
-    const orders = JSON.parse(response) as OrderType[]
-    const orderData = orders.find((order) => {
-        return order.orderId === orderId
-    })
-    return orderData
+export const searchOrderInAsyncStorage = async (orderId: string) => {
+    return searchObjectInAsyncStorage("orderData", "orderId", orderId)
 }
 
 export async function fetchIncompleteOrdersService(request: RequestType<FetchIncompleteOrders>): ResponseType<OrderType[]> {

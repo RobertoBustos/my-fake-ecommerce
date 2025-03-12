@@ -21,3 +21,5 @@ export async function saveCartDataService(request: RequestType<CartItemType[]>):
         return { data: false, error: error as Error }
     }
 }
+
+export default {}

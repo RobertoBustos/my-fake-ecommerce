@@ -16,3 +16,5 @@ export const createCartSummary = (cartItems: CartItemType[]): CartSummaryType =>
     }
     return { ...summary, total: summary.subtotal + summary.taxes }
 }
+
+export default {}

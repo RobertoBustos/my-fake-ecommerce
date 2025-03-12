@@ -67,3 +67,5 @@ export type ChangeOrderToComplete = {
 export type ChangeOrderToIncomplete = string
 
 export type CancelOrder = string
+
+export default {}

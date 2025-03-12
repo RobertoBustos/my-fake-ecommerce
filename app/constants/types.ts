@@ -97,3 +97,5 @@ export type CardType = {
     last4: string
     fingerprint: string
 }
+
+export default {}

@@ -17,3 +17,5 @@ export const getFromAsyncStorage = async (key: string) => {
         return null
     }
 }
+
+export default {}

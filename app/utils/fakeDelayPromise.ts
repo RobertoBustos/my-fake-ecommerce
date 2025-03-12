@@ -6,4 +6,6 @@ export const fakeDelayPromise = (delay: number, promise?: Promise<unknown>, forc
             return resolve(promise);
         }, delay);
     });
-}  
+}
+
+export default {}

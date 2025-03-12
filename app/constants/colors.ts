@@ -8,3 +8,5 @@ export const colors = {
     error: "#DC3545",
     warning: "#ffc107"
 }
+
+export default {}

@@ -23,3 +23,5 @@ export async function getProductDetailsService(productId: number): Promise<Produ
         return { name: "general", message: 'An error occurred' + error } as Error
     }
 }
+
+export default {}

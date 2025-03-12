@@ -1,7 +1,7 @@
 import { Alert } from "react-native";
 import { useOrderContext } from "../../contexts/OrderContext";
 import { useStripeContext } from "../../contexts/StripeContext";
-import { useAppNavigation } from "../../hooks/useAppNavigation";
+import useAppNavigation from "../../hooks/useAppNavigation";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
   preparePaymentSheet,

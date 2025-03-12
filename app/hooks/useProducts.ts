@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ProductType } from "../constants/types";
 import { getProductsService } from "../services/productServices";
 
-export const useProducts = () => {
+const useProducts = () => {
     const [products, setProducts] = useState<ProductType[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<Error>()
@@ -39,3 +39,4 @@ export const useProducts = () => {
 
     return { products, isLoading, error, findProductById }
 }
+export default useProducts

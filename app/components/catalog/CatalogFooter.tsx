@@ -1,4 +1,4 @@
-import { useAppNavigation } from "../../hooks/useAppNavigation";
+import useAppNavigation from "../../hooks/useAppNavigation";
 import { selectIsCartEmpty } from "../../redux/cart/selectors";
 import { useAppSelector } from "../../redux/hooks";
 import FooterButton from "../FooterButton";

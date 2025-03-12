@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ProductType } from "../constants/types";
 import { getProductDetailsService } from "../services/productServices";
 
-export const useProductDetails = (productId: number) => {
+const useProductDetails = (productId: number) => {
     const [response, setResponse] = useState<ProductType>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<Error>()
@@ -31,3 +31,5 @@ export const useProductDetails = (productId: number) => {
 
     return { response, isLoading, error }
 }
+
+export default useProductDetails

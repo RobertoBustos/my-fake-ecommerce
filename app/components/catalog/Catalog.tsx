@@ -1,4 +1,4 @@
-import { useProducts } from "../../hooks/useProducts";
+import useProducts from "../../hooks/useProducts";
 import ProductList from "../ProductList";
 import ProductListSkeleton from "../skeletons/ProductListSkeleton";
 import CatalogHeader from "./CatalogHeader";

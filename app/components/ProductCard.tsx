@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import { colors } from "../constants/colors";
 import { ProductType } from "../constants/types";
-import { useAppNavigation } from "../hooks/useAppNavigation";
+import useAppNavigation from "../hooks/useAppNavigation";
 import { formatCurrency } from "../utils/formatCurrency";
 import CustomCard from "./common/CustomCard";
 import CustomImage from "./common/CustomImage";

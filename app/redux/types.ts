@@ -35,3 +35,5 @@ export type CartStateType = {
     items: CartItemType[]
     summary: CartSummaryType
 }
+
+export default {}

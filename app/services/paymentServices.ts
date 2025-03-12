@@ -143,3 +143,5 @@ export async function cancelPaymentService(request: RequestType<CancelPayment>):
         return { data: false, error: error as Error }
     }
 }
+
+export default {}

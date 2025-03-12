@@ -47,3 +47,5 @@ export const selectIsShippingDataValid = () => {
 export const selectIncompleteOrders = (state: RootStateType) => state.order.incompleteOrders
 
 export const selectSelectedOrderId = (state: RootStateType) => state.order.selectedOrderId
+
+export default {}

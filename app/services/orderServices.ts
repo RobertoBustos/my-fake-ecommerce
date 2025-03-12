@@ -148,3 +148,5 @@ export async function saveOrderData(request: RequestType<OrderType[]>): Response
         return { data: false, error: error as Error }
     }
 }
+
+export default {}

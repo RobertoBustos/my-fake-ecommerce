@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import { colors } from "../constants/colors";
-import { useAppNavigation } from "../hooks/useAppNavigation";
+import useAppNavigation from "../hooks/useAppNavigation";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setSelectedOrderId } from "../redux/order/reducer";
 import { selectIncompleteOrders } from "../redux/order/selectors";

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { colors } from "../constants/colors";
 import { CartItemType } from "../constants/types";
-import { useAppNavigation } from "../hooks/useAppNavigation";
+import useAppNavigation from "../hooks/useAppNavigation";
 import { removeItemFromCart } from "../redux/cart/reducer";
 import { useAppDispatch } from "../redux/hooks";
 import { formatCurrency } from "../utils/formatCurrency";

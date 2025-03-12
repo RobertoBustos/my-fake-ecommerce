@@ -9,3 +9,4 @@ export const formatCurrency = (price: PriceType) => {
     return formatedValue.format(price.amount / 100)
 }
 
+export default {}

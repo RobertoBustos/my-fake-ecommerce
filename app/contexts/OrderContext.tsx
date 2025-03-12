@@ -8,7 +8,7 @@ import {
 } from "react";
 import LoadingScreen from "../components/common/LoadingScreen";
 import { OrderType, PaymentMethodType } from "../constants/types";
-import { useAppNavigation } from "../hooks/useAppNavigation";
+import useAppNavigation from "../hooks/useAppNavigation";
 import { resetCart, setCartFromOrder } from "../redux/cart/reducer";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {

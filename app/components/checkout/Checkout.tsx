@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Alert, Platform, StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useOrderContext } from "../../contexts/OrderContext";
-import { useKeyboardStatus } from "../../hooks/useKeyboardStatus";
+import useKeyboardStatus from "../../hooks/useKeyboardStatus";
 import CheckoutButtons from "../CheckoutButtons";
 import OrderSummary from "../OrderSummary";
 import AddressDetailsForm from "../forms/AddressDetailsForm";

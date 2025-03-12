@@ -1,5 +1,5 @@
 import { FlatList, StyleSheet, View } from "react-native";
-import { useProducts } from "../hooks/useProducts";
+import useProducts from "../hooks/useProducts";
 import ProductCard from "./ProductCard";
 
 const ProductList = () => {

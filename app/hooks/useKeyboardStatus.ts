@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Keyboard } from "react-native";
 
-export const useKeyboardStatus = () => {
+const useKeyboardStatus = () => {
     const [keyboardStatus, setKeyboardStatus] = useState<string>('hidden');
 
     useEffect(() => {
@@ -20,3 +20,5 @@ export const useKeyboardStatus = () => {
 
     return { keyboardStatus }
 }
+
+export default useKeyboardStatus

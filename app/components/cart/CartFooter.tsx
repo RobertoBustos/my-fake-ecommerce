@@ -1,4 +1,4 @@
-import { useAppNavigation } from "../../hooks/useAppNavigation";
+import useAppNavigation from "../../hooks/useAppNavigation";
 import { resetCart } from "../../redux/cart/reducer";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { createOrder, updateOrderItems } from "../../redux/order/reducer";

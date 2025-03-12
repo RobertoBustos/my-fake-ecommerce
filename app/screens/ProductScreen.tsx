@@ -3,8 +3,8 @@ import { ActivityIndicator, StyleSheet, Text } from "react-native";
 import Layout from "../components/Layout";
 import Product from "../components/product/Product";
 import ProductFooter from "../components/product/ProductFooter";
-import { useAppNavigation } from "../hooks/useAppNavigation";
-import { useProductDetails } from "../hooks/useProductDetails";
+import useAppNavigation from "../hooks/useAppNavigation";
+import useProductDetails from "../hooks/useProductDetails";
 import { addItemToCart } from "../redux/cart/reducer";
 import { useAppDispatch } from "../redux/hooks";
 

@@ -23,7 +23,7 @@ export type AppThunk<ThunkReturnType = void> = ThunkAction<
 
 export type OrderStateType = {
     incompleteOrders: OrderType[],
-    selectedOrderId: string,
+    selectedOrderId: string | undefined,
     isLoading: boolean
     isLoadingPayment: boolean
     isUpdating: boolean

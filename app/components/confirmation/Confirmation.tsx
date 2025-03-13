@@ -6,17 +6,25 @@ import { useOrderContext } from "../../contexts/OrderContext";
 import { formatCurrency } from "../../utils/formatCurrency";
 import AddressSummary from "../AddressSummary";
 import CustomerSummary from "../CustomerSummary";
+import OrderNotAllowedScreen from "../OrderNotAllowedScreen";
 import OrderSummary from "../OrderSummary";
 import PaymentSummary from "../PaymentSummary";
 import CustomImage from "../common/CustomImage";
 import ConfirmationHeader from "./ConfirmationHeader";
 
 const Confirmation = () => {
-  const { orderId, orderData, paymentData, isLoadingPayment } =
-    useOrderContext();
+  const { orderData, paymentData, isLoadingPayment } = useOrderContext();
 
   if (!orderData) {
     return null;
+  }
+
+  if (orderData.status !== "complete") {
+    return (
+      <OrderNotAllowedScreen
+        textToDisplay={"SORRY THIS ORDER IS NOT COMPLETED"}
+      />
+    );
   }
 
   return (
@@ -26,7 +34,7 @@ const Confirmation = () => {
         showsVerticalScrollIndicator={false}
       >
         <>
-          <ConfirmationHeader orderId={orderId} />
+          <ConfirmationHeader orderId={orderData.orderId} />
           {orderData.items?.map((item) => {
             return <OrderConfirmationItem data={item} key={item.id} />;
           })}

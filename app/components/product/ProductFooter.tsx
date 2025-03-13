@@ -1,3 +1,5 @@
+import { useAppSelector } from "@/app/redux/hooks";
+import { selectSelectedOrderId } from "@/app/redux/order/selectors";
 import FooterButton from "../FooterButton";
 import CustomFooter from "../common/CustomFooter";
 
@@ -6,13 +8,13 @@ export type ProductFooterPropsType = {
   disabled: boolean;
 };
 const ProductFooter = ({ onClick, disabled }: ProductFooterPropsType) => {
+  const orderId = useAppSelector(selectSelectedOrderId);
+
+  const footerText = orderId ? "Add to Order" : "Add to Cart";
+
   return (
     <CustomFooter>
-      <FooterButton
-        text={"Add to Cart"}
-        onPress={onClick}
-        disabled={disabled}
-      />
+      <FooterButton text={footerText} onPress={onClick} disabled={disabled} />
     </CustomFooter>
   );
 };

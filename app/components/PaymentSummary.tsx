@@ -13,6 +13,7 @@ const PaymentSummary = ({ data, isLoading }: PaymentSummaryPropsType) => {
 
   return data !== null && data.type === "card" && data.card ? (
     <CardPaymentSummary
+      brand={data.card.brand}
       size={80}
       last4={data.card.last4}
       expMonth={data.card.exp_month}

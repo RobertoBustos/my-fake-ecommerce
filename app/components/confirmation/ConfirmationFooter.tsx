@@ -9,20 +9,26 @@ import CustomFooter from "../common/CustomFooter";
 const ConfirmationFooter = () => {
   const navigation = useAppNavigation();
   const dispatch = useAppDispatch();
-  const { isLoading } = useOrderContext();
+  const { isUpdating, orderData, leaveCheckout } = useOrderContext();
+  const orderStatus = orderData?.status;
 
   const handleReturnHome = useCallback(() => {
+    if (orderStatus !== "complete") {
+      leaveCheckout();
+      return;
+    }
     dispatch(resetCart());
     navigation.reset({ index: 0, routes: [{ name: "Products" }] });
-  }, [dispatch, navigation]);
+  }, [dispatch, leaveCheckout, navigation, orderStatus]);
 
+  const footerText = orderStatus !== "complete" ? "Go Back" : "Return to Home";
   return (
     <CustomFooter>
       <FooterButton
-        text={"Return To Home"}
+        text={footerText}
         onPress={handleReturnHome}
-        isLoading={isLoading}
-        disabled={isLoading}
+        isLoading={isUpdating}
+        disabled={isUpdating}
       />
     </CustomFooter>
   );

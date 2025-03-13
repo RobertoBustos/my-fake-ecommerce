@@ -7,7 +7,7 @@ import { OrderStateType, RootStateType } from "../types";
 
 const initialState: OrderStateType = {
     incompleteOrders: [],
-    selectedOrderId: "",
+    selectedOrderId: undefined,
     isLoading: false,
     isLoadingPayment: false,
     isUpdating: false,
@@ -19,7 +19,7 @@ const orderSlice = createSlice({
     name: "order",
     initialState,
     reducers: {
-        setSelectedOrderId: (state, action: PayloadAction<string>) => {
+        setSelectedOrderId: (state, action: PayloadAction<string | undefined>) => {
             state.selectedOrderId = action.payload
         },
         setCustomerData: (state, action: PayloadAction<UserType>) => {
@@ -87,6 +87,7 @@ const orderSlice = createSlice({
         })
         builder.addCase(updateOrderItems.rejected, (state, action) => {
             state.isLoading = false
+            Alert.alert(action.payload as string)
         })
         builder.addCase(updateCustomerData.pending, (state, action) => {
             state.isUpdating = true
@@ -106,13 +107,13 @@ const orderSlice = createSlice({
             Alert.alert(action.payload as string)
         })
         builder.addCase(preparePaymentSheet.pending, (state, action) => {
-            state.isLoading = true
+            state.isUpdating = true
         })
         builder.addCase(preparePaymentSheet.fulfilled, (state, action) => {
-            state.isLoading = false
+            state.isUpdating = false
         })
         builder.addCase(preparePaymentSheet.rejected, (state, action) => {
-            state.isLoading = false
+            state.isUpdating = false
             Alert.alert(action.payload as string)
         })
         builder.addCase(updateOrderComplete.pending, (state, action) => {

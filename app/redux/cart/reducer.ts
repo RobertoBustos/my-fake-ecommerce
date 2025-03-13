@@ -24,6 +24,7 @@ const cartSlice = createSlice({
             const item = state.items.find(item => item.id === action.payload.id)
             if (item) {
                 item.quantity = item.quantity + action.payload.quantity
+                item.subtotal = item.subtotal + action.payload.subtotal
             } else {
                 state.items = [...state.items, action.payload]
             }

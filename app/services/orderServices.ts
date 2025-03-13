@@ -2,7 +2,7 @@ import { OrderType } from "../constants/types"
 import { getFromAsyncStorage, saveToAsyncStorage, searchObjectInAsyncStorage } from "../utils/asyncStorageUtils"
 import { createCartSummary } from "../utils/createCartSummary"
 import { fakeDelayPromise } from "../utils/fakeDelayPromise"
-import { cancelPaymentService, updatePaymentCustomerService } from "./paymentServices"
+import { cancelPaymentService, updatePaymentAmountService, updatePaymentCustomerService } from "./paymentServices"
 import { CancelOrder, ChangeOrderToComplete, ChangeOrderToIncomplete, CreateOrder, FetchIncompleteOrders, FetchOrder, RequestType, ResponseType, UpdateOrderCustomer, UpdateOrderItems } from "./serviceTypes"
 
 export const searchOrderInAsyncStorage = async (orderId: string) => {
@@ -47,14 +47,17 @@ export async function createOrderService(request: RequestType<CreateOrder>): Res
 export async function updateOrderItemsService(request: RequestType<UpdateOrderItems>): ResponseType<OrderType | undefined> {
     try {
         await fakeDelayPromise(1500)
-        const orderData = await searchOrderInAsyncStorage(request.orderId)
-        if (!orderData) {
+        const orderData: OrderType = await searchOrderInAsyncStorage(request.orderId)
+        if (!orderData || orderData.summary === null || orderData.paymentIntent === null) {
             throw new Error("Order Not Found")
         }
         const newSummary = createCartSummary(request.items)
-        const newOrder = { ...orderData, items: request.items, summary: createCartSummary(request.items) }
+        const newOrder = { ...orderData, items: request.items, summary: newSummary }
         if (orderData.summary?.total !== newSummary.total) {
-            throw new Error("The order amount needs to be updated")
+            const paymentResponse = await updatePaymentAmountService({ paymentId: orderData.paymentIntent.paymentId, amount: newSummary.total })
+            if (paymentResponse.error) {
+                throw new Error(paymentResponse.error.message)
+            }
         }
         return { data: newOrder }
     } catch (error) {

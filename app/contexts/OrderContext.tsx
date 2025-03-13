@@ -17,6 +17,7 @@ import {
   fetchOrder,
   fetchOrderPayment,
   setCompleteStatus,
+  setSelectedOrderId,
   updateCustomerData,
 } from "../redux/order/reducer";
 import {
@@ -27,7 +28,7 @@ import {
 } from "../redux/order/selectors";
 
 export type OrderContextType = {
-  orderId: string;
+  orderId: string | undefined;
   orderData: OrderType | undefined;
   paymentData: PaymentMethodType | undefined;
   isLoading: boolean;
@@ -36,10 +37,11 @@ export type OrderContextType = {
   updateOrderCustomer: () => void;
   setOrderForEdition: () => void;
   cancelIncompleteOrder: () => void;
+  leaveCheckout: () => void;
 };
 
 const OrderContext = createContext<OrderContextType>({
-  orderId: "",
+  orderId: undefined,
   orderData: undefined,
   paymentData: undefined,
   isLoading: false,
@@ -48,6 +50,7 @@ const OrderContext = createContext<OrderContextType>({
   updateOrderCustomer: () => {},
   setOrderForEdition: () => {},
   cancelIncompleteOrder: () => {},
+  leaveCheckout: () => {},
 });
 
 const OrderStore = ({ children }: PropsWithChildren) => {
@@ -91,6 +94,7 @@ const OrderStore = ({ children }: PropsWithChildren) => {
   }, [orderData]);
 
   const updateOrderCustomer = () => {
+    if (!orderId) return;
     dispatch(updateCustomerData(orderId))
       .unwrap()
       .then((response) => {
@@ -117,8 +121,14 @@ const OrderStore = ({ children }: PropsWithChildren) => {
     return dispatch(cancelOrder(orderData.orderId))
       .unwrap()
       .then(() => {
+        dispatch(setSelectedOrderId(undefined));
         return navigation.navigate("Products");
       });
+  };
+
+  const leaveCheckout = () => {
+    dispatch(setSelectedOrderId(undefined));
+    navigation.goBack();
   };
 
   useEffect(() => {
@@ -149,6 +159,7 @@ const OrderStore = ({ children }: PropsWithChildren) => {
         updateOrderCustomer,
         setOrderForEdition,
         cancelIncompleteOrder,
+        leaveCheckout,
       }}
     >
       {children}

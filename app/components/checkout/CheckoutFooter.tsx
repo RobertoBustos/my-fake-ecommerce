@@ -21,7 +21,7 @@ const CheckoutFooter = () => {
   const { confirmPayment } = useStripeContext();
   const isCustomerDataValid = useAppSelector(selectIsCustomerDataValid());
   const isShippingDataValid = useAppSelector(selectIsShippingDataValid());
-  const { orderId, isUpdating, orderData, updateOrderCustomer } =
+  const { orderId, isUpdating, orderData, updateOrderCustomer, leaveCheckout } =
     useOrderContext();
 
   if (
@@ -29,7 +29,7 @@ const CheckoutFooter = () => {
     (orderData.status === "complete" || orderData.status === "cancelled")
   ) {
     const handleGoBack = () => {
-      navigation.goBack();
+      leaveCheckout();
     };
 
     return (
@@ -46,6 +46,7 @@ const CheckoutFooter = () => {
 
   if (orderData && orderData.status === "payment_pending") {
     const handleConfirmPayment = () => {
+      if (!orderId) return;
       dispatch(preparePaymentSheet(orderId))
         .unwrap()
         .then((response) => {

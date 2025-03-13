@@ -1,9 +1,10 @@
+import { selectIsCartEmpty } from "@/app/redux/cart/selectors";
 import useAppNavigation from "../../hooks/useAppNavigation";
 import { resetCart } from "../../redux/cart/reducer";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { createOrder, updateOrderItems } from "../../redux/order/reducer";
 import {
-  selectIsOrderLoading,
+  selectIsUpdating,
   selectSelectedOrderId,
 } from "../../redux/order/selectors";
 import FooterButton from "../FooterButton";
@@ -13,9 +14,14 @@ const CartFooter = () => {
   const dispatch = useAppDispatch();
   const navigation = useAppNavigation();
   const orderId = useAppSelector(selectSelectedOrderId);
-  const isLoading = useAppSelector(selectIsOrderLoading);
+  const isUpdating = useAppSelector(selectIsUpdating);
+  const isCartEmpty = useAppSelector(selectIsCartEmpty);
 
   const handleRedirect = () => {
+    if (isCartEmpty) {
+      navigation.goBack();
+      return;
+    }
     if (!orderId) {
       dispatch(createOrder())
         .unwrap()
@@ -37,15 +43,19 @@ const CartFooter = () => {
     }
   };
 
-  const footerText = orderId ? "Update Order" : "Go to Checkout";
+  const footerText = isCartEmpty
+    ? "Go Back"
+    : orderId
+    ? "Update Order"
+    : "Go to Checkout";
 
   return (
     <CustomFooter>
       <FooterButton
         text={footerText}
         onPress={handleRedirect}
-        isLoading={isLoading}
-        disabled={isLoading}
+        isLoading={isUpdating}
+        disabled={isUpdating}
       />
     </CustomFooter>
   );

@@ -56,7 +56,10 @@ const CheckoutFooter = () => {
                 dispatch(updateOrderComplete(orderId))
                   .unwrap()
                   .then(() => {
-                    navigation.navigate("Confirmation");
+                    navigation.reset({
+                      index: 0,
+                      routes: [{ name: "Confirmation" }],
+                    });
                   })
                   .catch((error) => {
                     Alert.alert(error.message);

@@ -1,3 +1,4 @@
+import { setCompleteStatus } from "@/app/redux/order/reducer";
 import { useCallback } from "react";
 import { useOrderContext } from "../../contexts/OrderContext";
 import useAppNavigation from "../../hooks/useAppNavigation";
@@ -9,19 +10,16 @@ import CustomFooter from "../common/CustomFooter";
 const ConfirmationFooter = () => {
   const navigation = useAppNavigation();
   const dispatch = useAppDispatch();
-  const { isUpdating, orderData, leaveCheckout } = useOrderContext();
-  const orderStatus = orderData?.status;
+  const { isUpdating, orderData } = useOrderContext();
 
   const handleReturnHome = useCallback(() => {
-    if (orderStatus !== "complete") {
-      leaveCheckout();
-      return;
-    }
+    if (!orderData) return;
     dispatch(resetCart());
+    dispatch(setCompleteStatus(orderData.orderId));
     navigation.reset({ index: 0, routes: [{ name: "Products" }] });
-  }, [dispatch, leaveCheckout, navigation, orderStatus]);
+  }, [dispatch, navigation, orderData]);
 
-  const footerText = orderStatus !== "complete" ? "Go Back" : "Return to Home";
+  const footerText = "Return to Home";
   return (
     <CustomFooter>
       <FooterButton

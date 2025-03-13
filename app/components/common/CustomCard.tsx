@@ -7,7 +7,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { colors } from "../../constants/colors";
+import { GLOBAL_THEME_BORDER_RADIUS, colors } from "../../constants/colors";
 import FormSkeleton from "../skeletons/FormSkeleton";
 
 export type CustomCardPropsType = PropsWithChildren & {
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     justifyContent: "space-between",
     marginVertical: 8,
-    borderRadius: 10,
+    borderRadius: GLOBAL_THEME_BORDER_RADIUS,
     padding: 8,
     //shadows
     shadowColor: colors.black,
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
       height: 8,
     },
     shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowRadius: GLOBAL_THEME_BORDER_RADIUS * 0.1,
     elevation: 8,
   },
   headerText: {

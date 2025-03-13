@@ -9,4 +9,6 @@ export const colors = {
     warning: "#ffc107"
 }
 
+export const GLOBAL_THEME_BORDER_RADIUS = 25
+
 export default {}

@@ -1,6 +1,9 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { colors } from "../constants/colors";
+import { useAppDispatch } from "../redux/hooks";
+import { setSelectedOrderId } from "../redux/order/reducer";
 
 export type OrderNotAllowedScreenPropsType = {
   textToDisplay: string;
@@ -9,12 +12,20 @@ export type OrderNotAllowedScreenPropsType = {
 const OrderNotAllowedScreen = ({
   textToDisplay,
 }: OrderNotAllowedScreenPropsType) => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    return () => {
+      dispatch(setSelectedOrderId(undefined));
+    };
+  }, [dispatch]);
+
   return (
     <View style={styles.container}>
       <FontAwesome6
         name="face-grin-beam-sweat"
         size={100}
-        color={colors.error}
+        color={colors.primary}
         style={styles.icon}
       />
       <Text style={styles.text}>{textToDisplay}</Text>
@@ -34,7 +45,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 32,
     textAlign: "center",
-    color: colors.error,
+    color: colors.primary,
     fontWeight: 500,
   },
 });

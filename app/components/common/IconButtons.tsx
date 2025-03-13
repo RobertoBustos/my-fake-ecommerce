@@ -8,7 +8,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { colors } from "../../constants/colors";
+import { GLOBAL_THEME_BORDER_RADIUS, colors } from "../../constants/colors";
 
 export type IconButtonPropsType = {
   size?: number;
@@ -49,8 +49,8 @@ export const PlusButton = ({
         backgroundColor: backgroundColor,
         width: 100,
         height: 50,
-        borderTopRightRadius: 30,
-        borderBottomRightRadius: 30,
+        borderTopRightRadius: GLOBAL_THEME_BORDER_RADIUS,
+        borderBottomRightRadius: GLOBAL_THEME_BORDER_RADIUS,
       }}
     >
       <FontAwesome name="plus" size={size} color={color} />
@@ -71,8 +71,8 @@ export const MinusButton = ({
         backgroundColor: backgroundColor,
         width: 100,
         height: 50,
-        borderTopLeftRadius: 30,
-        borderBottomLeftRadius: 30,
+        borderTopLeftRadius: GLOBAL_THEME_BORDER_RADIUS,
+        borderBottomLeftRadius: GLOBAL_THEME_BORDER_RADIUS,
       }}
     >
       <FontAwesome name="minus" size={size} color={color} />
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: colors.primary,
-    borderRadius: 10,
+    borderRadius: GLOBAL_THEME_BORDER_RADIUS,
   },
   buttonText: {
     color: colors.white,

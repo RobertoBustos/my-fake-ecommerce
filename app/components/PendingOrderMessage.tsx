@@ -22,21 +22,24 @@ const PendingOrderMessage = () => {
     navigation.navigate("Confirmation");
   };
 
-  return incompleteOrders.map((order, index) => {
-    return (
-      <CustomCard
-        variant="warning"
-        key={index}
-        onPress={() => handleRedirect(order.orderId)}
-      >
-        <View style={{ width: "100%", height: 30 }}>
-          <Text
-            style={styles.text}
-          >{`Complete order number ${order.orderId} for $${order.summary?.total}`}</Text>
-        </View>
-      </CustomCard>
-    );
-  });
+  return (
+    incompleteOrders.length > 0 &&
+    incompleteOrders.map((order, index) => {
+      return (
+        <CustomCard
+          variant="warning"
+          key={index}
+          onPress={() => handleRedirect(order.orderId)}
+        >
+          <View style={{ width: "100%", height: 30 }}>
+            <Text
+              style={styles.text}
+            >{`Complete order number ${order.orderId} for $${order.summary?.total}`}</Text>
+          </View>
+        </CustomCard>
+      );
+    })
+  );
 };
 
 const styles = StyleSheet.create({

@@ -6,7 +6,6 @@ import { useOrderContext } from "../../contexts/OrderContext";
 import { formatCurrency } from "../../utils/formatCurrency";
 import AddressSummary from "../AddressSummary";
 import CustomerSummary from "../CustomerSummary";
-import OrderNotAllowedScreen from "../OrderNotAllowedScreen";
 import OrderSummary from "../OrderSummary";
 import PaymentSummary from "../PaymentSummary";
 import CustomImage from "../common/CustomImage";
@@ -17,14 +16,6 @@ const Confirmation = () => {
 
   if (!orderData) {
     return null;
-  }
-
-  if (orderData.status !== "complete") {
-    return (
-      <OrderNotAllowedScreen
-        textToDisplay={"SORRY THIS ORDER IS NOT COMPLETED"}
-      />
-    );
   }
 
   return (

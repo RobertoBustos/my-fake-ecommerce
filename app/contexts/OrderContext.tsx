@@ -6,6 +6,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import OrderNotAllowedScreen from "../components/OrderNotAllowedScreen";
 import LoadingScreen from "../components/common/LoadingScreen";
 import { OrderType, PaymentMethodType } from "../constants/types";
 import useAppNavigation from "../hooks/useAppNavigation";
@@ -16,7 +17,6 @@ import {
   changeOrdertoIncomplete,
   fetchOrder,
   fetchOrderPayment,
-  setCompleteStatus,
   setSelectedOrderId,
   updateCustomerData,
 } from "../redux/order/reducer";
@@ -86,9 +86,6 @@ const OrderStore = ({ children }: PropsWithChildren) => {
       .unwrap()
       .then((response) => {
         setPaymentData(response);
-        if (response && orderData.status !== "complete") {
-          dispatch(setCompleteStatus(orderData.orderId));
-        }
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderData]);
@@ -145,6 +142,18 @@ const OrderStore = ({ children }: PropsWithChildren) => {
 
   if (isLoading) {
     return <LoadingScreen />;
+  }
+
+  if (orderData?.status === "cancelled") {
+    return (
+      <OrderNotAllowedScreen textToDisplay="Sorry, This order has been cancelled" />
+    );
+  }
+
+  if (orderData?.status === "complete") {
+    return (
+      <OrderNotAllowedScreen textToDisplay="Sorry, This order is already completed" />
+    );
   }
 
   return (

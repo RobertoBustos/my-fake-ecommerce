@@ -12,7 +12,7 @@ import CheckoutHeader from "./CheckoutHeader";
 
 const Checkout = () => {
   const { keyboardStatus } = useKeyboardStatus();
-  const { orderId, orderData, setOrderForEdition, cancelIncompleteOrder } =
+  const { orderData, setOrderForEdition, cancelIncompleteOrder } =
     useOrderContext();
 
   const userData = useMemo(() => {
@@ -69,18 +69,16 @@ const Checkout = () => {
       showsVerticalScrollIndicator={false}
     >
       <>
-        <CheckoutHeader orderId={orderId} />
+        <CheckoutHeader orderId={orderData.orderId} />
         <OrderSummary data={orderData.summary} />
         <UserDetailsForm data={userData} />
         <AddressDetailsForm data={addressData} />
-        {orderData.status !== "complete" && orderData.status !== "cancelled" ? (
-          <CheckoutButtons
-            editOrderLabel="Edit Order"
-            cancelOrderLabel="Cancel Order"
-            onCancelOrder={handleCancelOrder}
-            onEditOrder={handleReturnOrderToCart}
-          />
-        ) : null}
+        <CheckoutButtons
+          editOrderLabel="Edit Order"
+          cancelOrderLabel="Cancel Order"
+          onCancelOrder={handleCancelOrder}
+          onEditOrder={handleReturnOrderToCart}
+        />
       </>
       {keyboardStatus === "shown" && Platform.OS === "ios" ? (
         <View style={styles.footer}>{<CheckoutFooter />}</View>

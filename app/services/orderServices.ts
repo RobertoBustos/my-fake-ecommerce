@@ -5,8 +5,18 @@ import { fakeDelayPromise } from "../utils/fakeDelayPromise"
 import { cancelPaymentService, updatePaymentAmountService, updatePaymentCustomerService } from "./paymentServices"
 import { CancelOrder, ChangeOrderToComplete, ChangeOrderToIncomplete, CreateOrder, FetchIncompleteOrders, FetchOrder, RequestType, ResponseType, UpdateOrderCustomer, UpdateOrderItems } from "./serviceTypes"
 
-export const searchOrderInAsyncStorage = async (orderId: string) => {
-    return searchObjectInAsyncStorage("orderData", "orderId", orderId)
+export async function searchOrderInAsyncStorage(orderId: string) {
+    return await searchObjectInAsyncStorage("orderData", "orderId", orderId)
+}
+
+export async function searchIncompleteOrders() {
+    const storage = await getFromAsyncStorage("orderData")
+    if (storage === null) {
+        return undefined
+    }
+    const data = JSON.parse(storage) as OrderType[]
+    const incompleteOrders = data.filter(order => order.status === "incomplete" || order.status === "payment_pending")
+    return incompleteOrders.length
 }
 
 export async function fetchIncompleteOrdersService(request: RequestType<FetchIncompleteOrders>): ResponseType<OrderType[]> {
@@ -38,6 +48,10 @@ export async function createOrderService(request: RequestType<CreateOrder>): Res
             throw new Error("Cant register an order without items")
         }
         await fakeDelayPromise(1500)
+        const incompleteOrders = await searchIncompleteOrders()
+        if (incompleteOrders) {
+            throw new Error(`Please complete one of your ${incompleteOrders} orders to continue`)
+        }
         return { data: { orderId: Math.floor(Math.random() * 999999).toString(), customerData: null, items: request.items, shippingData: null, summary: createCartSummary(request.items), status: "incomplete", paymentIntent: null } }
     } catch (error) {
         return { data: undefined, error: error as Error }

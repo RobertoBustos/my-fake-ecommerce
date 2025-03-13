@@ -61,15 +61,16 @@ const orderSlice = createSlice({
             Alert.alert(action.payload as string)
         })
         builder.addCase(createOrder.pending, (state, action) => {
-            state.isLoading = true
+            state.isUpdating = true
         })
         builder.addCase(createOrder.fulfilled, (state, action) => {
             state.incompleteOrders = [...state.incompleteOrders, action.payload]
-            state.isLoading = false
+            state.selectedOrderId = action.payload.orderId
+            state.isUpdating = false
             saveOrderData(state.incompleteOrders)
         })
         builder.addCase(createOrder.rejected, (state, action) => {
-            state.isLoading = false
+            state.isUpdating = false
             Alert.alert(action.payload as string)
         })
         builder.addCase(updateOrderItems.pending, (state, action) => {
@@ -120,11 +121,6 @@ const orderSlice = createSlice({
             state.isLoading = true
         })
         builder.addCase(updateOrderComplete.fulfilled, (state, action) => {
-            const order = state.incompleteOrders.find(order => order.orderId === action.payload.orderId)
-            if (order) {
-                order.status = action.payload.status
-                saveOrderData(state.incompleteOrders)
-            }
             state.isLoading = false
         })
         builder.addCase(updateOrderComplete.rejected, (state, action) => {
@@ -195,11 +191,7 @@ export const fetchOrder = createAsyncThunk("order/fetchOrder", async (payload: s
 })
 
 export const createOrder = createAsyncThunk("order/createOrder", async (_, { getState, rejectWithValue }) => {
-    const { cart, order } = getState() as RootStateType
-    // TODO: this validation should be in the service
-    if (order.incompleteOrders.length >= 3) {
-        return rejectWithValue("Please complete one of your orders to continue")
-    }
+    const { cart } = getState() as RootStateType
     const response = await createOrderService({ items: cart.items })
     if (response.error) {
         return rejectWithValue(response.error.message)

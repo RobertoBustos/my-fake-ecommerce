@@ -1,5 +1,5 @@
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
-import { colors } from "../../constants/colors";
+import { GLOBAL_THEME_BORDER_RADIUS, colors } from "../../constants/colors";
 import SkeletonWrapper from "../common/SkeletonWrapper";
 
 export type FormSkeletonPropsType = {
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     backgroundColor: colors.skeletonBackground,
-    borderRadius: 10,
+    borderRadius: GLOBAL_THEME_BORDER_RADIUS,
   },
 });
 export default FormSkeleton;

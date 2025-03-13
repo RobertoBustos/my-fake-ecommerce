@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import { colors } from "../../constants/colors";
+import { GLOBAL_THEME_BORDER_RADIUS, colors } from "../../constants/colors";
 import SkeletonWrapper from "../common/SkeletonWrapper";
 
 const ProductCardSkeleton = () => {
@@ -25,12 +25,12 @@ const styles = StyleSheet.create({
   left: {
     width: "65%",
     backgroundColor: colors.skeletonBackground,
-    borderRadius: 10,
+    borderRadius: GLOBAL_THEME_BORDER_RADIUS,
   },
   right: {
     width: "30%",
     backgroundColor: colors.skeletonBackground,
-    borderRadius: 10,
+    borderRadius: GLOBAL_THEME_BORDER_RADIUS,
   },
 });
 

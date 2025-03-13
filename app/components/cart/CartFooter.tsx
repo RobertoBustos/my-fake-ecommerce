@@ -1,6 +1,5 @@
 import { selectIsCartEmpty } from "@/app/redux/cart/selectors";
 import useAppNavigation from "../../hooks/useAppNavigation";
-import { resetCart } from "../../redux/cart/reducer";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { createOrder, updateOrderItems } from "../../redux/order/reducer";
 import {
@@ -26,7 +25,6 @@ const CartFooter = () => {
       dispatch(createOrder())
         .unwrap()
         .then((response) => {
-          dispatch(resetCart());
           navigation.navigate("Checkout");
           return;
         });
@@ -47,7 +45,7 @@ const CartFooter = () => {
     ? "Go Back"
     : orderId
     ? "Update Order"
-    : "Go to Checkout";
+    : "Create Order";
 
   return (
     <CustomFooter>

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import { colors } from "../constants/colors";
 import useAppNavigation from "../hooks/useAppNavigation";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
@@ -9,7 +9,7 @@ import {
 } from "../redux/order/selectors";
 import CustomCard from "./common/CustomCard";
 
-const PendingOrderMessage = () => {
+const IncompleteOrdersList = () => {
   const dispatch = useAppDispatch();
   const navigation = useAppNavigation();
   const incompleteOrders = useAppSelector(selectIncompleteOrders);
@@ -22,24 +22,21 @@ const PendingOrderMessage = () => {
     navigation.navigate("Confirmation");
   };
 
-  return (
-    incompleteOrders.length > 0 &&
-    incompleteOrders.map((order, index) => {
-      return (
-        <CustomCard
-          variant="warning"
-          key={index}
-          onPress={() => handleRedirect(order.orderId)}
-        >
-          <View style={{ width: "100%", height: 30 }}>
-            <Text
-              style={styles.text}
-            >{`Complete order number ${order.orderId} for $${order.summary?.total}`}</Text>
-          </View>
-        </CustomCard>
-      );
-    })
-  );
+  const invalidIncompleteStatus = ["cancelled", "complete"];
+
+  return incompleteOrders.map((order, index) => {
+    return invalidIncompleteStatus.includes(order.status) ? null : (
+      <CustomCard
+        variant="warning"
+        key={index}
+        onPress={() => handleRedirect(order.orderId)}
+      >
+        <Text
+          style={styles.text}
+        >{`Complete order number ${order.orderId} for $${order.summary?.total}`}</Text>
+      </CustomCard>
+    );
+  });
 };
 
 const styles = StyleSheet.create({
@@ -52,4 +49,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PendingOrderMessage;
+export default IncompleteOrdersList;

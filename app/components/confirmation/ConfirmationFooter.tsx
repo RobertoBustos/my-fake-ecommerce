@@ -1,9 +1,9 @@
-import { setCompleteStatus } from "@/app/redux/order/reducer";
 import { useCallback } from "react";
 import { useOrderContext } from "../../contexts/OrderContext";
 import useAppNavigation from "../../hooks/useAppNavigation";
 import { resetCart } from "../../redux/cart/reducer";
 import { useAppDispatch } from "../../redux/hooks";
+import { setCompleteStatus } from "../../redux/order/reducer";
 import FooterButton from "../FooterButton";
 import CustomFooter from "../common/CustomFooter";
 

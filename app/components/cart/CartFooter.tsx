@@ -1,5 +1,5 @@
-import { selectIsCartEmpty } from "@/app/redux/cart/selectors";
 import useAppNavigation from "../../hooks/useAppNavigation";
+import { selectIsCartEmpty } from "../../redux/cart/selectors";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { createOrder, updateOrderItems } from "../../redux/order/reducer";
 import {

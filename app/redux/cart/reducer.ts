@@ -2,6 +2,7 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Alert } from "react-native";
 import { CartItemType } from "../../constants/types";
 import { fetchCartService, saveCartDataService } from "../../services/cartServices";
+import { getProductDetailsService, getProductsService } from "../../services/productServices";
 import { createCartSummary } from "../../utils/createCartSummary";
 import { CartStateType } from "../types";
 
@@ -14,7 +15,10 @@ const initialSummary = {
 }
 const initialState: CartStateType = {
     items: [],
-    summary: initialSummary
+    summary: initialSummary,
+    products: [],
+    currentProduct: undefined,
+    isLoading: false
 }
 const cartSlice = createSlice({
     name: "cart",
@@ -57,7 +61,6 @@ const cartSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(fetchCart.pending, (state, action) => {
-
         })
         builder.addCase(fetchCart.fulfilled, (state, action) => {
             state.items = action.payload
@@ -66,8 +69,52 @@ const cartSlice = createSlice({
         builder.addCase(fetchCart.rejected, (state, action) => {
             Alert.alert(action.payload as string)
         })
+        builder.addCase(fetchProducts.pending, (state, action) => {
+            state.isLoading = true
+        })
+        builder.addCase(fetchProducts.fulfilled, (state, action) => {
+            state.products = action.payload
+            state.isLoading = false
+        })
+        builder.addCase(fetchProducts.rejected, (state, action) => {
+            state.isLoading = false
+            Alert.alert(action.payload as string)
+        })
+        builder.addCase(fetchProductById.pending, (state, action) => {
+            state.isLoading = true
+        })
+        builder.addCase(fetchProductById.fulfilled, (state, action) => {
+            state.currentProduct = action.payload
+            state.isLoading = false
+        })
+        builder.addCase(fetchProductById.rejected, (state, action) => {
+            state.isLoading = false
+            Alert.alert(action.payload as string)
+        })
     }
 });
+
+export const fetchProducts = createAsyncThunk("cart/fetchProducts", async (_, { rejectWithValue }) => {
+    const response = await getProductsService()
+    if (response.error) {
+        return rejectWithValue(response.error.message)
+    }
+    if (!response.data) {
+        return rejectWithValue("Error getting service response")
+    }
+    return response.data
+})
+
+export const fetchProductById = createAsyncThunk("cart/fetchProductById", async (payload: number, { rejectWithValue }) => {
+    const response = await getProductDetailsService(payload)
+    if (response.error) {
+        return rejectWithValue(response.error.message)
+    }
+    if (!response.data) {
+        return rejectWithValue("Error getting service response")
+    }
+    return response.data
+})
 
 export const fetchCart = createAsyncThunk("cart/fetchCart", async (_, { rejectWithValue }) => {
     const response = await fetchCartService()

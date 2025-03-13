@@ -1,41 +1,47 @@
-import React, { useState } from "react";
-import { ActivityIndicator, StyleSheet, Text } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Text } from "react-native";
 import Layout from "../components/Layout";
+import LoadingScreen from "../components/common/LoadingScreen";
 import Product from "../components/product/Product";
 import ProductFooter from "../components/product/ProductFooter";
 import useAppNavigation from "../hooks/useAppNavigation";
-import useProductDetails from "../hooks/useProductDetails";
-import { addItemToCart } from "../redux/cart/reducer";
-import { useAppDispatch } from "../redux/hooks";
+import { addItemToCart, fetchProductById } from "../redux/cart/reducer";
+import {
+  selectIsProductsLoading,
+  selectProductData,
+} from "../redux/cart/selectors";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 
 const ProductScreen = ({ route }: any) => {
   const dispatch = useAppDispatch();
   const navigation = useAppNavigation();
-  const { isLoading, response } = useProductDetails(route.params.productId);
+  const productData = useAppSelector(selectProductData);
+  const isLoading = useAppSelector(selectIsProductsLoading);
   const [quantity, setQuantity] = useState<number>(1);
 
+  useEffect(() => {
+    dispatch(fetchProductById(route.params.productId));
+    return () => {};
+  }, [dispatch, route.params.productId]);
+
   const handleAddToCart = (quantity: number) => {
-    if (!response) return;
+    if (!productData) return;
     dispatch(
       addItemToCart({
-        ...response,
-        cartItemId: response.id,
+        ...productData,
+        cartItemId: productData.id,
         quantity: quantity,
-        subtotal: response.price.amount * quantity,
+        subtotal: productData.price.amount * quantity,
       })
     );
     navigation.goBack();
   };
 
   if (isLoading) {
-    return (
-      <Layout>
-        <ActivityIndicator size="large" color={"black"} style={styles.loader} />
-      </Layout>
-    );
+    return <LoadingScreen />;
   }
 
-  if (!response) {
+  if (!productData) {
     return (
       <Layout>
         <Text>Item Not Found</Text>
@@ -47,24 +53,18 @@ const ProductScreen = ({ route }: any) => {
     <Layout
       footerComponent={
         <ProductFooter
-          disabled={response.stock === 0}
+          disabled={productData.stock === 0}
           onClick={() => handleAddToCart(quantity)}
         />
       }
     >
       <Product
-        data={response}
+        data={productData}
         onQuantityChange={setQuantity}
         currentQuantity={quantity}
       />
     </Layout>
   );
 };
-
-const styles = StyleSheet.create({
-  loader: {
-    flex: 1,
-  },
-});
 
 export default ProductScreen;

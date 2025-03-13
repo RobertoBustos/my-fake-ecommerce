@@ -1,9 +1,22 @@
 import { FlatList, StyleSheet, View } from "react-native";
-import useProducts from "../hooks/useProducts";
+import { fetchProducts } from "../redux/cart/reducer";
+import {
+  selectIsProductsLoading,
+  selectProducts,
+} from "../redux/cart/selectors";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import ProductCard from "./ProductCard";
 
 const ProductList = () => {
-  const { products } = useProducts();
+  const dispatch = useAppDispatch();
+  const products = useAppSelector(selectProducts);
+  const isLoading = useAppSelector(selectIsProductsLoading);
+
+  const handleRefresh = () => {
+    setTimeout(() => {
+      dispatch(fetchProducts());
+    }, 1000);
+  };
 
   return (
     <View style={styles.container}>
@@ -11,6 +24,8 @@ const ProductList = () => {
         data={products}
         renderItem={({ item }) => <ProductCard data={item} />}
         showsVerticalScrollIndicator={false}
+        refreshing={isLoading}
+        onRefresh={handleRefresh}
       />
     </View>
   );

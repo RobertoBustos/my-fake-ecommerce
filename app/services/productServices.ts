@@ -1,26 +1,30 @@
 import { BASE_URL } from "../constants/config";
 import { ProductType } from "../constants/types";
+import { RequestType, ResponseType } from "./serviceTypes";
 
-export async function getProductsService(): Promise<ProductType[] | Error> {
+export async function getProductsService(): ResponseType<ProductType[] | undefined> {
     try {
         const response = await fetch(BASE_URL + '/products')
         const data = await response.json()
-        if (data.length === 0) {
-            throw { name: "general", message: 'No data found' } as Error
+        if (data.error) {
+            throw new Error(data.error.message)
         }
-        return data
+        return { data }
     } catch (error) {
-        return { name: "general", message: 'An error occurred' + error } as Error
+        return { data: undefined, error: error as Error }
     }
 }
 
-export async function getProductDetailsService(productId: number): Promise<ProductType | Error> {
+export async function getProductDetailsService(request: RequestType<number>): ResponseType<ProductType | undefined> {
     try {
-        const response = await fetch(BASE_URL + `/products/${productId}`)
+        const response = await fetch(BASE_URL + `/products/${request}`)
         const data = await response.json()
-        return data
+        if (data.error) {
+            throw new Error(data.error.message)
+        }
+        return { data }
     } catch (error) {
-        return { name: "general", message: 'An error occurred' + error } as Error
+        return { data: undefined, error: error as Error }
     }
 }
 

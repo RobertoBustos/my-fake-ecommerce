@@ -1,5 +1,5 @@
-import { useAppSelector } from "@/app/redux/hooks";
-import { selectSelectedOrderId } from "@/app/redux/order/selectors";
+import { useAppSelector } from "../../redux/hooks";
+import { selectSelectedOrderId } from "../../redux/order/selectors";
 import FooterButton from "../FooterButton";
 import CustomFooter from "../common/CustomFooter";
 

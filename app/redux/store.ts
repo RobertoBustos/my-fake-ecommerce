@@ -8,11 +8,21 @@ const rootReducer = combineReducers({
     order: orderReducer
 })
 
+const createEnhancers = (getDefaultEnhancers: any) => {
+    if (__DEV__) {
+        const reactotron = require("../../ReactotronConfig").default
+        return getDefaultEnhancers().concat(reactotron.createEnhancer())
+    } else {
+        return getDefaultEnhancers()
+    }
+}
+
 const setupStore = (preloadedState?: PreloadState) => {
     return configureStore({
         reducer: rootReducer,
         preloadedState,
         devTools: true,
+        enhancers: createEnhancers,
     })
 }
 

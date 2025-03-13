@@ -152,7 +152,7 @@ const OrderStore = ({ children }: PropsWithChildren) => {
 
   if (orderData?.status === "complete") {
     return (
-      <OrderNotAllowedScreen textToDisplay="Sorry, This order is already completed" />
+      <OrderNotAllowedScreen textToDisplay="Sorry, This order has been completed" />
     );
   }
 

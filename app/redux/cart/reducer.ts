@@ -18,7 +18,8 @@ const initialState: CartStateType = {
     summary: initialSummary,
     products: [],
     currentProduct: undefined,
-    isLoading: false
+    isFetching: false,
+    isRefreshing: false
 }
 const cartSlice = createSlice({
     name: "cart",
@@ -57,7 +58,10 @@ const cartSlice = createSlice({
             state.items = action.payload
             state.summary = createCartSummary(action.payload)
             saveCartDataService(state.items)
-        }
+        },
+        setRefresingState: (state, action: PayloadAction<boolean>) => {
+            state.isRefreshing = action.payload
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(fetchCart.pending, (state, action) => {
@@ -70,25 +74,29 @@ const cartSlice = createSlice({
             Alert.alert(action.payload as string)
         })
         builder.addCase(fetchProducts.pending, (state, action) => {
-            state.isLoading = true
+            state.isFetching = true
         })
         builder.addCase(fetchProducts.fulfilled, (state, action) => {
             state.products = action.payload
-            state.isLoading = false
+            state.isFetching = false
+            state.isRefreshing = false
         })
         builder.addCase(fetchProducts.rejected, (state, action) => {
-            state.isLoading = false
+            state.isFetching = false
+            state.isRefreshing = false
             Alert.alert(action.payload as string)
         })
         builder.addCase(fetchProductById.pending, (state, action) => {
-            state.isLoading = true
+            state.isFetching = true
         })
         builder.addCase(fetchProductById.fulfilled, (state, action) => {
             state.currentProduct = action.payload
-            state.isLoading = false
+            state.isFetching = false
+            state.isRefreshing = false
         })
         builder.addCase(fetchProductById.rejected, (state, action) => {
-            state.isLoading = false
+            state.isFetching = false
+            state.isRefreshing = false
             Alert.alert(action.payload as string)
         })
     }
@@ -127,5 +135,5 @@ export const fetchCart = createAsyncThunk("cart/fetchCart", async (_, { rejectWi
     return response.data
 })
 
-export const { addItemToCart, updateItemFromCart, removeItemFromCart, resetCart, setCartFromOrder } = cartSlice.actions
+export const { addItemToCart, updateItemFromCart, removeItemFromCart, resetCart, setCartFromOrder, setRefresingState } = cartSlice.actions
 export default cartSlice.reducer

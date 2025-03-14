@@ -19,7 +19,7 @@ const IncompleteOrdersList = () => {
     if (currentOrderId !== orderId) {
       dispatch(setSelectedOrderId(orderId));
     }
-    navigation.navigate("Confirmation");
+    navigation.navigate("Checkout");
   };
 
   const invalidIncompleteStatus = ["cancelled", "complete"];

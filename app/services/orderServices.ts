@@ -96,7 +96,7 @@ export async function updateOrderCustomerDataService(request: RequestType<Update
         if (!paymentResponse.data) {
             throw new Error("Customer Not Found")
         }
-        const newOrder = { ...orderData, customerData: { ...request.customerData, customerId: paymentResponse.data.customer }, shippingData: request.shippingData }
+        const newOrder = { ...orderData, status: "payment_pending", customerData: { ...request.customerData, customerId: paymentResponse.data.customer }, shippingData: request.shippingData }
         return { data: newOrder }
     } catch (error) {
         return { data: undefined, error: error as Error }

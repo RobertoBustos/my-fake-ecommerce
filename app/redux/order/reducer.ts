@@ -8,9 +8,10 @@ import { OrderStateType, RootStateType } from "../types";
 const initialState: OrderStateType = {
     incompleteOrders: [],
     selectedOrderId: undefined,
-    isLoading: false,
+    isFetching: false,
     isLoadingPayment: false,
     isUpdating: false,
+    isRefreshing: false,
     customerData: null,
     shippingData: null,
 }
@@ -35,29 +36,34 @@ const orderSlice = createSlice({
                 saveOrderData(state.incompleteOrders)
             }
         },
+        setOrderRefresingState: (state, action: PayloadAction<boolean>) => {
+            state.isRefreshing = action.payload
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(fetchIncompleteOrders.pending, (state, action) => {
-            state.isLoading = true
+            state.isFetching = true
         })
         builder.addCase(fetchIncompleteOrders.fulfilled, (state, action) => {
             state.incompleteOrders = action.payload
-            state.isLoading = false
+            state.isFetching = false
         })
         builder.addCase(fetchIncompleteOrders.rejected, (state, action) => {
-            state.isLoading = false
+            state.isFetching = false
             Alert.alert(action.payload as string)
         })
         builder.addCase(fetchOrder.pending, (state, action) => {
-            state.isLoading = true
+            state.isFetching = true
         })
         builder.addCase(fetchOrder.fulfilled, (state, action) => {
             state.customerData = action.payload.customerData
             state.shippingData = action.payload.shippingData
-            state.isLoading = false
+            state.isFetching = false
+            state.isRefreshing = false
         })
         builder.addCase(fetchOrder.rejected, (state, action) => {
-            state.isLoading = false
+            state.isFetching = false
+            state.isRefreshing = false
             Alert.alert(action.payload as string)
         })
         builder.addCase(createOrder.pending, (state, action) => {
@@ -74,7 +80,7 @@ const orderSlice = createSlice({
             Alert.alert(action.payload as string)
         })
         builder.addCase(updateOrderItems.pending, (state, action) => {
-            state.isLoading = true
+            state.isUpdating = true
         })
         builder.addCase(updateOrderItems.fulfilled, (state, action) => {
             const order = state.incompleteOrders.find(order => order.orderId === action.payload.orderId)
@@ -84,10 +90,10 @@ const orderSlice = createSlice({
                 order.status = "incomplete"
                 saveOrderData(state.incompleteOrders)
             }
-            state.isLoading = false
+            state.isUpdating = false
         })
         builder.addCase(updateOrderItems.rejected, (state, action) => {
-            state.isLoading = false
+            state.isUpdating = false
             Alert.alert(action.payload as string)
         })
         builder.addCase(updateCustomerData.pending, (state, action) => {
@@ -98,7 +104,7 @@ const orderSlice = createSlice({
             if (order) {
                 order.customerData = action.payload.customerData
                 order.shippingData = action.payload.shippingData
-                order.status = "payment_pending"
+                order.status = action.payload.status
                 saveOrderData(state.incompleteOrders)
             }
             state.isUpdating = false
@@ -118,13 +124,13 @@ const orderSlice = createSlice({
             Alert.alert(action.payload as string)
         })
         builder.addCase(updateOrderComplete.pending, (state, action) => {
-            state.isLoading = true
+            state.isUpdating = true
         })
         builder.addCase(updateOrderComplete.fulfilled, (state, action) => {
-            state.isLoading = false
+            state.isUpdating = false
         })
         builder.addCase(updateOrderComplete.rejected, (state, action) => {
-            state.isLoading = false
+            state.isUpdating = false
         })
         builder.addCase(fetchOrderPayment.pending, (state, action) => {
             state.isLoadingPayment = true
@@ -295,5 +301,5 @@ export const cancelOrder = createAsyncThunk("order/cancelOrder", async (payload:
     return response.data
 })
 
-export const { setCustomerData, setShippingData, setSelectedOrderId, setCompleteStatus } = orderSlice.actions
+export const { setCustomerData, setShippingData, setSelectedOrderId, setCompleteStatus, setOrderRefresingState } = orderSlice.actions
 export default orderSlice.reducer

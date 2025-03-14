@@ -1,5 +1,13 @@
+import { useAppSelector } from "@/app/redux/hooks";
+import { selectIsOrderRefreshing } from "@/app/redux/order/selectors";
 import { useMemo } from "react";
-import { Alert, Platform, StyleSheet, View } from "react-native";
+import {
+  Alert,
+  Platform,
+  RefreshControl,
+  StyleSheet,
+  View,
+} from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useOrderContext } from "../../contexts/OrderContext";
 import useKeyboardStatus from "../../hooks/useKeyboardStatus";
@@ -12,8 +20,13 @@ import CheckoutHeader from "./CheckoutHeader";
 
 const Checkout = () => {
   const { keyboardStatus } = useKeyboardStatus();
-  const { orderData, setOrderForEdition, cancelIncompleteOrder } =
-    useOrderContext();
+  const {
+    orderData,
+    setOrderForEdition,
+    cancelIncompleteOrder,
+    refreshCheckout,
+  } = useOrderContext();
+  const isRefresing = useAppSelector(selectIsOrderRefreshing);
 
   const userData = useMemo(() => {
     return {
@@ -67,6 +80,9 @@ const Checkout = () => {
     <KeyboardAwareScrollView
       style={styles.container}
       showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={isRefresing} onRefresh={refreshCheckout} />
+      }
     >
       <>
         <CheckoutHeader orderId={orderData.orderId} />

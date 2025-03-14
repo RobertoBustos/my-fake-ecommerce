@@ -1,5 +1,14 @@
+import { fetchProductById, setRefresingState } from "@/app/redux/cart/reducer";
+import { selectIsDataRefreshing } from "@/app/redux/cart/selectors";
+import { useAppDispatch, useAppSelector } from "@/app/redux/hooks";
 import { useMemo } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { colors } from "../../constants/colors";
 import { ProductType } from "../../constants/types";
 import { formatCurrency } from "../../utils/formatCurrency";
@@ -18,6 +27,16 @@ const Product = ({
   currentQuantity,
   onQuantityChange,
 }: ProdctPropsType) => {
+  const dispatch = useAppDispatch();
+  const isRefresing = useAppSelector(selectIsDataRefreshing);
+
+  const handleRefresh = () => {
+    dispatch(setRefresingState(true));
+    setTimeout(() => {
+      dispatch(fetchProductById(data.id));
+    }, 1000);
+  };
+
   const maxPurchaseLimit = useMemo(() => {
     if (!data) return 0;
     return data.purchaseLimit?.max
@@ -32,6 +51,9 @@ const Product = ({
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={isRefresing} onRefresh={handleRefresh} />
+        }
       >
         <Text style={styles.title}>{data.title}</Text>
         <CustomImage imageUrl={data.image} width={350} height={350} />

@@ -24,9 +24,10 @@ export type AppThunk<ThunkReturnType = void> = ThunkAction<
 export type OrderStateType = {
     incompleteOrders: OrderType[],
     selectedOrderId: string | undefined,
-    isLoading: boolean
+    isFetching: boolean
     isLoadingPayment: boolean
     isUpdating: boolean
+    isRefreshing: boolean
     customerData: CustomerType | null
     shippingData: AddressType | null
 }
@@ -36,7 +37,8 @@ export type CartStateType = {
     summary: CartSummaryType
     products: ProductType[],
     currentProduct: ProductType | undefined
-    isLoading: boolean
+    isFetching: boolean
+    isRefreshing: boolean
 }
 
 export default {}

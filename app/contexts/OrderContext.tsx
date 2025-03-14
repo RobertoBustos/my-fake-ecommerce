@@ -17,6 +17,7 @@ import {
   changeOrdertoIncomplete,
   fetchOrder,
   fetchOrderPayment,
+  setOrderRefresingState,
   setSelectedOrderId,
   updateCustomerData,
 } from "../redux/order/reducer";
@@ -38,6 +39,7 @@ export type OrderContextType = {
   setOrderForEdition: () => void;
   cancelIncompleteOrder: () => void;
   leaveCheckout: () => void;
+  refreshCheckout: () => void;
 };
 
 const OrderContext = createContext<OrderContextType>({
@@ -51,6 +53,7 @@ const OrderContext = createContext<OrderContextType>({
   setOrderForEdition: () => {},
   cancelIncompleteOrder: () => {},
   leaveCheckout: () => {},
+  refreshCheckout: () => {},
 });
 
 const OrderStore = ({ children }: PropsWithChildren) => {
@@ -128,6 +131,14 @@ const OrderStore = ({ children }: PropsWithChildren) => {
     navigation.goBack();
   };
 
+  const refreshCheckout = () => {
+    if (!orderData) return;
+    dispatch(setOrderRefresingState(true));
+    setTimeout(() => {
+      fetchOrderData(orderData.orderId);
+    }, 500);
+  };
+
   useEffect(() => {
     fetchPaymentData();
     return () => {};
@@ -169,6 +180,7 @@ const OrderStore = ({ children }: PropsWithChildren) => {
         setOrderForEdition,
         cancelIncompleteOrder,
         leaveCheckout,
+        refreshCheckout,
       }}
     >
       {children}

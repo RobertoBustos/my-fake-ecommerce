@@ -10,6 +10,8 @@ export const selectProducts = (state: RootStateType) => state.cart.products
 
 export const selectProductData = (state: RootStateType) => state.cart.currentProduct
 
-export const selectIsProductsLoading = (state: RootStateType) => state.cart.isLoading
+export const selectIsProductsLoading = (state: RootStateType) => state.cart.isFetching && !state.cart.isRefreshing
+
+export const selectIsDataRefreshing = (state: RootStateType) => state.cart.isRefreshing
 
 export default {}

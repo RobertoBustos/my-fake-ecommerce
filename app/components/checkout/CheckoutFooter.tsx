@@ -21,28 +21,8 @@ const CheckoutFooter = () => {
   const { confirmPayment } = useStripeContext();
   const isCustomerDataValid = useAppSelector(selectIsCustomerDataValid());
   const isShippingDataValid = useAppSelector(selectIsShippingDataValid());
-  const { orderId, isUpdating, orderData, updateOrderCustomer, leaveCheckout } =
+  const { orderId, isUpdating, orderData, updateOrderCustomer, isRefreshing } =
     useOrderContext();
-
-  if (
-    orderData &&
-    (orderData.status === "complete" || orderData.status === "cancelled")
-  ) {
-    const handleGoBack = () => {
-      leaveCheckout();
-    };
-
-    return (
-      <CustomFooter>
-        <FooterButton
-          text={`Go Back`}
-          onPress={handleGoBack}
-          isLoading={isUpdating}
-          disabled={isUpdating}
-        />
-      </CustomFooter>
-    );
-  }
 
   if (orderData && orderData.status === "payment_pending") {
     const handleConfirmPayment = () => {
@@ -94,10 +74,15 @@ const CheckoutFooter = () => {
   return (
     <CustomFooter>
       <FooterButton
-        text={"Register Customer Information"}
+        text={"Confirm Your Order Information"}
         onPress={handleRegisterCustomerData}
-        isLoading={isUpdating}
-        disabled={!isCustomerDataValid || !isShippingDataValid || isUpdating}
+        isLoading={isUpdating || isRefreshing}
+        disabled={
+          !isCustomerDataValid ||
+          !isShippingDataValid ||
+          isUpdating ||
+          isRefreshing
+        }
       />
     </CustomFooter>
   );

@@ -17,12 +17,14 @@ import {
   changeOrdertoIncomplete,
   fetchOrder,
   fetchOrderPayment,
+  setCompleteStatus,
   setOrderRefresingState,
   setSelectedOrderId,
   updateCustomerData,
 } from "../redux/order/reducer";
 import {
   selectIsOrderLoading,
+  selectIsOrderRefreshing,
   selectIsPaymentLoading,
   selectIsUpdating,
   selectSelectedOrderId,
@@ -35,11 +37,12 @@ export type OrderContextType = {
   isLoading: boolean;
   isLoadingPayment: boolean;
   isUpdating: boolean;
+  isRefreshing: boolean;
   updateOrderCustomer: () => void;
   setOrderForEdition: () => void;
   cancelIncompleteOrder: () => void;
-  leaveCheckout: () => void;
   refreshCheckout: () => void;
+  returnFromConfirmation: () => void;
 };
 
 const OrderContext = createContext<OrderContextType>({
@@ -49,11 +52,12 @@ const OrderContext = createContext<OrderContextType>({
   isLoading: false,
   isLoadingPayment: false,
   isUpdating: false,
+  isRefreshing: false,
   updateOrderCustomer: () => {},
   setOrderForEdition: () => {},
   cancelIncompleteOrder: () => {},
-  leaveCheckout: () => {},
   refreshCheckout: () => {},
+  returnFromConfirmation: () => {},
 });
 
 const OrderStore = ({ children }: PropsWithChildren) => {
@@ -63,6 +67,7 @@ const OrderStore = ({ children }: PropsWithChildren) => {
   const isLoadingPayment = useAppSelector(selectIsPaymentLoading);
   const isUpdating = useAppSelector(selectIsUpdating);
   const orderId = useAppSelector(selectSelectedOrderId);
+  const isRefreshing = useAppSelector(selectIsOrderRefreshing);
   const [orderData, setOrderData] = useState<OrderType>();
   const [paymentData, setPaymentData] = useState<PaymentMethodType>();
 
@@ -98,6 +103,7 @@ const OrderStore = ({ children }: PropsWithChildren) => {
     dispatch(updateCustomerData(orderId))
       .unwrap()
       .then((response) => {
+        dispatch(setOrderRefresingState(true));
         fetchOrderData(response.orderId);
       });
   };
@@ -126,17 +132,20 @@ const OrderStore = ({ children }: PropsWithChildren) => {
       });
   };
 
-  const leaveCheckout = () => {
-    dispatch(setSelectedOrderId(undefined));
-    navigation.goBack();
-  };
-
   const refreshCheckout = () => {
     if (!orderData) return;
     dispatch(setOrderRefresingState(true));
     setTimeout(() => {
       fetchOrderData(orderData.orderId);
     }, 500);
+  };
+
+  const returnFromConfirmation = () => {
+    if (!orderData) return;
+    dispatch(resetCart());
+    dispatch(setSelectedOrderId(undefined));
+    dispatch(setCompleteStatus(orderData.orderId));
+    navigation.reset({ index: 0, routes: [{ name: "Products" }] });
   };
 
   useEffect(() => {
@@ -161,7 +170,7 @@ const OrderStore = ({ children }: PropsWithChildren) => {
     );
   }
 
-  if (orderData?.status === "complete") {
+  if (orderData && orderData.status === "complete") {
     return (
       <OrderNotAllowedScreen textToDisplay="Sorry, This order has been completed" />
     );
@@ -176,11 +185,12 @@ const OrderStore = ({ children }: PropsWithChildren) => {
         isLoading,
         isLoadingPayment,
         isUpdating,
+        isRefreshing,
         updateOrderCustomer,
         setOrderForEdition,
         cancelIncompleteOrder,
-        leaveCheckout,
         refreshCheckout,
+        returnFromConfirmation,
       }}
     >
       {children}

@@ -58,6 +58,7 @@ const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
             }}
             value={value}
             style={styles.input}
+            placeholderTextColor={colors.dark}
           />
         )}
       />
@@ -78,6 +79,7 @@ const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
             }}
             value={value}
             style={styles.input}
+            placeholderTextColor={colors.dark}
           />
         )}
       />

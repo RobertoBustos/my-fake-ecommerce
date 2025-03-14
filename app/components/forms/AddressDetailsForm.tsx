@@ -66,6 +66,7 @@ const AddressDetailsForm = ({
             style={styles.input}
             multiline={true}
             numberOfLines={4}
+            placeholderTextColor={colors.dark}
           />
         )}
       />
@@ -87,6 +88,7 @@ const AddressDetailsForm = ({
             }}
             value={value}
             style={styles.input}
+            placeholderTextColor={colors.dark}
           />
         )}
       />

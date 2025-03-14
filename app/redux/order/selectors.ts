@@ -3,7 +3,7 @@ import { RootStateType } from "../types";
 
 export const selectOrderState = (state: RootStateType) => state.order
 
-export const selectIsOrderLoading = (state: RootStateType) => state.order.isFetching && !state.order.isRefreshing
+export const selectIsOrderLoading = (state: RootStateType) => state.order.isFetching === true && state.order.isRefreshing === false
 
 export const selectIsPaymentLoading = (state: RootStateType) => state.order.isLoadingPayment
 

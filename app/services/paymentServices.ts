@@ -55,6 +55,9 @@ export async function updatePaymentCustomerService(request: RequestType<UpdatePa
         if (data.error) {
             throw new Error(data.error.message)
         }
+        if (data.customer === null) {
+            throw new Error("Error Getting Customer Information")
+        }
         return { data }
     } catch (error) {
         return { data: undefined, error: error as Error }

@@ -7,6 +7,7 @@ import {
   selectIncompleteOrders,
   selectSelectedOrderId,
 } from "../redux/order/selectors";
+import { formatCurrency } from "../utils/formatCurrency";
 import CustomCard from "./common/CustomCard";
 
 const IncompleteOrdersList = () => {
@@ -31,9 +32,12 @@ const IncompleteOrdersList = () => {
         key={index}
         onPress={() => handleRedirect(order.orderId)}
       >
-        <Text
-          style={styles.text}
-        >{`Complete order number ${order.orderId} for $${order.summary?.total}`}</Text>
+        <Text style={styles.text}>{`Complete order number ${
+          order.orderId
+        } for $${formatCurrency({
+          amount: order.summary?.total || 0,
+          currency: "MXN",
+        })}`}</Text>
       </CustomCard>
     );
   });

@@ -1,31 +1,27 @@
+import { useQuery } from "@apollo/client";
 import { FlatList, StyleSheet, View } from "react-native";
-import { fetchProducts, setRefresingState } from "../redux/cart/reducer";
-import {
-  selectIsDataRefreshing,
-  selectProducts,
-} from "../redux/cart/selectors";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { GET_PRODUCTS } from "../graphql/queries";
 import ProductCard from "./ProductCard";
+import ProductListSkeleton from "./skeletons/ProductListSkeleton";
 
 const ProductList = () => {
-  const dispatch = useAppDispatch();
-  const products = useAppSelector(selectProducts);
-  const isRefresing = useAppSelector(selectIsDataRefreshing);
+  const { loading, data, refetch } = useQuery(GET_PRODUCTS, {});
 
   const handleRefresh = () => {
-    dispatch(setRefresingState(true));
-    setTimeout(() => {
-      dispatch(fetchProducts());
-    }, 1000);
+    refetch();
   };
+
+  if (loading) {
+    return <ProductListSkeleton />;
+  }
 
   return (
     <View style={styles.container}>
       <FlatList
-        data={products}
+        data={data.getAllProducts}
         renderItem={({ item }) => <ProductCard data={item} />}
         showsVerticalScrollIndicator={false}
-        refreshing={isRefresing}
+        refreshing={loading}
         onRefresh={handleRefresh}
       />
     </View>

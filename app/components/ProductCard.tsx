@@ -26,7 +26,9 @@ const ProductCard = ({ data, disabled }: ProductCardPropsType) => {
     >
       <View style={styles.description}>
         <Text style={styles.title}>{data.title}</Text>
-        <Text style={styles.price}>{formatCurrency(data.price)}</Text>
+        <Text style={styles.price}>
+          {formatCurrency({ amount: data.unitPrice, currency: data.currency })}
+        </Text>
       </View>
       <CustomImage imageUrl={data.image} width={120} height={120} />
     </CustomCard>

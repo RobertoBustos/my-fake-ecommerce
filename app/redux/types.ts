@@ -1,5 +1,5 @@
 import { Action, EnhancedStore, StoreEnhancer, ThunkAction, ThunkDispatch, Tuple, UnknownAction } from "@reduxjs/toolkit";
-import { AddressType, CartItemType, CartSummaryType, CustomerType, OrderType, ProductType } from "../constants/types";
+import { AddressType, CartItemType, CartSummaryType, CustomerType, OrderType } from "../constants/types";
 
 export type RootStateType = {
     order: OrderStateType
@@ -35,10 +35,6 @@ export type OrderStateType = {
 export type CartStateType = {
     items: CartItemType[]
     summary: CartSummaryType
-    products: ProductType[],
-    currentProduct: ProductType | undefined
-    isFetching: boolean
-    isRefreshing: boolean
 }
 
 export default {}

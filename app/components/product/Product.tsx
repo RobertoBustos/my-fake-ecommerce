@@ -1,6 +1,3 @@
-import { fetchProductById, setRefresingState } from "@/app/redux/cart/reducer";
-import { selectIsDataRefreshing } from "@/app/redux/cart/selectors";
-import { useAppDispatch, useAppSelector } from "@/app/redux/hooks";
 import { useMemo } from "react";
 import {
   RefreshControl,
@@ -20,20 +17,20 @@ export type ProdctPropsType = {
   data: ProductType;
   currentQuantity: number;
   onQuantityChange: (quantity: number) => void;
+  onRefresh?: () => void;
+  isLoading?: boolean;
 };
 
 const Product = ({
   data,
   currentQuantity,
   onQuantityChange,
+  onRefresh,
+  isLoading = false,
 }: ProdctPropsType) => {
-  const dispatch = useAppDispatch();
-  const isRefresing = useAppSelector(selectIsDataRefreshing);
-
   const handleRefresh = () => {
-    dispatch(setRefresingState(true));
     setTimeout(() => {
-      dispatch(fetchProductById(data.id));
+      if (onRefresh) onRefresh();
     }, 1000);
   };
 
@@ -52,12 +49,14 @@ const Product = ({
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={isRefresing} onRefresh={handleRefresh} />
+          <RefreshControl refreshing={isLoading} onRefresh={handleRefresh} />
         }
       >
         <Text style={styles.title}>{data.title}</Text>
         <CustomImage imageUrl={data.image} width={350} height={350} />
-        <Text style={styles.price}>{formatCurrency(data.price)}</Text>
+        <Text style={styles.price}>
+          {formatCurrency({ amount: data.unitPrice, currency: data.currency })}
+        </Text>
         {data.stock >= 1 ? (
           <>
             <QuantityButtons

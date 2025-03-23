@@ -11,11 +11,9 @@ export type ProductType = {
     description: string;
     id: number;
     image: string;
-    price: PriceType;
-    rating: {
-        count: number;
-        rate: number;
-    }
+    unitPrice: number;
+    currency: string
+    rating: RatingType
     title: string
     stock: number
     purchaseLimit?: PurchaseLimitType
@@ -24,6 +22,11 @@ export type ProductType = {
 export type PriceType = {
     amount: number;
     currency: string;
+}
+
+export type RatingType = {
+    count: number;
+    rate: number;
 }
 
 export type PurchaseLimitType = {

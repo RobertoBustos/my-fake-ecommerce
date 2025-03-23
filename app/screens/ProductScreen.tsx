@@ -1,47 +1,45 @@
-import React, { useEffect, useState } from "react";
+import { useQuery } from "@apollo/client";
+import React, { useState } from "react";
 import { Text } from "react-native";
 import Layout from "../components/Layout";
 import LoadingScreen from "../components/common/LoadingScreen";
 import Product from "../components/product/Product";
 import ProductFooter from "../components/product/ProductFooter";
+import { GET_PRODUCT_BY_ID } from "../graphql/queries";
 import useAppNavigation from "../hooks/useAppNavigation";
-import { addItemToCart, fetchProductById } from "../redux/cart/reducer";
-import {
-  selectIsProductsLoading,
-  selectProductData,
-} from "../redux/cart/selectors";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { addItemToCart } from "../redux/cart/reducer";
+import { useAppDispatch } from "../redux/hooks";
 
 const ProductScreen = ({ route }: any) => {
   const dispatch = useAppDispatch();
   const navigation = useAppNavigation();
-  const productData = useAppSelector(selectProductData);
-  const isLoading = useAppSelector(selectIsProductsLoading);
   const [quantity, setQuantity] = useState<number>(1);
-
-  useEffect(() => {
-    dispatch(fetchProductById(route.params.productId));
-    return () => {};
-  }, [dispatch, route.params.productId]);
+  const { loading, error, data, refetch } = useQuery(GET_PRODUCT_BY_ID, {
+    variables: { productId: route.params.productId },
+  });
 
   const handleAddToCart = (quantity: number) => {
-    if (!productData) return;
+    if (!data) return;
     dispatch(
       addItemToCart({
-        ...productData,
-        cartItemId: productData.id,
+        ...data,
+        cartItemId: data.id,
         quantity: quantity,
-        subtotal: productData.price.amount * quantity,
+        subtotal: data.unitPrice * quantity,
       })
     );
     navigation.goBack();
   };
 
-  if (isLoading) {
+  const handleRefresh = () => {
+    refetch();
+  };
+
+  if (loading) {
     return <LoadingScreen />;
   }
 
-  if (!productData) {
+  if (error) {
     return (
       <Layout>
         <Text>Item Not Found</Text>
@@ -53,15 +51,17 @@ const ProductScreen = ({ route }: any) => {
     <Layout
       footerComponent={
         <ProductFooter
-          disabled={productData.stock === 0}
+          disabled={data.stock === 0}
           onClick={() => handleAddToCart(quantity)}
         />
       }
     >
       <Product
-        data={productData}
+        data={data}
         onQuantityChange={setQuantity}
         currentQuantity={quantity}
+        onRefresh={handleRefresh}
+        isLoading={loading}
       />
     </Layout>
   );

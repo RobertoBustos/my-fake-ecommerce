@@ -20,7 +20,7 @@ const cartSlice = createSlice({
     initialState,
     reducers: {
         addItemToCart: (state, action: PayloadAction<CartItemType>) => {
-            const item = state.items.find(item => item.id === action.payload.id)
+            const item = state.items.find(item => item.productId === action.payload.productId)
             if (item) {
                 item.quantity = item.quantity + action.payload.quantity
                 item.subtotal = item.subtotal + action.payload.subtotal
@@ -30,8 +30,8 @@ const cartSlice = createSlice({
             state.summary = createCartSummary(state.items)
             saveCartDataService(state.items)
         },
-        removeItemFromCart: (state, action: PayloadAction<number>) => {
-            state.items = state.items.filter(item => item.id !== action.payload)
+        removeItemFromCart: (state, action: PayloadAction<string>) => {
+            state.items = state.items.filter(item => item.cartItemId !== action.payload)
             state.summary = createCartSummary(state.items)
             saveCartDataService(state.items)
         },

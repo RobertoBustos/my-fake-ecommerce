@@ -3,9 +3,9 @@ import { CartItemType, CartSummaryType } from "../constants/types";
 export const createCartSummary = (cartItems: CartItemType[]): CartSummaryType => {
     const details = cartItems.map(item => {
         return {
-            unitPrice: item.price.amount,
+            unitPrice: item.unitPrice,
             quantity: item.quantity,
-            subtotal: item.price.amount * item.quantity
+            subtotal: item.unitPrice * item.quantity
         }
     })
     const summary = {

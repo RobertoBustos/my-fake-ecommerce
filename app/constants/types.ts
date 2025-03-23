@@ -1,6 +1,6 @@
 export type RootStackParamList = {
     Products: undefined
-    Product: { productId: number };
+    Product: { productId: string };
     Cart: undefined
     Checkout: undefined
     Confirmation: undefined
@@ -21,7 +21,7 @@ export type ProductType = {
 
 export type PriceType = {
     amount: number;
-    currency: string;
+    currency?: string;
 }
 
 export type RatingType = {
@@ -34,9 +34,13 @@ export type PurchaseLimitType = {
     max: number;
 }
 
-export type CartItemType = ProductType & {
-    cartItemId: number
+export type CartItemType = {
+    cartItemId: string
+    productId: string
     quantity: number
+    unitPrice: number
+    image: string
+    title: string
     subtotal: number
 }
 

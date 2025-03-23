@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_PRODUCTS = gql`
-query {
-  getAllProducts {
+query getAllProducts {
+  products {
     id,
     title,
     description,
@@ -13,14 +13,15 @@ query {
 }`;
 
 export const GET_PRODUCT_BY_ID = gql`
-query {
-  getProductById ( productId: $productId ) {
+query getProductById($productId: String!){
+  product(productId: $productId) {
     id
     title
     description
     image
     unitPrice
     currency
+    stock
   }
 }`;
 

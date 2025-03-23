@@ -42,18 +42,18 @@ const CartItemCard = ({ data, disabled }: CartItemCardPropsType) => {
   }
 
   const getPriceText = useMemo(() => {
-    return data.quantity + " X " + formatCurrency(data.price);
-  }, [data.price, data.quantity]);
+    return data.quantity + " X " + formatCurrency({ amount: data.unitPrice });
+  }, [data.quantity, data.unitPrice]);
 
   return (
     <CustomCard
       orientation="horizontal"
       onPress={() =>
         navigation.navigate("Product", {
-          productId: data.id,
+          productId: data.productId,
         })
       }
-      disabled={true}
+      disabled={disabled}
     >
       <View style={styles.description}>
         <Text style={styles.title}>{data.title}</Text>
@@ -61,7 +61,6 @@ const CartItemCard = ({ data, disabled }: CartItemCardPropsType) => {
         <Text style={styles.subtotal}>
           {formatCurrency({
             amount: data.subtotal || 0,
-            currency: data.price.currency,
           })}
         </Text>
       </View>

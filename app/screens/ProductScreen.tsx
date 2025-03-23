@@ -15,17 +15,20 @@ const ProductScreen = ({ route }: any) => {
   const navigation = useAppNavigation();
   const [quantity, setQuantity] = useState<number>(1);
   const { loading, error, data, refetch } = useQuery(GET_PRODUCT_BY_ID, {
-    variables: { productId: route.params.productId },
+    variables: { productId: route.params.productId.toString() },
   });
 
   const handleAddToCart = (quantity: number) => {
-    if (!data) return;
+    if (!data.product) return;
     dispatch(
       addItemToCart({
-        ...data,
-        cartItemId: data.id,
+        productId: data.product.id,
+        cartItemId: data.product.id,
+        unitPrice: data.product.unitPrice,
         quantity: quantity,
-        subtotal: data.unitPrice * quantity,
+        subtotal: data.product.unitPrice * quantity,
+        image: data.product.image,
+        title: data.product.title,
       })
     );
     navigation.goBack();
@@ -51,13 +54,13 @@ const ProductScreen = ({ route }: any) => {
     <Layout
       footerComponent={
         <ProductFooter
-          disabled={data.stock === 0}
+          disabled={data.product.stock === 0}
           onClick={() => handleAddToCart(quantity)}
         />
       }
     >
       <Product
-        data={data}
+        data={data.product}
         onQuantityChange={setQuantity}
         currentQuantity={quantity}
         onRefresh={handleRefresh}

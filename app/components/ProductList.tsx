@@ -5,7 +5,7 @@ import ProductCard from "./ProductCard";
 import ProductListSkeleton from "./skeletons/ProductListSkeleton";
 
 const ProductList = () => {
-  const { loading, data, refetch } = useQuery(GET_PRODUCTS, {});
+  const { loading, data, refetch } = useQuery(GET_PRODUCTS);
 
   const handleRefresh = () => {
     refetch();
@@ -18,7 +18,7 @@ const ProductList = () => {
   return (
     <View style={styles.container}>
       <FlatList
-        data={data.getAllProducts}
+        data={data.products}
         renderItem={({ item }) => <ProductCard data={item} />}
         showsVerticalScrollIndicator={false}
         refreshing={loading}

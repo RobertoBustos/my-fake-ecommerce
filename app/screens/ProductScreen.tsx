@@ -1,10 +1,11 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import React, { useState } from "react";
 import { Text } from "react-native";
 import Layout from "../components/Layout";
 import LoadingScreen from "../components/common/LoadingScreen";
 import Product from "../components/product/Product";
 import ProductFooter from "../components/product/ProductFooter";
+import { ADD_PRODUCT } from "../graphql/mutations";
 import { GET_PRODUCT_BY_ID } from "../graphql/queries";
 import useAppNavigation from "../hooks/useAppNavigation";
 import { addItemToCart } from "../redux/cart/reducer";
@@ -15,23 +16,21 @@ const ProductScreen = ({ route }: any) => {
   const navigation = useAppNavigation();
   const [quantity, setQuantity] = useState<number>(1);
   const { loading, error, data, refetch } = useQuery(GET_PRODUCT_BY_ID, {
-    variables: { productId: route.params.productId.toString() },
+    variables: { id: route.params.productId.toString() },
   });
+  const [addToCart] = useMutation(ADD_PRODUCT);
 
   const handleAddToCart = (quantity: number) => {
     if (!data.product) return;
-    dispatch(
-      addItemToCart({
+    addToCart({
+      variables: {
         productId: data.product.id,
-        cartItemId: data.product.id,
-        unitPrice: data.product.unitPrice,
         quantity: quantity,
-        subtotal: data.product.unitPrice * quantity,
-        image: data.product.image,
-        title: data.product.title,
-      })
-    );
-    navigation.goBack();
+      },
+    }).then(({ data }) => {
+      dispatch(addItemToCart(data.addToCart));
+      navigation.goBack();
+    });
   };
 
   const handleRefresh = () => {

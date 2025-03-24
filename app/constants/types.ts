@@ -35,13 +35,11 @@ export type PurchaseLimitType = {
 }
 
 export type CartItemType = {
-    cartItemId: string
-    productId: string
+    id: string
     quantity: number
     unitPrice: number
-    image: string
-    title: string
     subtotal: number
+    details: Partial<ProductType>
 }
 
 export type CartSummaryType = {

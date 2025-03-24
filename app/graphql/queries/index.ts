@@ -13,8 +13,8 @@ query getAllProducts {
 }`;
 
 export const GET_PRODUCT_BY_ID = gql`
-query getProductById($productId: String!){
-  product(productId: $productId) {
+query getProductById($id: ID!){
+  product(id: $id) {
     id
     title
     description

@@ -7,8 +7,13 @@ import useAppNavigation from "../hooks/useAppNavigation";
 import useOrder from "../hooks/useOrder";
 import { resetCart, setCartFromOrder } from "../redux/cart/reducer";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { setCustomerData, setSelectedOrderId } from "../redux/order/reducer";
 import {
+  setAddressData,
+  setCustomerData,
+  setSelectedOrderId,
+} from "../redux/order/reducer";
+import {
+  selectAddressData,
   selectCustomerData,
   selectSelectedOrderId,
 } from "../redux/order/selectors";
@@ -17,14 +22,15 @@ import { useStripeContext } from "./StripeContext";
 export type OrderContextType = {
   orderId: string | undefined;
   orderData: OrderType | undefined;
-  isLoading: boolean;
-  isUpdating: boolean;
-  isCreatingPayment: boolean;
   refreshCheckout: () => void;
   updateOrder: () => void;
   setOrderForEdition: () => void;
   cancelIncompleteOrder: () => void;
   completeOrder: () => void;
+  returnFromConfirmation: () => void;
+  isLoading: boolean;
+  isUpdating: boolean;
+  isCreatingPayment: boolean;
 };
 
 const OrderContext = createContext<OrderContextType>({
@@ -35,6 +41,7 @@ const OrderContext = createContext<OrderContextType>({
   setOrderForEdition: () => {},
   cancelIncompleteOrder: () => {},
   completeOrder: () => {},
+  returnFromConfirmation: () => {},
   isLoading: false,
   isUpdating: false,
   isCreatingPayment: false,
@@ -57,6 +64,7 @@ const OrderStore = ({ children }: PropsWithChildren) => {
   const { confirmPayment, initPayment } = useStripeContext();
   const dispatch = useAppDispatch();
   const customerData = useAppSelector(selectCustomerData());
+  const addressData = useAppSelector(selectAddressData());
   const orderData: OrderType | undefined =
     orders && orders.length && orders.length === 1 ? orders[0] : undefined;
 
@@ -75,6 +83,14 @@ const OrderStore = ({ children }: PropsWithChildren) => {
         })
       );
     }
+    if (orderData && orderData.address !== null) {
+      dispatch(
+        setAddressData({
+          address: orderData.address.address,
+          zipCode: orderData.address.zipCode,
+        })
+      );
+    }
   }, [dispatch, orderData]);
 
   const refreshCheckout = () => {
@@ -87,6 +103,7 @@ const OrderStore = ({ children }: PropsWithChildren) => {
     updateExistingOrder({
       id: orderData.id,
       customer: { email: customerData.email, name: customerData.name },
+      address: { address: addressData.address, zipCode: addressData.zipCode },
       status: "PAYMENT_PENDING",
     })
       .then((data) => {
@@ -100,6 +117,7 @@ const OrderStore = ({ children }: PropsWithChildren) => {
     updateExistingOrder({
       id: orderData.id,
       customer: null,
+      address: null,
       status: "INCOMPLETE",
     })
       .then((data) => {
@@ -136,9 +154,11 @@ const OrderStore = ({ children }: PropsWithChildren) => {
                 updateExistingOrder({
                   id: orderData.id,
                   customer: null,
+                  address: null,
                   status: "COMPLETE",
                 })
                   .then((response) => {
+                    refetchOrder();
                     navigation.reset({
                       index: 0,
                       routes: [{ name: "Confirmation" }],
@@ -151,6 +171,16 @@ const OrderStore = ({ children }: PropsWithChildren) => {
           .catch((error) => Alert.alert(error));
       })
       .catch((error) => Alert.alert(error));
+  };
+
+  const returnFromConfirmation = () => {
+    dispatch(resetCart());
+    dispatch(setSelectedOrderId(undefined));
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Products" }],
+    });
+    return;
   };
 
   if (isLoading) {
@@ -182,6 +212,7 @@ const OrderStore = ({ children }: PropsWithChildren) => {
         cancelIncompleteOrder,
         completeOrder,
         isCreatingPayment,
+        returnFromConfirmation,
       }}
     >
       {children}

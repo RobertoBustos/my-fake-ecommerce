@@ -7,6 +7,7 @@ export type AddToCartInputType = {
     cartId: string
     productId: string
     quantity: number
+    orderId: string | null
 }
 
 export type RemoveFromCartInput = {

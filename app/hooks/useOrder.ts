@@ -1,5 +1,6 @@
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { useCallback } from "react";
+import { AddressType, UserType } from "../constants/types";
 import { CANCEL_ORDER, CREATE_ORDER, CREATE_ORDER_PAYMENT, UPDATE_ORDER } from "../graphql/mutations";
 import { GET_INCOMPLETE_ORDERS, GET_ORDERS } from "../graphql/queries";
 
@@ -9,10 +10,8 @@ export type CreateOrderInput = {
 
 export type UpdateOrderInput = {
     id: string
-    customer: {
-        email: string
-        name: string
-    } | null
+    customer: UserType | null
+    address: AddressType | null
     status: string | null
 }
 
@@ -40,7 +39,7 @@ const useOrder = () => {
     const [getIncompleteOrders, { data: incompleteOrdersResponse }] = useLazyQuery(GET_INCOMPLETE_ORDERS);
 
     const fetchIncompleteOrders = useCallback(async () => {
-        return getIncompleteOrders({ variables: { filter: { field: "status", value: "INCOMPLETE" } } })
+        return getIncompleteOrders({ variables: { filter: { field: "status", value: "INCOMPLETE" } }, pollInterval: 60000 })
     }, [getIncompleteOrders])
 
     const fetchOrder = useCallback(async (id: string) => {

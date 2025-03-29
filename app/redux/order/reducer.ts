@@ -5,7 +5,7 @@ import { OrderStateType } from "../types";
 const initialState: OrderStateType = {
     selectedOrderId: undefined,
     customerData: null,
-    shippingData: null,
+    addressData: null,
 }
 
 const orderSlice = createSlice({
@@ -18,11 +18,11 @@ const orderSlice = createSlice({
         setCustomerData: (state, action: PayloadAction<UserType>) => {
             state.customerData = { ...action.payload, id: "" }
         },
-        setShippingData: (state, action: PayloadAction<AddressType>) => {
-            state.shippingData = action.payload
+        setAddressData: (state, action: PayloadAction<AddressType>) => {
+            state.addressData = action.payload
         }
     }
 });
 
-export const { setCustomerData, setShippingData, setSelectedOrderId } = orderSlice.actions
+export const { setCustomerData, setAddressData, setSelectedOrderId } = orderSlice.actions
 export default orderSlice.reducer

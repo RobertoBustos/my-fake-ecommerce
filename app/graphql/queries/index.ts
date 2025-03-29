@@ -28,6 +28,10 @@ query GetOrders($filter: Filter){
       email
       name
     }
+    address {
+      address
+      zipCode
+    }
     totals {
       currency
       subTotal

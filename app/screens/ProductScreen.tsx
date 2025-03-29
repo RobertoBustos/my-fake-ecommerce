@@ -10,12 +10,14 @@ import useProduct from "../hooks/useProduct";
 import { addItemToCart } from "../redux/cart/reducer";
 import { selectCartId } from "../redux/cart/selectors";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { selectSelectedOrderId } from "../redux/order/selectors";
 
 const ProductScreen = ({ route }: any) => {
   const dispatch = useAppDispatch();
   const navigation = useAppNavigation();
   const cartId = useAppSelector(selectCartId);
   const [quantity, setQuantity] = useState<number>(1);
+  const orderId = useAppSelector(selectSelectedOrderId);
   const { data, isLoading, refetch, error } = useProduct({
     filter: { field: "id", value: route.params.productId },
   });
@@ -23,12 +25,15 @@ const ProductScreen = ({ route }: any) => {
 
   const handleAddToCart = (quantity: number) => {
     if (!data) return;
-    addProduct({ cartId: cartId, productId: data.id, quantity: quantity }).then(
-      (data) => {
-        dispatch(addItemToCart(data));
-        navigation.goBack();
-      }
-    );
+    addProduct({
+      cartId: cartId,
+      productId: data.id,
+      quantity: quantity,
+      orderId: orderId || null,
+    }).then((data) => {
+      dispatch(addItemToCart(data));
+      navigation.goBack();
+    });
   };
 
   const handleRefresh = () => {

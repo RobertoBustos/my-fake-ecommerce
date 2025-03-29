@@ -5,7 +5,7 @@ import { ZodType, z } from "zod";
 import { colors } from "../../constants/colors";
 import { AddressType } from "../../constants/types";
 import { useAppDispatch } from "../../redux/hooks";
-import { setShippingData } from "../../redux/order/reducer";
+import { setAddressData } from "../../redux/order/reducer";
 import CustomCard from "../common/CustomCard";
 
 const validationSchema: ZodType<AddressType> = z.object({
@@ -42,7 +42,7 @@ const AddressDetailsForm = ({
 
   const saveToStore = () => {
     const values = getValues();
-    dispatch(setShippingData(values));
+    dispatch(setAddressData(values));
   };
 
   return (

@@ -1,9 +1,9 @@
-import { ShippingType } from "../constants/types";
+import { AddressType } from "../constants/types";
 import CustomCard from "./common/CustomCard";
 import SummaryCardRow from "./common/SummaryCardRow";
 
 export type AddressSummaryPropsType = {
-  data: ShippingType | null;
+  data: AddressType | null;
   isLoading?: boolean;
 };
 

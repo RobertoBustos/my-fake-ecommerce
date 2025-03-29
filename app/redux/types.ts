@@ -24,7 +24,7 @@ export type AppThunk<ThunkReturnType = void> = ThunkAction<
 export type OrderStateType = {
     selectedOrderId: string | undefined,
     customerData: CustomerType | null
-    shippingData: AddressType | null
+    addressData: AddressType | null
 }
 
 export type CartStateType = {

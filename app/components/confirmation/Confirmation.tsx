@@ -4,6 +4,7 @@ import { colors } from "../../constants/colors";
 import { CartItemType } from "../../constants/types";
 import { useOrderContext } from "../../contexts/OrderContext";
 import { formatCurrency } from "../../utils/formatCurrency";
+import AddressSummary from "../AddressSummary";
 import CustomerSummary from "../CustomerSummary";
 import OrderSummary from "../OrderSummary";
 import PaymentSummary from "../PaymentSummary";
@@ -34,7 +35,7 @@ const Confirmation = () => {
           />
           <OrderSummary data={orderData.totals} />
           <CustomerSummary data={orderData.customer} />
-          {/* <AddressSummary data={orderData.shippingData} /> */}
+          <AddressSummary data={orderData.address} />
         </>
       </ScrollView>
     </View>

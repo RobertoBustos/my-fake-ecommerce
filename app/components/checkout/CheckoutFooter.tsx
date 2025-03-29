@@ -1,8 +1,8 @@
 import { useOrderContext } from "../../contexts/OrderContext";
 import { useAppSelector } from "../../redux/hooks";
 import {
+  selectIsAddressDataValid,
   selectIsCustomerDataValid,
-  selectIsShippingDataValid,
 } from "../../redux/order/selectors";
 import { formatCurrency } from "../../utils/formatCurrency";
 import FooterButton from "../FooterButton";
@@ -10,7 +10,7 @@ import CustomFooter from "../common/CustomFooter";
 
 const CheckoutFooter = () => {
   const isCustomerDataValid = useAppSelector(selectIsCustomerDataValid());
-  const isShippingDataValid = useAppSelector(selectIsShippingDataValid());
+  const isAddressDataValid = useAppSelector(selectIsAddressDataValid());
   const {
     orderData,
     updateOrder,
@@ -50,10 +50,7 @@ const CheckoutFooter = () => {
         onPress={handleRegisterCustomerData}
         isLoading={isUpdating || isLoading}
         disabled={
-          !isCustomerDataValid ||
-          !isShippingDataValid ||
-          isUpdating ||
-          isLoading
+          !isCustomerDataValid || !isAddressDataValid || isUpdating || isLoading
         }
       />
     </CustomFooter>

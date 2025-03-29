@@ -21,19 +21,19 @@ export const selectIsCustomerDataValid = () => {
     );
 }
 
-export const selectShippingData = () => {
+export const selectAddressData = () => {
     return createSelector([selectOrderState], (orderState) => {
         return {
-            address: orderState.shippingData?.address || "",
-            zipCode: orderState.shippingData?.zipCode || "",
+            address: orderState.addressData?.address || "",
+            zipCode: orderState.addressData?.zipCode || "",
         }
     }
     );
 }
 
-export const selectIsShippingDataValid = () => {
-    return createSelector([selectShippingData()], (shippingData) => {
-        return shippingData.address !== "" && shippingData.zipCode !== ""
+export const selectIsAddressDataValid = () => {
+    return createSelector([selectAddressData()], (addressData) => {
+        return addressData.address !== "" && addressData.zipCode !== ""
     }
     );
 }

@@ -35,10 +35,10 @@ const Checkout = () => {
 
   const addressData = useMemo(() => {
     return {
-      address: "",
-      zipCode: "",
+      address: orderData?.address?.address || "",
+      zipCode: orderData?.address?.zipCode || "",
     };
-  }, []);
+  }, [orderData]);
 
   const handleReturnOrderToCart = () => {
     Alert.alert("Do you wish to modify this order?", "", [

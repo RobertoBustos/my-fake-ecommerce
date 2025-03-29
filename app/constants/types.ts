@@ -52,12 +52,12 @@ export type AddressType = {
 export type OrderType = {
     id: string
     customer: CustomerType | null
+    address: AddressType | null
     payment: PaymentType | null
     cart: string
     totals: TotalsType
     status: "INCOMPLETE" | "PAYMENT_PENDING" | "COMPLETE" | "CANCELLED"
     details: CartItemType[]
-    //shippingData: ShippingType | null
 }
 
 export type CustomerType = {

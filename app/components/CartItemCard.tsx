@@ -1,10 +1,9 @@
-import { useMutation } from "@apollo/client";
 import { useMemo } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { colors } from "../constants/colors";
 import { CartItemType } from "../constants/types";
-import { REMOVE_PRODUCT } from "../graphql/mutations";
 import useAppNavigation from "../hooks/useAppNavigation";
+import useCart from "../hooks/useCart";
 import { removeItemFromCart } from "../redux/cart/reducer";
 import { useAppDispatch } from "../redux/hooks";
 import { formatCurrency } from "../utils/formatCurrency";
@@ -22,14 +21,14 @@ const CartItemCard = ({ data, disabled }: CartItemCardPropsType) => {
   const dispatch = useAppDispatch();
   const navigation = useAppNavigation();
   const isProductInCart = data.id !== undefined;
-  const [removeFromCart] = useMutation(REMOVE_PRODUCT);
+  const { removeProduct } = useCart();
 
   const handleRemoveFromCart = () => {
     Alert.alert("Remove this item from cart?", "", [
       {
         text: "OK",
         onPress: () =>
-          removeFromCart({ variables: { id: data.id } }).then(() =>
+          removeProduct({ id: data.id }).then(() =>
             dispatch(removeItemFromCart(data.id))
           ),
         style: "default",
@@ -43,9 +42,9 @@ const CartItemCard = ({ data, disabled }: CartItemCardPropsType) => {
   };
 
   const handlePress = () => {
-    if (!data.details.id) return;
+    if (!data.product.id) return;
     navigation.navigate("Product", {
-      productId: data.details.id.toString(),
+      productId: data.product.id.toString(),
     });
   };
 
@@ -55,7 +54,7 @@ const CartItemCard = ({ data, disabled }: CartItemCardPropsType) => {
   }
 
   const getPriceText = useMemo(() => {
-    return data.quantity + " X " + formatCurrency({ amount: data.unitPrice });
+    return data.quantity + " X " + formatCurrency(data.unitPrice);
   }, [data.quantity, data.unitPrice]);
 
   return (
@@ -65,17 +64,11 @@ const CartItemCard = ({ data, disabled }: CartItemCardPropsType) => {
       disabled={disabled}
     >
       <View style={styles.description}>
-        <Text style={styles.title}>{data.details.title}</Text>
+        <Text style={styles.title}>{data.product.title}</Text>
         <Text style={priceStyles}>{getPriceText}</Text>
-        <Text style={styles.subtotal}>
-          {formatCurrency({
-            amount: data.subtotal || 0,
-          })}
-        </Text>
+        <Text style={styles.subtotal}>{formatCurrency(data.subtotal)}</Text>
       </View>
-      {data.details.image ? (
-        <CustomImage imageUrl={data.details.image} width={120} height={120} />
-      ) : null}
+      <CustomImage imageUrl={data.product.image} width={120} height={120} />
       <CustomButton
         onPress={handleRemoveFromCart}
         buttonComponent={<DeleteButton color={colors.error} size={30} />}

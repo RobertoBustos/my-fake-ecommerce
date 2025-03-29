@@ -1,27 +1,26 @@
-import { useQuery } from "@apollo/client";
 import { FlatList, StyleSheet, View } from "react-native";
-import { GET_PRODUCTS } from "../graphql/queries";
+import useProduct from "../hooks/useProduct";
 import ProductCard from "./ProductCard";
 import ProductListSkeleton from "./skeletons/ProductListSkeleton";
 
 const ProductList = () => {
-  const { loading, data, refetch } = useQuery(GET_PRODUCTS);
+  const { isLoading, data, refetch } = useProduct({ filter: null });
 
   const handleRefresh = () => {
     refetch();
   };
 
-  if (loading) {
+  if (isLoading) {
     return <ProductListSkeleton />;
   }
 
   return (
     <View style={styles.container}>
       <FlatList
-        data={data.products}
+        data={data}
         renderItem={({ item }) => <ProductCard data={item} />}
         showsVerticalScrollIndicator={false}
-        refreshing={loading}
+        refreshing={isLoading}
         onRefresh={handleRefresh}
       />
     </View>

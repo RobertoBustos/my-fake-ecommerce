@@ -2,7 +2,7 @@ import { PaymentMethodType } from "../constants/types";
 import CardPaymentSummary from "./CardPaymentSummary";
 
 export type PaymentSummaryPropsType = {
-  data: PaymentMethodType | null;
+  data: PaymentMethodType;
   isLoading: boolean;
 };
 
@@ -11,7 +11,7 @@ const PaymentSummary = ({ data, isLoading }: PaymentSummaryPropsType) => {
     return null;
   }
 
-  return data !== null && data.type === "card" && data.card ? (
+  return data !== null ? (
     <CardPaymentSummary
       brand={data.card.brand}
       size={80}

@@ -3,20 +3,12 @@ import { RootStateType } from "../types";
 
 export const selectOrderState = (state: RootStateType) => state.order
 
-export const selectIsOrderLoading = (state: RootStateType) => state.order.isFetching === true && state.order.isRefreshing === false
-
-export const selectIsPaymentLoading = (state: RootStateType) => state.order.isLoadingPayment
-
-export const selectIsOrderRefreshing = (state: RootStateType) => state.order.isRefreshing
-
-export const selectIsUpdating = (state: RootStateType) => state.order.isUpdating
-
 export const selectCustomerData = () => {
     return createSelector([selectOrderState], (orderState) => {
         return {
-            customerId: orderState.customerData?.customerId || "",
+            customerId: orderState.customerData?.id || "",
             email: orderState.customerData?.email || "",
-            userName: orderState.customerData?.userName || ""
+            name: orderState.customerData?.name || ""
         }
     }
     );
@@ -24,7 +16,7 @@ export const selectCustomerData = () => {
 
 export const selectIsCustomerDataValid = () => {
     return createSelector([selectCustomerData()], (customerData) => {
-        return customerData.email !== "" && customerData.userName !== ""
+        return customerData.email !== "" && customerData.name !== ""
     }
     );
 }
@@ -45,8 +37,6 @@ export const selectIsShippingDataValid = () => {
     }
     );
 }
-
-export const selectIncompleteOrders = (state: RootStateType) => state.order.incompleteOrders
 
 export const selectSelectedOrderId = (state: RootStateType) => state.order.selectedOrderId
 

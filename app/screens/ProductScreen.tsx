@@ -1,43 +1,41 @@
-import { useMutation, useQuery } from "@apollo/client";
 import React, { useState } from "react";
 import { Text } from "react-native";
 import Layout from "../components/Layout";
 import LoadingScreen from "../components/common/LoadingScreen";
 import Product from "../components/product/Product";
 import ProductFooter from "../components/product/ProductFooter";
-import { ADD_PRODUCT } from "../graphql/mutations";
-import { GET_PRODUCT_BY_ID } from "../graphql/queries";
 import useAppNavigation from "../hooks/useAppNavigation";
+import useCart from "../hooks/useCart";
+import useProduct from "../hooks/useProduct";
 import { addItemToCart } from "../redux/cart/reducer";
-import { useAppDispatch } from "../redux/hooks";
+import { selectCartId } from "../redux/cart/selectors";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 
 const ProductScreen = ({ route }: any) => {
   const dispatch = useAppDispatch();
   const navigation = useAppNavigation();
+  const cartId = useAppSelector(selectCartId);
   const [quantity, setQuantity] = useState<number>(1);
-  const { loading, error, data, refetch } = useQuery(GET_PRODUCT_BY_ID, {
-    variables: { id: route.params.productId.toString() },
+  const { data, isLoading, refetch, error } = useProduct({
+    filter: { field: "id", value: route.params.productId },
   });
-  const [addToCart] = useMutation(ADD_PRODUCT);
+  const { addProduct } = useCart();
 
   const handleAddToCart = (quantity: number) => {
-    if (!data.product) return;
-    addToCart({
-      variables: {
-        productId: data.product.id,
-        quantity: quantity,
-      },
-    }).then(({ data }) => {
-      dispatch(addItemToCart(data.addToCart));
-      navigation.goBack();
-    });
+    if (!data) return;
+    addProduct({ cartId: cartId, productId: data.id, quantity: quantity }).then(
+      (data) => {
+        dispatch(addItemToCart(data));
+        navigation.goBack();
+      }
+    );
   };
 
   const handleRefresh = () => {
     refetch();
   };
 
-  if (loading) {
+  if (isLoading) {
     return <LoadingScreen />;
   }
 
@@ -53,17 +51,17 @@ const ProductScreen = ({ route }: any) => {
     <Layout
       footerComponent={
         <ProductFooter
-          disabled={data.product.stock === 0}
+          disabled={data.stock === 0 || cartId === ""}
           onClick={() => handleAddToCart(quantity)}
         />
       }
     >
       <Product
-        data={data.product}
+        data={data}
         onQuantityChange={setQuantity}
         currentQuantity={quantity}
         onRefresh={handleRefresh}
-        isLoading={loading}
+        isLoading={isLoading}
       />
     </Layout>
   );

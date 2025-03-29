@@ -1,176 +1,169 @@
-import {
-  PropsWithChildren,
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { PropsWithChildren, createContext, useContext, useEffect } from "react";
+import { Alert } from "react-native";
 import OrderNotAllowedScreen from "../components/OrderNotAllowedScreen";
 import LoadingScreen from "../components/common/LoadingScreen";
-import { OrderType, PaymentMethodType } from "../constants/types";
+import { OrderType } from "../constants/types";
 import useAppNavigation from "../hooks/useAppNavigation";
+import useOrder from "../hooks/useOrder";
 import { resetCart, setCartFromOrder } from "../redux/cart/reducer";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { setCustomerData, setSelectedOrderId } from "../redux/order/reducer";
 import {
-  cancelOrder,
-  changeOrdertoIncomplete,
-  fetchOrder,
-  fetchOrderPayment,
-  setCompleteStatus,
-  setOrderRefresingState,
-  setSelectedOrderId,
-  updateCustomerData,
-} from "../redux/order/reducer";
-import {
-  selectIsOrderLoading,
-  selectIsOrderRefreshing,
-  selectIsPaymentLoading,
-  selectIsUpdating,
+  selectCustomerData,
   selectSelectedOrderId,
 } from "../redux/order/selectors";
+import { useStripeContext } from "./StripeContext";
 
 export type OrderContextType = {
   orderId: string | undefined;
   orderData: OrderType | undefined;
-  paymentData: PaymentMethodType | undefined;
   isLoading: boolean;
-  isLoadingPayment: boolean;
   isUpdating: boolean;
-  isRefreshing: boolean;
-  updateOrderCustomer: () => void;
+  isCreatingPayment: boolean;
+  refreshCheckout: () => void;
+  updateOrder: () => void;
   setOrderForEdition: () => void;
   cancelIncompleteOrder: () => void;
-  refreshCheckout: () => void;
-  returnFromConfirmation: () => void;
+  completeOrder: () => void;
 };
 
 const OrderContext = createContext<OrderContextType>({
   orderId: undefined,
   orderData: undefined,
-  paymentData: undefined,
-  isLoading: false,
-  isLoadingPayment: false,
-  isUpdating: false,
-  isRefreshing: false,
-  updateOrderCustomer: () => {},
+  refreshCheckout: () => {},
+  updateOrder: () => {},
   setOrderForEdition: () => {},
   cancelIncompleteOrder: () => {},
-  refreshCheckout: () => {},
-  returnFromConfirmation: () => {},
+  completeOrder: () => {},
+  isLoading: false,
+  isUpdating: false,
+  isCreatingPayment: false,
 });
 
 const OrderStore = ({ children }: PropsWithChildren) => {
   const navigation = useAppNavigation();
-  const dispatch = useAppDispatch();
-  const isLoading = useAppSelector(selectIsOrderLoading);
-  const isLoadingPayment = useAppSelector(selectIsPaymentLoading);
-  const isUpdating = useAppSelector(selectIsUpdating);
   const orderId = useAppSelector(selectSelectedOrderId);
-  const isRefreshing = useAppSelector(selectIsOrderRefreshing);
-  const [orderData, setOrderData] = useState<OrderType>();
-  const [paymentData, setPaymentData] = useState<PaymentMethodType>();
+  const {
+    fetchOrder,
+    orders,
+    updateExistingOrder,
+    refetchOrder,
+    createPayment,
+    cancelExistingOrder,
+    isLoading,
+    isUpdating,
+    isCreatingPayment,
+  } = useOrder();
+  const { confirmPayment, initPayment } = useStripeContext();
+  const dispatch = useAppDispatch();
+  const customerData = useAppSelector(selectCustomerData());
+  const orderData: OrderType | undefined =
+    orders && orders.length && orders.length === 1 ? orders[0] : undefined;
 
-  const fetchOrderData = useCallback(async (orderId: string) => {
-    if (isLoading) return;
-    dispatch(resetCart());
-    dispatch(fetchOrder(orderId))
-      .unwrap()
-      .then((response) => {
-        setOrderData(response);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const fetchPaymentData = useCallback(async () => {
-    if (!orderData || orderData.paymentIntent === null || isLoadingPayment)
-      return;
-    dispatch(
-      fetchOrderPayment({
-        orderId: orderData.orderId,
-        paymentId: orderData.paymentIntent.paymentId,
-      })
-    )
-      .unwrap()
-      .then((response) => {
-        setPaymentData(response);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orderData]);
-
-  const updateOrderCustomer = () => {
+  useEffect(() => {
     if (!orderId) return;
-    dispatch(updateCustomerData(orderId))
-      .unwrap()
-      .then((response) => {
-        dispatch(setOrderRefresingState(true));
-        fetchOrderData(response.orderId);
-      });
+    fetchOrder(orderId);
+    return () => {};
+  }, [fetchOrder, orderId]);
+
+  useEffect(() => {
+    if (orderData && orderData.customer !== null) {
+      dispatch(
+        setCustomerData({
+          email: orderData.customer.email,
+          name: orderData.customer.name,
+        })
+      );
+    }
+  }, [dispatch, orderData]);
+
+  const refreshCheckout = () => {
+    if (!orderData) return;
+    refetchOrder();
+  };
+
+  const updateOrder = () => {
+    if (!orderData) return;
+    updateExistingOrder({
+      id: orderData.id,
+      customer: { email: customerData.email, name: customerData.name },
+      status: "PAYMENT_PENDING",
+    })
+      .then((data) => {
+        refetchOrder();
+      })
+      .catch((error) => Alert.alert(error));
   };
 
   const setOrderForEdition = () => {
     if (!orderData) return;
-    dispatch(changeOrdertoIncomplete(orderData.orderId))
-      .unwrap()
-      .then(() => {
-        fetchOrderData(orderData.orderId).then(() => {
-          if (orderData.items !== null) {
-            dispatch(setCartFromOrder(orderData.items));
-            return navigation.navigate("Products");
-          }
-        });
-      });
+    updateExistingOrder({
+      id: orderData.id,
+      customer: null,
+      status: "INCOMPLETE",
+    })
+      .then((data) => {
+        dispatch(setCartFromOrder(orderData.details));
+        navigation.navigate("Products");
+        return;
+      })
+      .catch((error) => Alert.alert(error));
   };
 
   const cancelIncompleteOrder = () => {
     if (!orderData) return;
-    return dispatch(cancelOrder(orderData.orderId))
-      .unwrap()
+    cancelExistingOrder({ id: orderData.id })
       .then(() => {
+        dispatch(resetCart());
         dispatch(setSelectedOrderId(undefined));
-        return navigation.navigate("Products");
-      });
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Products" }],
+        });
+        return;
+      })
+      .catch((error) => Alert.alert(error));
   };
 
-  const refreshCheckout = () => {
+  const completeOrder = () => {
     if (!orderData) return;
-    dispatch(setOrderRefresingState(true));
-    setTimeout(() => {
-      fetchOrderData(orderData.orderId);
-    }, 500);
+    createPayment({ orderId: orderData.id })
+      .then((response) => {
+        initPayment(orderData, response.ephimeralKey, response.clientSecret)
+          .then(() => {
+            confirmPayment()
+              .then((response) => {
+                updateExistingOrder({
+                  id: orderData.id,
+                  customer: null,
+                  status: "COMPLETE",
+                })
+                  .then((response) => {
+                    navigation.reset({
+                      index: 0,
+                      routes: [{ name: "Confirmation" }],
+                    });
+                  })
+                  .catch((error) => Alert.alert(error));
+              })
+              .catch((error) => Alert.alert(error));
+          })
+          .catch((error) => Alert.alert(error));
+      })
+      .catch((error) => Alert.alert(error));
   };
-
-  const returnFromConfirmation = () => {
-    if (!orderData) return;
-    dispatch(resetCart());
-    dispatch(setSelectedOrderId(undefined));
-    dispatch(setCompleteStatus(orderData.orderId));
-    navigation.reset({ index: 0, routes: [{ name: "Products" }] });
-  };
-
-  useEffect(() => {
-    fetchPaymentData();
-    return () => {};
-  }, [fetchPaymentData, orderData]);
-
-  useEffect(() => {
-    if (orderId) {
-      fetchOrderData(orderId);
-    }
-    return () => {};
-  }, [fetchOrderData, orderId]);
 
   if (isLoading) {
     return <LoadingScreen />;
   }
 
-  if (orderData?.status === "cancelled") {
+  if (orderData?.status === "CANCELLED") {
     return (
       <OrderNotAllowedScreen textToDisplay="Sorry, This order has been cancelled" />
     );
   }
 
-  if (orderData && orderData.status === "complete") {
+  if (orderData && orderData.status === "COMPLETE") {
     return (
       <OrderNotAllowedScreen textToDisplay="Sorry, This order has been completed" />
     );
@@ -181,16 +174,14 @@ const OrderStore = ({ children }: PropsWithChildren) => {
       value={{
         orderId,
         orderData,
-        paymentData,
         isLoading,
-        isLoadingPayment,
+        refreshCheckout,
+        updateOrder,
         isUpdating,
-        isRefreshing,
-        updateOrderCustomer,
         setOrderForEdition,
         cancelIncompleteOrder,
-        refreshCheckout,
-        returnFromConfirmation,
+        completeOrder,
+        isCreatingPayment,
       }}
     >
       {children}

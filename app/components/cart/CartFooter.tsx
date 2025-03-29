@@ -1,11 +1,10 @@
+import useOrder from "@/app/hooks/useOrder";
+import { setSelectedOrderId } from "@/app/redux/order/reducer";
+import { Alert } from "react-native";
 import useAppNavigation from "../../hooks/useAppNavigation";
-import { selectIsCartEmpty } from "../../redux/cart/selectors";
+import { selectCartId, selectIsCartEmpty } from "../../redux/cart/selectors";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { createOrder, updateOrderItems } from "../../redux/order/reducer";
-import {
-  selectIsUpdating,
-  selectSelectedOrderId,
-} from "../../redux/order/selectors";
+import { selectSelectedOrderId } from "../../redux/order/selectors";
 import FooterButton from "../FooterButton";
 import CustomFooter from "../common/CustomFooter";
 
@@ -13,8 +12,9 @@ const CartFooter = () => {
   const dispatch = useAppDispatch();
   const navigation = useAppNavigation();
   const orderId = useAppSelector(selectSelectedOrderId);
-  const isUpdating = useAppSelector(selectIsUpdating);
   const isCartEmpty = useAppSelector(selectIsCartEmpty);
+  const cartId = useAppSelector(selectCartId);
+  const { createNewOrder, isCreating } = useOrder();
 
   const handleRedirect = () => {
     if (isCartEmpty) {
@@ -22,22 +22,16 @@ const CartFooter = () => {
       return;
     }
     if (!orderId) {
-      dispatch(createOrder())
-        .unwrap()
-        .then((response) => {
+      createNewOrder({ cartId: cartId })
+        .then((data) => {
+          dispatch(setSelectedOrderId(data.id));
           navigation.navigate("Checkout");
           return;
-        });
-      return;
+        })
+        .catch((error) => Alert.alert(error));
     }
     if (orderId) {
-      dispatch(updateOrderItems(orderId))
-        .unwrap()
-        .then((result) => {
-          if (result) {
-            navigation.navigate("Checkout");
-          }
-        });
+      navigation.navigate("Checkout");
     }
   };
 
@@ -52,8 +46,8 @@ const CartFooter = () => {
       <FooterButton
         text={footerText}
         onPress={handleRedirect}
-        isLoading={isUpdating}
-        disabled={isUpdating}
+        isLoading={isCreating}
+        disabled={isCreating}
       />
     </CustomFooter>
   );

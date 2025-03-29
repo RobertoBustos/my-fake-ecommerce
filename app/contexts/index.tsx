@@ -1,3 +1,7 @@
+import { ApolloProvider } from "@apollo/client";
+import { Provider as ReduxProvider } from "react-redux";
+import gqlClient from "../graphql/gqlClient";
+import store from "../redux/store";
 import SiblingStore from "./SiblingContext";
 import StripeStore from "./StripeContext";
 
@@ -7,9 +11,13 @@ export type RootContextType = {
 
 const RootContext = ({ children }: RootContextType) => {
   return (
-    <SiblingStore>
-      <StripeStore>{children}</StripeStore>
-    </SiblingStore>
+    <ReduxProvider store={store}>
+      <ApolloProvider client={gqlClient}>
+        <SiblingStore>
+          <StripeStore>{children}</StripeStore>
+        </SiblingStore>
+      </ApolloProvider>
+    </ReduxProvider>
   );
 };
 

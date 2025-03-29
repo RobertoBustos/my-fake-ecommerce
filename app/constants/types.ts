@@ -16,12 +16,7 @@ export type ProductType = {
     rating: RatingType
     title: string
     stock: number
-    purchaseLimit?: PurchaseLimitType
-}
-
-export type PriceType = {
-    amount: number;
-    currency?: string;
+    purchaseLimits: PurchaseLimitType
 }
 
 export type RatingType = {
@@ -36,31 +31,17 @@ export type PurchaseLimitType = {
 
 export type CartItemType = {
     id: string
+    cartId: string
+    productId: string
     quantity: number
     unitPrice: number
     subtotal: number
-    details: Partial<ProductType>
-}
-
-export type CartSummaryType = {
-    details: CartSummaryItemType[]
-    subtotal: number
-    taxes: number
-    total: number
-    discount: number
-}
-
-export type CartSummaryItemType = {
-    quantity: number
-    unitPrice: number
-    taxes?: number
-    discount?: number
-    subtotal: number
+    product: ProductType
 }
 
 export type UserType = {
     email: string
-    userName: string
+    name: string
 }
 
 export type AddressType = {
@@ -69,29 +50,44 @@ export type AddressType = {
 }
 
 export type OrderType = {
-    orderId: string
-    customerData: CustomerType | null
-    shippingData: ShippingType | null
-    paymentIntent: PaymentType | null
-    items: CartItemType[] | null
-    summary: CartSummaryType | null
-    status: "incomplete" | "payment_pending" | "complete" | "cancelled"
+    id: string
+    customer: CustomerType | null
+    payment: PaymentType | null
+    cart: string
+    totals: TotalsType
+    status: "INCOMPLETE" | "PAYMENT_PENDING" | "COMPLETE" | "CANCELLED"
+    details: CartItemType[]
+    //shippingData: ShippingType | null
 }
 
-export type CustomerType = UserType & { customerId: string }
-
-export type ShippingType = AddressType
+export type CustomerType = {
+    id: string
+    email: string
+    name: string
+}
 
 export type PaymentType = {
-    paymentId: string
-    customer: string
+    id: string
     amount: number
+    status: string
+    customer: string
+    payment_method: string
+    paymentDetails: PaymentMethodType
+}
+
+export type TotalsType = {
+    currency: string
+    items: number
+    units: number
+    subTotal: number
+    taxes: number
+    discount: number
+    total: number
 }
 
 export type PaymentMethodType = {
     id: string
-    type: string
-    card?: CardType
+    card: CardType
 }
 
 export type CardType = {
@@ -101,6 +97,11 @@ export type CardType = {
     exp_year: number
     last4: string
     fingerprint: string
+    checks: ChecksType
+}
+
+export type ChecksType = {
+    cvc_check: string
 }
 
 export default {}

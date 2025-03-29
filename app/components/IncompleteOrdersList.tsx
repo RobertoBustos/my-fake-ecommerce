@@ -1,20 +1,32 @@
+import { useEffect } from "react";
 import { StyleSheet, Text } from "react-native";
 import { colors } from "../constants/colors";
 import useAppNavigation from "../hooks/useAppNavigation";
+import useOrder from "../hooks/useOrder";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setSelectedOrderId } from "../redux/order/reducer";
-import {
-  selectIncompleteOrders,
-  selectSelectedOrderId,
-} from "../redux/order/selectors";
+import { selectSelectedOrderId } from "../redux/order/selectors";
 import { formatCurrency } from "../utils/formatCurrency";
 import CustomCard from "./common/CustomCard";
+
+export type IncompleteOrder = {
+  id: string;
+  status: string;
+  totals: {
+    total: number;
+  };
+};
 
 const IncompleteOrdersList = () => {
   const dispatch = useAppDispatch();
   const navigation = useAppNavigation();
-  const incompleteOrders = useAppSelector(selectIncompleteOrders);
   const currentOrderId = useAppSelector(selectSelectedOrderId);
+  const { fetchIncompleteOrders, incompleteOrders } = useOrder();
+
+  useEffect(() => {
+    fetchIncompleteOrders();
+    return () => {};
+  }, [fetchIncompleteOrders]);
 
   const handleRedirect = (orderId: string) => {
     if (currentOrderId !== orderId) {
@@ -23,21 +35,21 @@ const IncompleteOrdersList = () => {
     navigation.navigate("Checkout");
   };
 
-  const invalidIncompleteStatus = ["cancelled", "complete"];
+  if (!incompleteOrders) {
+    return null;
+  }
 
-  return incompleteOrders.map((order, index) => {
+  const invalidIncompleteStatus = ["cancelled", "complete"];
+  return incompleteOrders.map((order: IncompleteOrder, index: number) => {
     return invalidIncompleteStatus.includes(order.status) ? null : (
       <CustomCard
         variant="warning"
         key={index}
-        onPress={() => handleRedirect(order.orderId)}
+        onPress={() => handleRedirect(order.id)}
       >
         <Text style={styles.text}>{`Complete order number ${
-          order.orderId
-        } for $${formatCurrency({
-          amount: order.summary?.total || 0,
-          currency: "MXN",
-        })}`}</Text>
+          order.id
+        } for $${formatCurrency(order.totals.total)}`}</Text>
       </CustomCard>
     );
   });

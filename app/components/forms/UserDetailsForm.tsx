@@ -10,14 +10,14 @@ import CustomCard from "../common/CustomCard";
 
 const validationSchema: ZodType<UserType> = z.object({
   email: z.string().email({ message: "Invalid email" }).toLowerCase(),
-  userName: z
+  name: z
     .string()
     .min(4, { message: "Your name must contain from 4 up to 60 characters" })
     .max(60, { message: "Your name must contain from 4 up to 60 characters" }),
 });
 
 export type UserDetailsFormPropsType = {
-  data: { email: string; userName: string };
+  data: { email: string; name: string };
   isLoading?: boolean;
 };
 
@@ -31,7 +31,7 @@ const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
   } = useForm<UserType>({
     defaultValues: {
       email: data.email,
-      userName: data.userName,
+      name: data.name,
     },
     resolver: zodResolver(validationSchema),
     mode: "all",
@@ -67,7 +67,7 @@ const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
       )}
       <Controller
         control={control}
-        name="userName"
+        name="name"
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
             inputMode="text"
@@ -83,8 +83,8 @@ const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
           />
         )}
       />
-      {errors.userName && (
-        <Text style={styles.errorText}>{errors.userName.message}</Text>
+      {errors.name && (
+        <Text style={styles.errorText}>{errors.name.message}</Text>
       )}
     </CustomCard>
   );

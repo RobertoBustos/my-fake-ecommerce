@@ -1,5 +1,3 @@
-import { useAppSelector } from "@/app/redux/hooks";
-import { selectIsOrderRefreshing } from "@/app/redux/order/selectors";
 import { useMemo } from "react";
 import {
   Alert,
@@ -22,25 +20,25 @@ const Checkout = () => {
   const { keyboardStatus } = useKeyboardStatus();
   const {
     orderData,
+    refreshCheckout,
+    isLoading,
     setOrderForEdition,
     cancelIncompleteOrder,
-    refreshCheckout,
   } = useOrderContext();
-  const isRefresing = useAppSelector(selectIsOrderRefreshing);
 
   const userData = useMemo(() => {
     return {
-      email: orderData?.customerData?.email || "",
-      userName: orderData?.customerData?.userName || "",
+      email: orderData?.customer?.email || "",
+      name: orderData?.customer?.name || "",
     };
   }, [orderData]);
 
   const addressData = useMemo(() => {
     return {
-      address: orderData?.shippingData?.address || "",
-      zipCode: orderData?.shippingData?.zipCode || "",
+      address: "",
+      zipCode: "",
     };
-  }, [orderData]);
+  }, []);
 
   const handleReturnOrderToCart = () => {
     Alert.alert("Do you wish to modify this order?", "", [
@@ -81,12 +79,12 @@ const Checkout = () => {
       style={styles.container}
       showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={isRefresing} onRefresh={refreshCheckout} />
+        <RefreshControl refreshing={isLoading} onRefresh={refreshCheckout} />
       }
     >
       <>
-        <CheckoutHeader orderId={orderData.orderId} />
-        <OrderSummary data={orderData.summary} />
+        <CheckoutHeader orderId={orderData.id} />
+        <OrderSummary data={orderData.totals} />
         <UserDetailsForm data={userData} />
         <AddressDetailsForm data={addressData} />
         <CheckoutButtons

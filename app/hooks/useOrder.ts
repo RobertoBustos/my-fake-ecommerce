@@ -1,0 +1,108 @@
+import { useLazyQuery, useMutation } from "@apollo/client";
+import { useCallback } from "react";
+import { CANCEL_ORDER, CREATE_ORDER, CREATE_ORDER_PAYMENT, UPDATE_ORDER } from "../graphql/mutations";
+import { GET_INCOMPLETE_ORDERS, GET_ORDERS } from "../graphql/queries";
+
+export type CreateOrderInput = {
+    cartId: string
+}
+
+export type UpdateOrderInput = {
+    id: string
+    customer: {
+        email: string
+        name: string
+    } | null
+    status: string | null
+}
+
+export type CreateOrderPaymentInput = {
+    orderId: string
+}
+
+export type CancelOrderInput = {
+    id: string
+}
+
+export type PaymentCreated = {
+    paymentId: string
+    clientSecret: string
+    ephimeralKey: string
+}
+
+
+const useOrder = () => {
+    const [createOrder, { loading: isCreating, }] = useMutation(CREATE_ORDER);
+    const [updateOrder, { loading: isUpdating, }] = useMutation(UPDATE_ORDER);
+    const [cancelOrder, { loading: isCancelling, }] = useMutation(CANCEL_ORDER);
+    const [createOrderPayment, { loading: isCreatingPayment, }] = useMutation(CREATE_ORDER_PAYMENT);
+    const [getOrders, { loading: isLoading, data: ordersResponse, error, refetch: refetchOrder }] = useLazyQuery(GET_ORDERS);
+    const [getIncompleteOrders, { data: incompleteOrdersResponse }] = useLazyQuery(GET_INCOMPLETE_ORDERS);
+
+    const fetchIncompleteOrders = useCallback(async () => {
+        return getIncompleteOrders({ variables: { filter: { field: "status", value: "INCOMPLETE" } } })
+    }, [getIncompleteOrders])
+
+    const fetchOrder = useCallback(async (id: string) => {
+        return getOrders({ variables: { filter: { field: "id", value: id } } })
+    }, [getOrders])
+
+    const createNewOrder = useCallback(async (input: CreateOrderInput) => {
+        try {
+            const response = await createOrder({
+                variables: {
+                    input: input,
+                },
+            })
+            return response.data.createOrder.data
+        } catch (error) {
+            throw error as Error
+        }
+    }, [createOrder])
+
+    const updateExistingOrder = useCallback(async (input: UpdateOrderInput) => {
+        try {
+            const response = await updateOrder({
+                variables: {
+                    input: input,
+                },
+            })
+            return response.data.updateOrder
+        } catch (error) {
+            throw error as Error
+        }
+    }, [updateOrder])
+
+    const createPayment = useCallback(async (input: CreateOrderPaymentInput) => {
+        try {
+            const response = await createOrderPayment({
+                variables: {
+                    input: input,
+                },
+            })
+            return response.data.createOrderPayment.data
+        } catch (error) {
+            throw error as Error
+        }
+    }, [createOrderPayment])
+
+    const cancelExistingOrder = useCallback(async (input: CancelOrderInput) => {
+        try {
+            const response = await cancelOrder({
+                variables: {
+                    input: input,
+                },
+            })
+            return response.data.cancelOrder.data
+        } catch (error) {
+            throw error as Error
+        }
+    }, [cancelOrder])
+
+    const incompleteOrders = incompleteOrdersResponse ? incompleteOrdersResponse.incompleteOrders : undefined
+    const orders = ordersResponse ? ordersResponse.orders : undefined
+
+    return { fetchIncompleteOrders, incompleteOrders, fetchOrder, orders, isLoading, error, refetchOrder, createNewOrder, isCreating, updateExistingOrder, isUpdating, createPayment, isCreatingPayment, cancelExistingOrder, isCancelling }
+}
+
+export default useOrder

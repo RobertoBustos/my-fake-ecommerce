@@ -1,19 +1,12 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { Alert } from "react-native";
 import { CartItemType } from "../../constants/types";
-import { saveCartDataService } from "../../services/cartServices";
-import { createCartSummary } from "../../utils/createCartSummary";
+import { getDeviceId } from "../../utils/getDeviceId";
 import { CartStateType } from "../types";
 
-const initialSummary = {
-    details: [],
-    subtotal: 0,
-    taxes: 0,
-    total: 0,
-    discount: 0
-}
 const initialState: CartStateType = {
     items: [],
-    summary: initialSummary,
+    cartId: ""
 }
 const cartSlice = createSlice({
     name: "cart",
@@ -27,26 +20,34 @@ const cartSlice = createSlice({
             } else {
                 state.items = [...state.items, action.payload]
             }
-            state.summary = createCartSummary(state.items)
-            saveCartDataService(state.items)
         },
         removeItemFromCart: (state, action: PayloadAction<string>) => {
             state.items = state.items.filter(item => item.id !== action.payload)
-            state.summary = createCartSummary(state.items)
-            saveCartDataService(state.items)
         },
         resetCart: (state) => {
             state.items = []
-            state.summary = initialSummary
-            saveCartDataService(state.items)
         },
         setCartFromOrder: (state, action: PayloadAction<CartItemType[]>) => {
             state.items = action.payload
-            state.summary = createCartSummary(action.payload)
-            saveCartDataService(state.items)
         }
     },
+    extraReducers: (builder) => {
+        builder.addCase(setCartId.fulfilled, (state, action) => {
+            state.cartId = action.payload
+        })
+        builder.addCase(setCartId.rejected, (state, action) => {
+            Alert.alert(action.payload as string)
+        })
+    }
 });
+
+export const setCartId = createAsyncThunk("cart/setCartId", async (_, { rejectWithValue }) => {
+    const cartId = await getDeviceId()
+    if (!cartId) {
+        return rejectWithValue("There was an error setting up cart")
+    }
+    return cartId
+})
 
 export const { addItemToCart, removeItemFromCart, resetCart, setCartFromOrder } = cartSlice.actions
 export default cartSlice.reducer

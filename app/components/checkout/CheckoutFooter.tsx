@@ -1,12 +1,5 @@
-import { Alert } from "react-native";
 import { useOrderContext } from "../../contexts/OrderContext";
-import { useStripeContext } from "../../contexts/StripeContext";
-import useAppNavigation from "../../hooks/useAppNavigation";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import {
-  preparePaymentSheet,
-  updateOrderComplete,
-} from "../../redux/order/reducer";
+import { useAppSelector } from "../../redux/hooks";
 import {
   selectIsCustomerDataValid,
   selectIsShippingDataValid,
@@ -16,59 +9,38 @@ import FooterButton from "../FooterButton";
 import CustomFooter from "../common/CustomFooter";
 
 const CheckoutFooter = () => {
-  const navigation = useAppNavigation();
-  const dispatch = useAppDispatch();
-  const { confirmPayment } = useStripeContext();
   const isCustomerDataValid = useAppSelector(selectIsCustomerDataValid());
   const isShippingDataValid = useAppSelector(selectIsShippingDataValid());
-  const { orderId, isUpdating, orderData, updateOrderCustomer, isRefreshing } =
-    useOrderContext();
+  const {
+    orderData,
+    updateOrder,
+    isLoading,
+    isUpdating,
+    completeOrder,
+    isCreatingPayment,
+  } = useOrderContext();
 
-  if (orderData && orderData.status === "payment_pending") {
+  if (orderData && orderData.status === "PAYMENT_PENDING") {
     const handleConfirmPayment = () => {
-      if (!orderId) return;
-      dispatch(preparePaymentSheet(orderId))
-        .unwrap()
-        .then((response) => {
-          if (response) {
-            confirmPayment()
-              .then(() => {
-                dispatch(updateOrderComplete(orderId))
-                  .unwrap()
-                  .then(() => {
-                    navigation.reset({
-                      index: 0,
-                      routes: [{ name: "Confirmation" }],
-                    });
-                  })
-                  .catch((error) => {
-                    Alert.alert(error.message);
-                  });
-              })
-              .catch((error) => {
-                Alert.alert(error.message);
-              });
-          }
-        });
+      completeOrder();
     };
 
     return (
       <CustomFooter>
         <FooterButton
-          text={`Complete Your Payment for ${formatCurrency({
-            amount: orderData.summary?.total || 0,
-            currency: "MXN",
-          })}`}
+          text={`Complete Your Payment for ${formatCurrency(
+            orderData.totals.total
+          )}`}
           onPress={handleConfirmPayment}
-          isLoading={isUpdating}
-          disabled={isUpdating}
+          isLoading={isCreatingPayment}
+          disabled={isCreatingPayment}
         />
       </CustomFooter>
     );
   }
 
   const handleRegisterCustomerData = () => {
-    updateOrderCustomer();
+    updateOrder();
   };
 
   return (
@@ -76,12 +48,12 @@ const CheckoutFooter = () => {
       <FooterButton
         text={"Confirm Your Order Information"}
         onPress={handleRegisterCustomerData}
-        isLoading={isUpdating || isRefreshing}
+        isLoading={isUpdating || isLoading}
         disabled={
           !isCustomerDataValid ||
           !isShippingDataValid ||
           isUpdating ||
-          isRefreshing
+          isLoading
         }
       />
     </CustomFooter>

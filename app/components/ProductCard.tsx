@@ -19,7 +19,7 @@ const ProductCard = ({ data, disabled }: ProductCardPropsType) => {
       orientation="horizontal"
       onPress={() =>
         navigation.navigate("Product", {
-          productId: data.id,
+          productId: data.id.toString(),
         })
       }
       disabled={disabled}
@@ -27,7 +27,7 @@ const ProductCard = ({ data, disabled }: ProductCardPropsType) => {
       <View style={styles.description}>
         <Text style={styles.title}>{data.title}</Text>
         <Text style={styles.price}>
-          {formatCurrency({ amount: data.unitPrice, currency: data.currency })}
+          {formatCurrency(data.unitPrice, data.currency)}
         </Text>
       </View>
       <CustomImage imageUrl={data.image} width={120} height={120} />

@@ -29,18 +29,14 @@ const Product = ({
   isLoading = false,
 }: ProdctPropsType) => {
   const handleRefresh = () => {
-    setTimeout(() => {
-      if (onRefresh) onRefresh();
-    }, 1000);
+    if (onRefresh) onRefresh();
   };
 
   const maxPurchaseLimit = useMemo(() => {
     if (!data) return 0;
-    return data.purchaseLimit?.max
-      ? data.purchaseLimit?.max > data.stock
-        ? data.stock
-        : data.purchaseLimit?.max
-      : data.stock;
+    return data.purchaseLimits.max > data.stock
+      ? data.stock
+      : data.purchaseLimits.max;
   }, [data]);
 
   return (
@@ -55,12 +51,12 @@ const Product = ({
         <Text style={styles.title}>{data.title}</Text>
         <CustomImage imageUrl={data.image} width={350} height={350} />
         <Text style={styles.price}>
-          {formatCurrency({ amount: data.unitPrice, currency: data.currency })}
+          {formatCurrency(data.unitPrice, data.currency)}
         </Text>
         {data.stock >= 1 ? (
           <>
             <QuantityButtons
-              min={data.purchaseLimit?.min || 1}
+              min={data.purchaseLimits.min || 1}
               max={maxPurchaseLimit}
               value={currentQuantity}
               onChange={onQuantityChange}

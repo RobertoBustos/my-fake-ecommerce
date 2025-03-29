@@ -3,10 +3,13 @@ import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
 import { onError } from "@apollo/client/link/error";
 import { Alert } from "react-native";
 import { BASE_URL } from "../constants/config";
+import { getDeviceId } from "../utils/getDeviceId";
 if (__DEV__) {
   loadDevMessages();
   loadErrorMessages();
 }
+
+export const deviceId = getDeviceId()
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
@@ -27,5 +30,6 @@ const gqlClient = new ApolloClient({
   cache: new InMemoryCache(),
   link
 });
+
 
 export default gqlClient

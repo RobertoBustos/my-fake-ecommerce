@@ -18,16 +18,4 @@ export const getFromAsyncStorage = async (key: string) => {
     }
 }
 
-export const searchObjectInAsyncStorage = async (storageKey: string, objectKey: string, value: string) => {
-    const storage = await getFromAsyncStorage(storageKey)
-    if (storage === null) {
-        return undefined
-    }
-    const data = JSON.parse(storage)
-    const object = data.find((element: any) => {
-        return element[objectKey] === value
-    })
-    return object
-}
-
 export default {}

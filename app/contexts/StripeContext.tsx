@@ -1,16 +1,28 @@
 import {
   PresentPaymentSheetResult,
   StripeProvider,
+  initPaymentSheet,
   usePaymentSheet,
 } from "@stripe/stripe-react-native";
 import { createContext, useCallback, useContext } from "react";
 import { MERCHANT_ID, PUBLISHABLE_KEY } from "../constants/config";
+import { OrderType } from "../constants/types";
 
 export type StripeContextType = {
+  initPayment: (
+    orderData: OrderType,
+    ephemeralKey: string,
+    clientSecret: string
+  ) => Promise<boolean | Error>;
   confirmPayment: () => Promise<PresentPaymentSheetResult | Error>;
 };
 
 const StripeContext = createContext<StripeContextType>({
+  initPayment: (
+    orderData: OrderType,
+    ephemeralKey: string,
+    clientSecret: string
+  ) => new Promise(() => {}),
   confirmPayment: () => new Promise(() => {}),
 });
 
@@ -22,6 +34,39 @@ export type StripeStorePropsType = {
 
 const StipeStore = ({ children }: StripeStorePropsType) => {
   const { presentPaymentSheet } = usePaymentSheet();
+
+  const initPayment = useCallback(
+    async (
+      orderData: OrderType,
+      ephemeralKey: string,
+      clientSecret: string
+    ) => {
+      try {
+        if (!orderData || orderData.customer === null) {
+          throw new Error("Order not found");
+        }
+        const paymentSheetResponse = await initPaymentSheet({
+          customerId: orderData.customer.id,
+          customerEphemeralKeySecret: ephemeralKey,
+          paymentIntentClientSecret: clientSecret,
+          merchantDisplayName: "My Fake Ecommerce",
+          allowsDelayedPaymentMethods: true,
+          returnURL: "stripe-example://stripe-redirect",
+          defaultBillingDetails: {
+            name: orderData.customer.name,
+            email: orderData.customer.email,
+          },
+        });
+        if (paymentSheetResponse.error) {
+          return false;
+        }
+        return true;
+      } catch (error) {
+        return error as Error;
+      }
+    },
+    []
+  );
 
   const confirmPayment = useCallback(async () => {
     try {
@@ -42,6 +87,7 @@ const StipeStore = ({ children }: StripeStorePropsType) => {
   return (
     <StripeContext.Provider
       value={{
+        initPayment,
         confirmPayment,
       }}
     >

@@ -14,9 +14,9 @@ const CustomerSummary = ({ data, isLoading }: CustomerSummaryPropsType) => {
 
   return (
     <CustomCard headerText="Customer Information" isLoading={isLoading}>
-      <SummaryCardRow concept={"Customer Id"} value={data.customerId} />
+      <SummaryCardRow concept={"Customer Id"} value={data.id} />
       <SummaryCardRow concept={"Email"} value={data.email} />
-      <SummaryCardRow concept={"Full Name"} value={data.userName} />
+      <SummaryCardRow concept={"Full Name"} value={data.name} />
     </CustomCard>
   );
 };

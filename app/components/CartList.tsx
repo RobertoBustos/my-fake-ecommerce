@@ -1,12 +1,10 @@
 import { FlatList, StyleSheet, View } from "react-native";
-import { CartItemType } from "../constants/types";
+import { useCartContext } from "../contexts/CartContext";
 import CartItemCard from "./CartItemCard";
 
-export type CartListPropsType = {
-  cartItems: CartItemType[];
-};
+const CartList = () => {
+  const { cartItems } = useCartContext();
 
-const CartList = ({ cartItems }: CartListPropsType) => {
   return (
     <View style={styles.container}>
       <FlatList

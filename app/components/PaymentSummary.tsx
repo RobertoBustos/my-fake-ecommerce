@@ -3,10 +3,9 @@ import CardPaymentSummary from "./CardPaymentSummary";
 
 export type PaymentSummaryPropsType = {
   data: PaymentMethodType;
-  isLoading: boolean;
 };
 
-const PaymentSummary = ({ data, isLoading }: PaymentSummaryPropsType) => {
+const PaymentSummary = ({ data }: PaymentSummaryPropsType) => {
   if (!data) {
     return null;
   }
@@ -19,7 +18,6 @@ const PaymentSummary = ({ data, isLoading }: PaymentSummaryPropsType) => {
       expMonth={data.card.exp_month}
       expYear={data.card.exp_year}
       autorization={data.card.fingerprint}
-      isLoading={isLoading}
     />
   ) : null;
 };

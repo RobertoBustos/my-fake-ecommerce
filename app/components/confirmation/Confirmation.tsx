@@ -1,8 +1,7 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../constants/colors";
-import { CartItemType } from "../../constants/types";
-import { useOrderContext } from "../../contexts/OrderContext";
+import { CartItemType, OrderType } from "../../constants/types";
 import { formatCurrency } from "../../utils/formatCurrency";
 import AddressSummary from "../AddressSummary";
 import CustomerSummary from "../CustomerSummary";
@@ -11,10 +10,12 @@ import PaymentSummary from "../PaymentSummary";
 import CustomImage from "../common/CustomImage";
 import ConfirmationHeader from "./ConfirmationHeader";
 
-const Confirmation = () => {
-  const { orderData, isLoading } = useOrderContext();
+export type ConfirmationPropsType = {
+  data?: OrderType;
+};
 
-  if (!orderData || orderData.payment === null) {
+const Confirmation = ({ data }: ConfirmationPropsType) => {
+  if (!data || data.payment === null) {
     return null;
   }
 
@@ -25,17 +26,14 @@ const Confirmation = () => {
         showsVerticalScrollIndicator={false}
       >
         <>
-          <ConfirmationHeader orderId={orderData.id} />
-          {orderData.details.map((item) => {
+          <ConfirmationHeader orderId={data.id} />
+          {data.details.map((item) => {
             return <OrderConfirmationItem data={item} key={item.id} />;
           })}
-          <PaymentSummary
-            data={orderData.payment.paymentDetails}
-            isLoading={isLoading}
-          />
-          <OrderSummary data={orderData.totals} />
-          <CustomerSummary data={orderData.customer} />
-          <AddressSummary data={orderData.address} />
+          <PaymentSummary data={data.payment.paymentDetails} />
+          <OrderSummary data={data.totals} />
+          <CustomerSummary data={data.customer} />
+          <AddressSummary data={data.address} />
         </>
       </ScrollView>
     </View>

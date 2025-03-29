@@ -27,7 +27,6 @@ export type OrderContextType = {
   setOrderForEdition: () => void;
   cancelIncompleteOrder: () => void;
   completeOrder: () => void;
-  returnFromConfirmation: () => void;
   isLoading: boolean;
   isUpdating: boolean;
   isCreatingPayment: boolean;
@@ -41,7 +40,6 @@ const OrderContext = createContext<OrderContextType>({
   setOrderForEdition: () => {},
   cancelIncompleteOrder: () => {},
   completeOrder: () => {},
-  returnFromConfirmation: () => {},
   isLoading: false,
   isUpdating: false,
   isCreatingPayment: false,
@@ -173,16 +171,6 @@ const OrderStore = ({ children }: PropsWithChildren) => {
       .catch((error) => Alert.alert(error));
   };
 
-  const returnFromConfirmation = () => {
-    dispatch(resetCart());
-    dispatch(setSelectedOrderId(undefined));
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "Products" }],
-    });
-    return;
-  };
-
   if (isLoading) {
     return <LoadingScreen />;
   }
@@ -212,7 +200,6 @@ const OrderStore = ({ children }: PropsWithChildren) => {
         cancelIncompleteOrder,
         completeOrder,
         isCreatingPayment,
-        returnFromConfirmation,
       }}
     >
       {children}

@@ -10,7 +10,6 @@ export type CardPaymentSummaryPropsType = {
   expMonth: number;
   expYear: number;
   autorization: string;
-  isLoading: boolean;
 };
 
 const CardPaymentSummary = ({
@@ -20,7 +19,6 @@ const CardPaymentSummary = ({
   expMonth,
   expYear,
   autorization,
-  isLoading,
 }: CardPaymentSummaryPropsType) => {
   const renderCard = (brand: string) => {
     if (brand === "visa") {
@@ -36,7 +34,7 @@ const CardPaymentSummary = ({
   };
 
   return (
-    <CustomCard isLoading={isLoading} orientation="horizontal">
+    <CustomCard orientation="horizontal">
       {renderCard(brand)}
       <View style={styles.container}>
         <Text

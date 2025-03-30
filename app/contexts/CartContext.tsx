@@ -46,7 +46,7 @@ const CartStore = ({ children }: PropsWithChildren) => {
   const isCartEmpty = useAppSelector(selectIsCartEmpty);
   const orderId = useAppSelector(selectSelectedOrderId);
   const cartId = useAppSelector(selectCartId);
-  const { createNewOrder, isCreating } = useOrder();
+  const { createNewOrder, isCreating, refetchIncompleteOrders } = useOrder();
   const { removeProduct, isRemoving } = useCart();
   const isLoading = isCreating || isRemoving;
   const footerText = isCartEmpty
@@ -63,6 +63,7 @@ const CartStore = ({ children }: PropsWithChildren) => {
     if (!orderId) {
       createNewOrder({ cartId: cartId })
         .then((data) => {
+          refetchIncompleteOrders();
           dispatch(setSelectedOrderId(data.id));
           navigation.navigate("Checkout");
           return;

@@ -36,10 +36,10 @@ const useOrder = () => {
     const [cancelOrder, { loading: isCancelling, }] = useMutation(CANCEL_ORDER);
     const [createOrderPayment, { loading: isCreatingPayment, }] = useMutation(CREATE_ORDER_PAYMENT);
     const [getOrders, { loading: isLoading, data: ordersResponse, error, refetch: refetchOrder }] = useLazyQuery(GET_ORDERS);
-    const [getIncompleteOrders, { data: incompleteOrdersResponse }] = useLazyQuery(GET_INCOMPLETE_ORDERS);
+    const [getIncompleteOrders, { data: incompleteOrdersResponse, refetch: refetchIncompleteOrders }] = useLazyQuery(GET_INCOMPLETE_ORDERS);
 
     const fetchIncompleteOrders = useCallback(async () => {
-        return getIncompleteOrders({ variables: { filter: { field: "status", value: "INCOMPLETE" } }, pollInterval: 60000 })
+        return getIncompleteOrders({ variables: { filter: { field: "status", value: "INCOMPLETE" } } })
     }, [getIncompleteOrders])
 
     const fetchOrder = useCallback(async (id: string) => {
@@ -101,7 +101,7 @@ const useOrder = () => {
     const incompleteOrders = incompleteOrdersResponse ? incompleteOrdersResponse.incompleteOrders : undefined
     const orders = ordersResponse ? ordersResponse.orders : undefined
 
-    return { fetchIncompleteOrders, incompleteOrders, fetchOrder, orders, isLoading, error, refetchOrder, createNewOrder, isCreating, updateExistingOrder, isUpdating, createPayment, isCreatingPayment, cancelExistingOrder, isCancelling }
+    return { fetchIncompleteOrders, incompleteOrders, refetchIncompleteOrders, fetchOrder, orders, isLoading, error, refetchOrder, createNewOrder, isCreating, updateExistingOrder, isUpdating, createPayment, isCreatingPayment, cancelExistingOrder, isCancelling }
 }
 
 export default useOrder

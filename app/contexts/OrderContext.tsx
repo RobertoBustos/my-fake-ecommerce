@@ -15,34 +15,35 @@ import {
 import {
   selectAddressData,
   selectCustomerData,
+  selectIsAddressDataValid,
+  selectIsCustomerDataValid,
   selectSelectedOrderId,
 } from "../redux/order/selectors";
+import { formatCurrency } from "../utils/formatCurrency";
 import { useStripeContext } from "./StripeContext";
 
 export type OrderContextType = {
-  orderId: string | undefined;
   orderData: OrderType | undefined;
   refreshCheckout: () => void;
-  updateOrder: () => void;
   setOrderForEdition: () => void;
   cancelIncompleteOrder: () => void;
-  completeOrder: () => void;
   isLoading: boolean;
-  isUpdating: boolean;
-  isCreatingPayment: boolean;
+  processCheckout: () => void;
+  footerText: string;
+  isProcessing: boolean;
+  isDisabled: boolean;
 };
 
 const OrderContext = createContext<OrderContextType>({
-  orderId: undefined,
   orderData: undefined,
   refreshCheckout: () => {},
-  updateOrder: () => {},
   setOrderForEdition: () => {},
   cancelIncompleteOrder: () => {},
-  completeOrder: () => {},
   isLoading: false,
-  isUpdating: false,
-  isCreatingPayment: false,
+  processCheckout: () => {},
+  footerText: "",
+  isProcessing: false,
+  isDisabled: false,
 });
 
 const OrderStore = ({ children }: PropsWithChildren) => {
@@ -58,13 +59,22 @@ const OrderStore = ({ children }: PropsWithChildren) => {
     isLoading,
     isUpdating,
     isCreatingPayment,
+    refetchIncompleteOrders,
   } = useOrder();
   const { confirmPayment, initPayment } = useStripeContext();
   const dispatch = useAppDispatch();
   const customerData = useAppSelector(selectCustomerData());
   const addressData = useAppSelector(selectAddressData());
+  const isCustomerDataValid = useAppSelector(selectIsCustomerDataValid());
+  const isAddressDataValid = useAppSelector(selectIsAddressDataValid());
   const orderData: OrderType | undefined =
     orders && orders.length && orders.length === 1 ? orders[0] : undefined;
+  const footerText =
+    orderData?.status === "PAYMENT_PENDING"
+      ? `Complete Your Payment for ${formatCurrency(orderData.totals.total)}`
+      : "Confirm Your Order Information";
+  const isProcessing = isUpdating || isLoading || isCreatingPayment;
+  const isDisabled = !isCustomerDataValid || !isAddressDataValid;
 
   useEffect(() => {
     if (!orderId) return;
@@ -156,7 +166,7 @@ const OrderStore = ({ children }: PropsWithChildren) => {
                   status: "COMPLETE",
                 })
                   .then((response) => {
-                    refetchOrder();
+                    refetchIncompleteOrders();
                     navigation.reset({
                       index: 0,
                       routes: [{ name: "Confirmation" }],
@@ -169,6 +179,14 @@ const OrderStore = ({ children }: PropsWithChildren) => {
           .catch((error) => Alert.alert(error));
       })
       .catch((error) => Alert.alert(error));
+  };
+
+  const processCheckout = () => {
+    if (!orderData) return;
+    if (orderData.status === "PAYMENT_PENDING") {
+      return completeOrder();
+    }
+    return updateOrder();
   };
 
   if (isLoading) {
@@ -190,16 +208,15 @@ const OrderStore = ({ children }: PropsWithChildren) => {
   return (
     <OrderContext.Provider
       value={{
-        orderId,
         orderData,
         isLoading,
         refreshCheckout,
-        updateOrder,
-        isUpdating,
         setOrderForEdition,
         cancelIncompleteOrder,
-        completeOrder,
-        isCreatingPayment,
+        processCheckout,
+        footerText,
+        isProcessing,
+        isDisabled,
       }}
     >
       {children}

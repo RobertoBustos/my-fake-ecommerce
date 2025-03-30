@@ -51,13 +51,9 @@ const styles = StyleSheet.create({
   },
   price: {
     color: colors.primary,
-    fontSize: 16,
+    fontSize: 24,
     fontWeight: "bold",
     marginBottom: 16,
-  },
-  subtotal: {
-    color: colors.primary,
-    fontSize: 24,
   },
 });
 

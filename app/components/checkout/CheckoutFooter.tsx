@@ -1,57 +1,22 @@
 import { useOrderContext } from "../../contexts/OrderContext";
-import { useAppSelector } from "../../redux/hooks";
-import {
-  selectIsAddressDataValid,
-  selectIsCustomerDataValid,
-} from "../../redux/order/selectors";
-import { formatCurrency } from "../../utils/formatCurrency";
 import FooterButton from "../FooterButton";
 import CustomFooter from "../common/CustomFooter";
 
 const CheckoutFooter = () => {
-  const isCustomerDataValid = useAppSelector(selectIsCustomerDataValid());
-  const isAddressDataValid = useAppSelector(selectIsAddressDataValid());
-  const {
-    orderData,
-    updateOrder,
-    isLoading,
-    isUpdating,
-    completeOrder,
-    isCreatingPayment,
-  } = useOrderContext();
+  const { footerText, processCheckout, isProcessing, isDisabled } =
+    useOrderContext();
 
-  if (orderData && orderData.status === "PAYMENT_PENDING") {
-    const handleConfirmPayment = () => {
-      completeOrder();
-    };
-
-    return (
-      <CustomFooter>
-        <FooterButton
-          text={`Complete Your Payment for ${formatCurrency(
-            orderData.totals.total
-          )}`}
-          onPress={handleConfirmPayment}
-          isLoading={isCreatingPayment}
-          disabled={isCreatingPayment}
-        />
-      </CustomFooter>
-    );
-  }
-
-  const handleRegisterCustomerData = () => {
-    updateOrder();
+  const handleClick = () => {
+    processCheckout();
   };
 
   return (
     <CustomFooter>
       <FooterButton
-        text={"Confirm Your Order Information"}
-        onPress={handleRegisterCustomerData}
-        isLoading={isUpdating || isLoading}
-        disabled={
-          !isCustomerDataValid || !isAddressDataValid || isUpdating || isLoading
-        }
+        text={footerText}
+        onPress={handleClick}
+        isLoading={isProcessing}
+        disabled={isDisabled || isProcessing}
       />
     </CustomFooter>
   );

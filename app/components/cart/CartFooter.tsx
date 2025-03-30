@@ -3,25 +3,19 @@ import FooterButton from "../FooterButton";
 import CustomFooter from "../common/CustomFooter";
 
 const CartFooter = () => {
-  const { processCart, isCartEmpty, isCreating, orderId } = useCartContext();
+  const { processCart, footerText, isLoading } = useCartContext();
 
   const handleRedirect = () => {
     processCart();
   };
-
-  const footerText = isCartEmpty
-    ? "Go Back"
-    : orderId
-    ? "Update Order"
-    : "Create Order";
 
   return (
     <CustomFooter>
       <FooterButton
         text={footerText}
         onPress={handleRedirect}
-        isLoading={isCreating}
-        disabled={isCreating}
+        isLoading={isLoading}
+        disabled={isLoading}
       />
     </CustomFooter>
   );

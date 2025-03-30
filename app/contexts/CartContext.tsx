@@ -2,7 +2,12 @@ import { PropsWithChildren, createContext, useContext } from "react";
 import { Alert } from "react-native";
 import { CartItemType } from "../constants/types";
 import useAppNavigation from "../hooks/useAppNavigation";
+import useCart from "../hooks/useCart";
 import useOrder from "../hooks/useOrder";
+import {
+  removeItemFromCart,
+  setSelectedProductId,
+} from "../redux/cart/reducer";
 import {
   selectCartId,
   selectCartItems,
@@ -15,17 +20,23 @@ import { selectSelectedOrderId } from "../redux/order/selectors";
 export type CartContextType = {
   cartItems: CartItemType[];
   isCartEmpty: boolean;
-  isCreating: boolean;
+  isLoading: boolean;
   processCart: () => void;
+  removeFromCart: (id: string) => void;
+  redirectToProduct: (id: string) => void;
   orderId: string | undefined;
+  footerText: string;
 };
 
 const CartContext = createContext<CartContextType>({
   cartItems: [],
   isCartEmpty: false,
-  isCreating: false,
+  isLoading: false,
   processCart: () => {},
+  removeFromCart: (id: string) => {},
+  redirectToProduct: (id: string) => {},
   orderId: undefined,
+  footerText: "",
 });
 
 const CartStore = ({ children }: PropsWithChildren) => {
@@ -36,6 +47,13 @@ const CartStore = ({ children }: PropsWithChildren) => {
   const orderId = useAppSelector(selectSelectedOrderId);
   const cartId = useAppSelector(selectCartId);
   const { createNewOrder, isCreating } = useOrder();
+  const { removeProduct, isRemoving } = useCart();
+  const isLoading = isCreating || isRemoving;
+  const footerText = isCartEmpty
+    ? "Go Back"
+    : orderId
+    ? "Update Order"
+    : "Create Order";
 
   const processCart = () => {
     if (isCartEmpty) {
@@ -56,9 +74,41 @@ const CartStore = ({ children }: PropsWithChildren) => {
     }
   };
 
+  const removeFromCart = (cartItemId: string) => {
+    Alert.alert("Remove this item from cart?", "", [
+      {
+        text: "OK",
+        onPress: () =>
+          removeProduct({ id: cartItemId }).then(() =>
+            dispatch(removeItemFromCart(cartItemId))
+          ),
+        style: "default",
+      },
+      {
+        text: "Cancel",
+        onPress: () => {},
+        style: "cancel",
+      },
+    ]);
+  };
+
+  const redirectToProduct = (productId: string) => {
+    dispatch(setSelectedProductId(productId));
+    navigation.navigate("Product");
+  };
+
   return (
     <CartContext.Provider
-      value={{ cartItems, isCartEmpty, isCreating, processCart, orderId }}
+      value={{
+        cartItems,
+        isCartEmpty,
+        isLoading,
+        processCart,
+        removeFromCart,
+        redirectToProduct,
+        orderId,
+        footerText,
+      }}
     >
       {children}
     </CartContext.Provider>

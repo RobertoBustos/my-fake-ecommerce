@@ -2,6 +2,8 @@ import { StyleSheet, Text, View } from "react-native";
 import { colors } from "../constants/colors";
 import { ProductType } from "../constants/types";
 import useAppNavigation from "../hooks/useAppNavigation";
+import { setSelectedProductId } from "../redux/cart/reducer";
+import { useAppDispatch } from "../redux/hooks";
 import { formatCurrency } from "../utils/formatCurrency";
 import CustomCard from "./common/CustomCard";
 import CustomImage from "./common/CustomImage";
@@ -13,15 +15,15 @@ export type ProductCardPropsType = {
 
 const ProductCard = ({ data, disabled }: ProductCardPropsType) => {
   const navigation = useAppNavigation();
+  const dispatch = useAppDispatch();
 
   return (
     <CustomCard
       orientation="horizontal"
-      onPress={() =>
-        navigation.navigate("Product", {
-          productId: data.id.toString(),
-        })
-      }
+      onPress={() => {
+        dispatch(setSelectedProductId(data.id));
+        navigation.navigate("Product");
+      }}
       disabled={disabled}
     >
       <View style={styles.description}>

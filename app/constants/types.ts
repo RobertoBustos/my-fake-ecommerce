@@ -1,6 +1,6 @@
 export type RootStackParamList = {
     Products: undefined
-    Product: { productId: string };
+    Product: undefined;
     Cart: undefined
     Checkout: undefined
     Confirmation: undefined
@@ -9,7 +9,7 @@ export type RootStackParamList = {
 export type ProductType = {
     category: string;
     description: string;
-    id: number;
+    id: string;
     image: string;
     unitPrice: number;
     currency: string

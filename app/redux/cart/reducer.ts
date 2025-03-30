@@ -6,12 +6,16 @@ import { CartStateType } from "../types";
 
 const initialState: CartStateType = {
     items: [],
-    cartId: ""
+    cartId: "",
+    selectedProductId: ""
 }
 const cartSlice = createSlice({
     name: "cart",
     initialState,
     reducers: {
+        setSelectedProductId: (state, action: PayloadAction<string>) => {
+            state.selectedProductId = action.payload
+        },
         addItemToCart: (state, action: PayloadAction<CartItemType>) => {
             const item = state.items.find(item => item.id === action.payload.id)
             if (item) {
@@ -49,5 +53,5 @@ export const setCartId = createAsyncThunk("cart/setCartId", async (_, { rejectWi
     return cartId
 })
 
-export const { addItemToCart, removeItemFromCart, resetCart, setCartFromOrder } = cartSlice.actions
+export const { addItemToCart, removeItemFromCart, resetCart, setCartFromOrder, setSelectedProductId } = cartSlice.actions
 export default cartSlice.reducer

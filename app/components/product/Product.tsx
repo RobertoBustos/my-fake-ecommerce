@@ -1,3 +1,4 @@
+import { useProductContext } from "@/app/contexts/ProductContext";
 import { useMemo } from "react";
 import {
   RefreshControl,
@@ -7,29 +8,17 @@ import {
   View,
 } from "react-native";
 import { colors } from "../../constants/colors";
-import { ProductType } from "../../constants/types";
 import { formatCurrency } from "../../utils/formatCurrency";
 import NoStockMessage from "../NoStockMessage";
 import QuantityButtons from "../QuantityButtons";
 import CustomImage from "../common/CustomImage";
 
-export type ProdctPropsType = {
-  data: ProductType;
-  currentQuantity: number;
-  onQuantityChange: (quantity: number) => void;
-  onRefresh?: () => void;
-  isLoading?: boolean;
-};
+const Product = () => {
+  const { data, reloadProduct, isLoading, quantity, setQuantity } =
+    useProductContext();
 
-const Product = ({
-  data,
-  currentQuantity,
-  onQuantityChange,
-  onRefresh,
-  isLoading = false,
-}: ProdctPropsType) => {
   const handleRefresh = () => {
-    if (onRefresh) onRefresh();
+    reloadProduct();
   };
 
   const maxPurchaseLimit = useMemo(() => {
@@ -38,6 +27,10 @@ const Product = ({
       ? data.stock
       : data.purchaseLimits.max;
   }, [data]);
+
+  if (!data) {
+    return null;
+  }
 
   return (
     <View style={styles.container}>
@@ -58,8 +51,8 @@ const Product = ({
             <QuantityButtons
               min={data.purchaseLimits.min || 1}
               max={maxPurchaseLimit}
-              value={currentQuantity}
-              onChange={onQuantityChange}
+              value={quantity}
+              onChange={setQuantity}
             />
             <Text style={styles.stock}>{data.stock} Available</Text>
           </>

@@ -30,6 +30,7 @@ export type OrderStateType = {
 export type CartStateType = {
     items: CartItemType[]
     cartId: string
+    selectedProductId: string
 }
 
 export default {}

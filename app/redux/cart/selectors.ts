@@ -6,4 +6,6 @@ export const selectIsCartEmpty = (state: RootStateType) => state.cart.items.leng
 
 export const selectCartId = (state: RootStateType) => state.cart.cartId
 
+export const selectSelectedProductId = (state: RootStateType) => state.cart.selectedProductId
+
 export default {}

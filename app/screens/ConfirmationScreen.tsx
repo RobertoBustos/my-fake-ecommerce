@@ -16,11 +16,11 @@ const ConfirmationScreen = () => {
 
   useEffect(() => {
     if (!orderId) return;
-    fetchOrder(orderId);
+    fetchOrder(orderId, !orderData?.payment ? 1500 : 0);
     return () => {};
-  }, [fetchOrder, orderId]);
+  }, [fetchOrder, orderData?.payment, orderId]);
 
-  if (isLoading) {
+  if (isLoading || !orderData?.payment) {
     return <LoadingScreen />;
   }
 

@@ -42,8 +42,8 @@ const useOrder = () => {
         return getIncompleteOrders({ variables: { filter: { field: "status", value: "INCOMPLETE" } } })
     }, [getIncompleteOrders])
 
-    const fetchOrder = useCallback(async (id: string) => {
-        return getOrders({ variables: { filter: { field: "id", value: id } } })
+    const fetchOrder = useCallback(async (id: string, pollInterval: number = 0) => {
+        return getOrders({ variables: { filter: { field: "id", value: id } }, pollInterval })
     }, [getOrders])
 
     const createNewOrder = useCallback(async (input: CreateOrderInput) => {

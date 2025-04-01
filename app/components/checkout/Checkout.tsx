@@ -1,15 +1,10 @@
 import { useMemo } from "react";
-import {
-  Alert,
-  Platform,
-  RefreshControl,
-  StyleSheet,
-  View,
-} from "react-native";
+import { Platform, RefreshControl, StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useOrderContext } from "../../contexts/OrderContext";
 import useKeyboardStatus from "../../hooks/useKeyboardStatus";
 import CheckoutButtons from "../CheckoutButtons";
+import OrderNotAllowedScreen from "../OrderNotAllowedScreen";
 import OrderSummary from "../OrderSummary";
 import AddressDetailsForm from "../forms/AddressDetailsForm";
 import UserDetailsForm from "../forms/UserDetailsForm";
@@ -18,13 +13,8 @@ import CheckoutHeader from "./CheckoutHeader";
 
 const Checkout = () => {
   const { keyboardStatus } = useKeyboardStatus();
-  const {
-    orderData,
-    refreshCheckout,
-    isLoading,
-    setOrderForEdition,
-    cancelIncompleteOrder,
-  } = useOrderContext();
+  const { orderData, reloadOrder, isLoading, cancelOrder, returnOrderToCart } =
+    useOrderContext();
 
   const userData = useMemo(() => {
     return {
@@ -41,37 +31,21 @@ const Checkout = () => {
   }, [orderData]);
 
   const handleReturnOrderToCart = () => {
-    Alert.alert("Do you wish to modify this order?", "", [
-      {
-        text: "OK",
-        onPress: () => setOrderForEdition(),
-        style: "default",
-      },
-      {
-        text: "Cancel",
-        onPress: () => {},
-        style: "cancel",
-      },
-    ]);
+    returnOrderToCart();
   };
 
   const handleCancelOrder = () => {
-    Alert.alert("Cancel this order?", "", [
-      {
-        text: "OK",
-        onPress: () => cancelIncompleteOrder(),
-        style: "default",
-      },
-      {
-        text: "Cancel",
-        onPress: () => {},
-        style: "cancel",
-      },
-    ]);
+    cancelOrder();
   };
 
   if (!orderData) {
     return null;
+  }
+
+  if (orderData && orderData.status === "COMPLETE") {
+    return (
+      <OrderNotAllowedScreen textToDisplay="Sorry, This order has been completed" />
+    );
   }
 
   return (
@@ -79,7 +53,7 @@ const Checkout = () => {
       style={styles.container}
       showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={isLoading} onRefresh={refreshCheckout} />
+        <RefreshControl refreshing={isLoading} onRefresh={reloadOrder} />
       }
     >
       <>

@@ -1,33 +1,21 @@
-import { useEffect } from "react";
+import { StaticScreenProps } from "@react-navigation/native";
 import Layout from "../components/Layout";
-import LoadingScreen from "../components/common/LoadingScreen";
 import Confirmation from "../components/confirmation/Confirmation";
 import ConfirmationFooter from "../components/confirmation/ConfirmationFooter";
-import { OrderType } from "../constants/types";
-import useOrder from "../hooks/useOrder";
-import { useAppSelector } from "../redux/hooks";
-import { selectSelectedOrderId } from "../redux/order/selectors";
+import { RootStackParamList } from "../constants/types";
+import OrderStore from "../contexts/OrderContext";
 
-const ConfirmationScreen = () => {
-  const orderId = useAppSelector(selectSelectedOrderId);
-  const { fetchOrder, orders, isLoading } = useOrder();
-  const orderData: OrderType | undefined =
-    orders && orders.length && orders.length === 1 ? orders[0] : undefined;
+export type ConfirmationScreenPropsType = StaticScreenProps<
+  RootStackParamList["Confirmation"]
+>;
 
-  useEffect(() => {
-    if (!orderId) return;
-    fetchOrder(orderId, !orderData?.payment ? 1500 : 0);
-    return () => {};
-  }, [fetchOrder, orderData?.payment, orderId]);
-
-  if (isLoading || !orderData?.payment) {
-    return <LoadingScreen />;
-  }
-
+const ConfirmationScreen = ({ route }: ConfirmationScreenPropsType) => {
   return (
-    <Layout footerComponent={<ConfirmationFooter />}>
-      <Confirmation data={orderData} />
-    </Layout>
+    <OrderStore orderId={route.params.orderId}>
+      <Layout footerComponent={<ConfirmationFooter />}>
+        <Confirmation />
+      </Layout>
+    </OrderStore>
   );
 };
 

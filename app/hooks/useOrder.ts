@@ -38,8 +38,8 @@ const useOrder = () => {
     const [getOrders, { loading: isLoading, data: ordersResponse, error, refetch: refetchOrder }] = useLazyQuery(GET_ORDERS);
     const [getIncompleteOrders, { data: incompleteOrdersResponse, refetch: refetchIncompleteOrders }] = useLazyQuery(GET_INCOMPLETE_ORDERS);
 
-    const fetchIncompleteOrders = useCallback(async () => {
-        return getIncompleteOrders({ variables: { filter: { field: "status", value: "INCOMPLETE" } } })
+    const fetchIncompleteOrders = useCallback(async (cartId: string) => {
+        return getIncompleteOrders({ variables: { filter: { field: "cart", value: cartId } } })
     }, [getIncompleteOrders])
 
     const fetchOrder = useCallback(async (id: string, pollInterval: number = 0) => {

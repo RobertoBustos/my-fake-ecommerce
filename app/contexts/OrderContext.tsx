@@ -17,38 +17,42 @@ import {
   selectCustomerData,
   selectIsAddressDataValid,
   selectIsCustomerDataValid,
-  selectSelectedOrderId,
 } from "../redux/order/selectors";
 import { formatCurrency } from "../utils/formatCurrency";
 import { useStripeContext } from "./StripeContext";
 
 export type OrderContextType = {
   orderData: OrderType | undefined;
-  refreshCheckout: () => void;
-  setOrderForEdition: () => void;
-  cancelIncompleteOrder: () => void;
+  reloadOrder: () => void;
+  returnOrderToCart: () => void;
+  cancelOrder: () => void;
   isLoading: boolean;
   processCheckout: () => void;
   footerText: string;
   isProcessing: boolean;
   isDisabled: boolean;
+  returnFromConfirmation: () => void;
 };
 
 const OrderContext = createContext<OrderContextType>({
   orderData: undefined,
-  refreshCheckout: () => {},
-  setOrderForEdition: () => {},
-  cancelIncompleteOrder: () => {},
+  reloadOrder: () => {},
+  returnOrderToCart: () => {},
+  cancelOrder: () => {},
   isLoading: false,
   processCheckout: () => {},
   footerText: "",
   isProcessing: false,
   isDisabled: false,
+  returnFromConfirmation: () => {},
 });
 
-const OrderStore = ({ children }: PropsWithChildren) => {
+export type OrderStoreContextType = PropsWithChildren & {
+  orderId: string;
+};
+
+const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
   const navigation = useAppNavigation();
-  const orderId = useAppSelector(selectSelectedOrderId);
   const {
     fetchOrder,
     orders,
@@ -69,15 +73,10 @@ const OrderStore = ({ children }: PropsWithChildren) => {
   const isAddressDataValid = useAppSelector(selectIsAddressDataValid());
   const orderData: OrderType | undefined =
     orders && orders.length && orders.length === 1 ? orders[0] : undefined;
-  const footerText =
-    orderData?.status === "PAYMENT_PENDING"
-      ? `Complete Your Payment for ${formatCurrency(orderData.totals.total)}`
-      : "Confirm Your Order Information";
   const isProcessing = isUpdating || isLoading || isCreatingPayment;
   const isDisabled = !isCustomerDataValid || !isAddressDataValid;
 
   useEffect(() => {
-    if (!orderId) return;
     fetchOrder(orderId);
     return () => {};
   }, [fetchOrder, orderId]);
@@ -99,41 +98,21 @@ const OrderStore = ({ children }: PropsWithChildren) => {
         })
       );
     }
+    return () => {};
   }, [dispatch, orderData]);
 
-  const refreshCheckout = () => {
+  const getFooterText = () => {
+    if (orderData?.status === "COMPLETE") return "Return to Home";
+    if (orderData?.status === "PAYMENT_PENDING")
+      return `Complete Your Payment for ${formatCurrency(
+        orderData.totals.total
+      )}`;
+    return "Confirm Your Order Information";
+  };
+
+  const reloadOrder = () => {
     if (!orderData) return;
     refetchOrder();
-  };
-
-  const updateOrder = () => {
-    if (!orderData) return;
-    updateExistingOrder({
-      id: orderData.id,
-      customer: { email: customerData.email, name: customerData.name },
-      address: { address: addressData.address, zipCode: addressData.zipCode },
-      status: "PAYMENT_PENDING",
-    })
-      .then((data) => {
-        refetchOrder();
-      })
-      .catch((error) => Alert.alert(error));
-  };
-
-  const setOrderForEdition = () => {
-    if (!orderData) return;
-    updateExistingOrder({
-      id: orderData.id,
-      customer: null,
-      address: null,
-      status: "INCOMPLETE",
-    })
-      .then((data) => {
-        dispatch(setCartFromOrder(orderData.details));
-        navigation.navigate("Products");
-        return;
-      })
-      .catch((error) => Alert.alert(error));
   };
 
   const cancelIncompleteOrder = () => {
@@ -147,6 +126,68 @@ const OrderStore = ({ children }: PropsWithChildren) => {
           routes: [{ name: "Products" }],
         });
         return;
+      })
+      .catch((error) => Alert.alert(error));
+  };
+
+  const cancelOrder = () => {
+    Alert.alert("Cancel this order?", "", [
+      {
+        text: "OK",
+        onPress: () => cancelIncompleteOrder(),
+        style: "default",
+      },
+      {
+        text: "Cancel",
+        onPress: () => {},
+        style: "cancel",
+      },
+    ]);
+  };
+
+  const setOrderForEdition = () => {
+    if (!orderData) return;
+    updateExistingOrder({
+      id: orderData.id,
+      customer: null,
+      address: null,
+      status: "INCOMPLETE",
+    })
+      .then(() => {
+        if (orderData.details.length > 0) {
+          dispatch(setCartFromOrder(orderData.details));
+        }
+        navigation.navigate("Products");
+        return;
+      })
+      .catch((error) => Alert.alert(error));
+  };
+
+  const returnOrderToCart = () => {
+    Alert.alert("Do you wish to modify this order?", "", [
+      {
+        text: "OK",
+        onPress: () => setOrderForEdition(),
+        style: "default",
+      },
+      {
+        text: "Cancel",
+        onPress: () => {},
+        style: "cancel",
+      },
+    ]);
+  };
+
+  const updateOrder = () => {
+    if (!orderData) return;
+    updateExistingOrder({
+      id: orderData.id,
+      customer: { email: customerData.email, name: customerData.name },
+      address: { address: addressData.address, zipCode: addressData.zipCode },
+      status: "PAYMENT_PENDING",
+    })
+      .then((data) => {
+        refetchOrder();
       })
       .catch((error) => Alert.alert(error));
   };
@@ -166,10 +207,15 @@ const OrderStore = ({ children }: PropsWithChildren) => {
                   status: "COMPLETE",
                 })
                   .then((response) => {
-                    refetchIncompleteOrders();
+                    refetchOrder();
                     navigation.reset({
                       index: 0,
-                      routes: [{ name: "Confirmation" }],
+                      routes: [
+                        {
+                          name: "Confirmation",
+                          params: { orderId: orderData.id },
+                        },
+                      ],
                     });
                   })
                   .catch((error) => Alert.alert(error));
@@ -189,6 +235,18 @@ const OrderStore = ({ children }: PropsWithChildren) => {
     return updateOrder();
   };
 
+  const returnFromConfirmation = () => {
+    dispatch(resetCart());
+    dispatch(setSelectedOrderId(undefined));
+    refetchIncompleteOrders().then(() => {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Products" }],
+      });
+      return;
+    });
+  };
+
   if (isLoading) {
     return <LoadingScreen />;
   }
@@ -199,22 +257,17 @@ const OrderStore = ({ children }: PropsWithChildren) => {
     );
   }
 
-  if (orderData && orderData.status === "COMPLETE") {
-    return (
-      <OrderNotAllowedScreen textToDisplay="Sorry, This order has been completed" />
-    );
-  }
-
   return (
     <OrderContext.Provider
       value={{
         orderData,
         isLoading,
-        refreshCheckout,
-        setOrderForEdition,
-        cancelIncompleteOrder,
+        reloadOrder,
+        returnOrderToCart,
+        cancelOrder,
         processCheckout,
-        footerText,
+        returnFromConfirmation,
+        footerText: getFooterText(),
         isProcessing,
         isDisabled,
       }}

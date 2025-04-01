@@ -78,8 +78,8 @@ query GetOrders($filter: Filter){
 }`;
 
 export const GET_INCOMPLETE_ORDERS = gql`
-query GetIncompleteOrders {
-   incompleteOrders {
+query GetIncompleteOrders ($filter: Filter) {
+   incompleteOrders (filter: $filter) {
     id
     status
     totals {
@@ -87,5 +87,21 @@ query GetIncompleteOrders {
     }
   }
 }`;
+
+export const GET_CART = gql`
+query GetCart($filter: Filter) {
+  carts (filter: $filter){
+    id
+    productId
+    quantity
+    unitPrice
+    subtotal
+    product {
+      image
+      title
+      id
+    }
+  }
+}`
 
 export default {}

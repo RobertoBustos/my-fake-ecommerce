@@ -65,13 +65,13 @@ const CartStore = ({ children }: PropsWithChildren) => {
         .then((data) => {
           refetchIncompleteOrders();
           dispatch(setSelectedOrderId(data.id));
-          navigation.navigate("Checkout");
+          navigation.navigate("Checkout", { orderId: data.id });
           return;
         })
         .catch((error) => Alert.alert(error));
     }
     if (orderId) {
-      navigation.navigate("Checkout");
+      navigation.navigate("Checkout", { orderId });
     }
   };
 
@@ -95,7 +95,7 @@ const CartStore = ({ children }: PropsWithChildren) => {
 
   const redirectToProduct = (productId: string) => {
     dispatch(setSelectedProductId(productId));
-    navigation.navigate("Product");
+    navigation.navigate("Product", { productId });
   };
 
   return (

@@ -1,6 +1,7 @@
-import { useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { useCallback } from "react";
 import { ADD_PRODUCT, REMOVE_PRODUCT } from "../graphql/mutations";
+import { GET_CART } from "../graphql/queries";
 
 
 export type AddToCartInputType = {
@@ -15,8 +16,13 @@ export type RemoveFromCartInput = {
 }
 
 const useCart = () => {
+    const [getCart, { loading: isLoading, refetch: reloadCart }] = useLazyQuery(GET_CART)
     const [addToCart, { loading: isAdding }] = useMutation(ADD_PRODUCT);
     const [removeFromCart, { loading: isRemoving }] = useMutation(REMOVE_PRODUCT);
+
+    const fetchCart = useCallback(async (id: string, pollInterval: number = 0) => {
+        return getCart({ variables: { filter: { field: "cartId", value: id } }, pollInterval })
+    }, [getCart])
 
     const addProduct = useCallback(async (input: AddToCartInputType) => {
         try {
@@ -44,7 +50,7 @@ const useCart = () => {
         }
     }, [removeFromCart])
 
-    return { addProduct, isAdding, removeProduct, isRemoving }
+    return { addProduct, isAdding, removeProduct, isRemoving, fetchCart, isLoading, reloadCart }
 }
 
 export default useCart

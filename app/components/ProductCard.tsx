@@ -22,7 +22,7 @@ const ProductCard = ({ data, disabled }: ProductCardPropsType) => {
       orientation="horizontal"
       onPress={() => {
         dispatch(setSelectedProductId(data.id));
-        navigation.navigate("Product");
+        navigation.navigate("Product", { productId: data.id });
       }}
       disabled={disabled}
     >

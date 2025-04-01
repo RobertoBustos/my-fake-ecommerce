@@ -3,6 +3,7 @@ import { StyleSheet, Text } from "react-native";
 import { colors } from "../constants/colors";
 import useAppNavigation from "../hooks/useAppNavigation";
 import useOrder from "../hooks/useOrder";
+import { selectCartId } from "../redux/cart/selectors";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setSelectedOrderId } from "../redux/order/reducer";
 import { selectSelectedOrderId } from "../redux/order/selectors";
@@ -21,18 +22,20 @@ const IncompleteOrdersList = () => {
   const dispatch = useAppDispatch();
   const navigation = useAppNavigation();
   const currentOrderId = useAppSelector(selectSelectedOrderId);
+  const cartId = useAppSelector(selectCartId);
   const { fetchIncompleteOrders, incompleteOrders } = useOrder();
 
   useEffect(() => {
-    fetchIncompleteOrders();
+    if (cartId === "") return;
+    fetchIncompleteOrders(cartId);
     return () => {};
-  }, [fetchIncompleteOrders]);
+  }, [cartId, fetchIncompleteOrders]);
 
   const handleRedirect = (orderId: string) => {
     if (currentOrderId !== orderId) {
       dispatch(setSelectedOrderId(orderId));
     }
-    navigation.navigate("Checkout");
+    navigation.navigate("Checkout", { orderId });
   };
 
   if (!incompleteOrders) {

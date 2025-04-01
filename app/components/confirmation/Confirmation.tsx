@@ -1,22 +1,23 @@
+import { useOrderContext } from "@/app/contexts/OrderContext";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../constants/colors";
-import { CartItemType, OrderType } from "../../constants/types";
+import { CartItemType } from "../../constants/types";
 import { formatCurrency } from "../../utils/formatCurrency";
 import AddressSummary from "../AddressSummary";
 import CustomerSummary from "../CustomerSummary";
 import OrderSummary from "../OrderSummary";
 import PaymentSummary from "../PaymentSummary";
 import CustomImage from "../common/CustomImage";
+import LoadingScreen from "../common/LoadingScreen";
 import ConfirmationHeader from "./ConfirmationHeader";
 
-export type ConfirmationPropsType = {
-  data?: OrderType;
-};
+const Confirmation = () => {
+  const { orderData, reloadOrder } = useOrderContext();
 
-const Confirmation = ({ data }: ConfirmationPropsType) => {
-  if (!data || data.payment === null) {
-    return null;
+  if (!orderData || orderData.payment === null) {
+    reloadOrder();
+    return <LoadingScreen />;
   }
 
   return (
@@ -26,14 +27,14 @@ const Confirmation = ({ data }: ConfirmationPropsType) => {
         showsVerticalScrollIndicator={false}
       >
         <>
-          <ConfirmationHeader orderId={data.id} />
-          {data.details.map((item) => {
+          <ConfirmationHeader orderId={orderData.id} />
+          {orderData.details.map((item) => {
             return <OrderConfirmationItem data={item} key={item.id} />;
           })}
-          <PaymentSummary data={data.payment.paymentDetails} />
-          <OrderSummary data={data.totals} />
-          <CustomerSummary data={data.customer} />
-          <AddressSummary data={data.address} />
+          <PaymentSummary data={orderData.payment.paymentDetails} />
+          <OrderSummary data={orderData.totals} />
+          <CustomerSummary data={orderData.customer} />
+          <AddressSummary data={orderData.address} />
         </>
       </ScrollView>
     </View>

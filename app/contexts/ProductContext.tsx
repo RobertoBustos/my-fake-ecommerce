@@ -5,7 +5,7 @@ import useAppNavigation from "../hooks/useAppNavigation";
 import useCart from "../hooks/useCart";
 import useProduct from "../hooks/useProduct";
 import { addItemToCart } from "../redux/cart/reducer";
-import { selectCartId, selectSelectedProductId } from "../redux/cart/selectors";
+import { selectCartId } from "../redux/cart/selectors";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { selectSelectedOrderId } from "../redux/order/selectors";
 
@@ -35,15 +35,18 @@ const ProductContext = createContext<ProdctContextType>({
   setQuantity: (value: number) => {},
 });
 
-const ProductStore = ({ children }: PropsWithChildren) => {
+export type ProductStorePropsType = PropsWithChildren & {
+  productId: string;
+};
+
+const ProductStore = ({ children, productId }: ProductStorePropsType) => {
   const dispatch = useAppDispatch();
   const navigation = useAppNavigation();
   const cartId = useAppSelector(selectCartId);
   const orderId = useAppSelector(selectSelectedOrderId);
-  const productId = useAppSelector(selectSelectedProductId);
   const [quantity, setQuantity] = useState<number>(1);
   const { data, isLoading, refetch, error } = useProduct({
-    filter: { field: "id", value: productId || "" },
+    filter: { field: "id", value: productId },
   });
   const { addProduct, isAdding } = useCart();
 

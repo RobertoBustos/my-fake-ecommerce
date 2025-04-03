@@ -1,6 +1,11 @@
 import { useMemo } from "react";
-import { Platform, RefreshControl, StyleSheet, View } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import {
+  Platform,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { useOrderContext } from "../../contexts/OrderContext";
 import useKeyboardStatus from "../../hooks/useKeyboardStatus";
 import CheckoutButtons from "../CheckoutButtons";
@@ -49,7 +54,7 @@ const Checkout = () => {
   }
 
   return (
-    <KeyboardAwareScrollView
+    <ScrollView
       style={styles.container}
       showsVerticalScrollIndicator={false}
       refreshControl={
@@ -71,7 +76,7 @@ const Checkout = () => {
       {keyboardStatus === "shown" && Platform.OS === "ios" ? (
         <View style={styles.footer}>{<CheckoutFooter />}</View>
       ) : null}
-    </KeyboardAwareScrollView>
+    </ScrollView>
   );
 };
 

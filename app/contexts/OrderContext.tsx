@@ -63,7 +63,6 @@ const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
     isLoading,
     isUpdating,
     isCreatingPayment,
-    refetchIncompleteOrders,
   } = useOrder();
   const { confirmPayment, initPayment } = useStripeContext();
   const dispatch = useAppDispatch();
@@ -238,13 +237,11 @@ const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
   const returnFromConfirmation = () => {
     dispatch(resetCart());
     dispatch(setSelectedOrderId(undefined));
-    refetchIncompleteOrders().then(() => {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "Products" }],
-      });
-      return;
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Products" }],
     });
+    return;
   };
 
   if (isLoading) {

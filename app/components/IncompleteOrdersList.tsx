@@ -1,3 +1,4 @@
+import { useIsFocused } from "@react-navigation/native";
 import { useEffect } from "react";
 import { StyleSheet, Text } from "react-native";
 import { colors } from "../constants/colors";
@@ -24,12 +25,14 @@ const IncompleteOrdersList = () => {
   const currentOrderId = useAppSelector(selectSelectedOrderId);
   const cartId = useAppSelector(selectCartId);
   const { fetchIncompleteOrders, incompleteOrders } = useOrder();
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    if (cartId === "") return;
-    fetchIncompleteOrders(cartId);
+    if (cartId !== "" && isFocused) {
+      fetchIncompleteOrders(cartId);
+    }
     return () => {};
-  }, [cartId, fetchIncompleteOrders]);
+  }, [cartId, fetchIncompleteOrders, isFocused]);
 
   const handleRedirect = (orderId: string) => {
     if (currentOrderId !== orderId) {

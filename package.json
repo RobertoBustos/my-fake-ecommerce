@@ -5,6 +5,9 @@
   "scripts": {
     "start": "expo start --clear",
     "dev": "eval $(grep '^NODE_ENV' .env.dev) && npm run start",
+    "build-dev-android": "eas build --platform android --profile development-android",
+    "build-dev-ios": "eas build --platform ios --profile development-ios-simulator",
+    "build-dev": "npm run build-dev-android && npm run build-dev-ios-simulator",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "ios": "expo start --ios",

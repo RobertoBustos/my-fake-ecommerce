@@ -1,8 +1,15 @@
 import { PropsWithChildren } from "react";
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet } from "react-native";
+import { KeyboardStickyView } from "react-native-keyboard-controller";
 
 const CustomFooter = ({ children }: PropsWithChildren) => {
-  return <View style={styles.footer}>{children}</View>;
+  const offset = { closed: 0, opened: Platform.OS === "ios" ? 36 : 0 };
+
+  return (
+    <KeyboardStickyView style={styles.footer} offset={offset}>
+      {children}
+    </KeyboardStickyView>
+  );
 };
 
 const styles = StyleSheet.create({

@@ -1,4 +1,5 @@
 import { ApolloProvider } from "@apollo/client";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import { Provider as ReduxProvider } from "react-redux";
 import gqlClient from "../graphql/gqlClient";
 import store from "../redux/store";
@@ -14,7 +15,9 @@ const RootContext = ({ children }: RootContextType) => {
     <ReduxProvider store={store}>
       <ApolloProvider client={gqlClient}>
         <SiblingStore>
-          <StripeStore>{children}</StripeStore>
+          <StripeStore>
+            <KeyboardProvider>{children}</KeyboardProvider>
+          </StripeStore>
         </SiblingStore>
       </ApolloProvider>
     </ReduxProvider>

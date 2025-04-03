@@ -1,18 +1,15 @@
 import { useMemo } from "react";
-import { Platform, RefreshControl, StyleSheet, View } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { RefreshControl } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { useOrderContext } from "../../contexts/OrderContext";
-import useKeyboardStatus from "../../hooks/useKeyboardStatus";
 import CheckoutButtons from "../CheckoutButtons";
 import OrderNotAllowedScreen from "../OrderNotAllowedScreen";
 import OrderSummary from "../OrderSummary";
 import AddressDetailsForm from "../forms/AddressDetailsForm";
 import UserDetailsForm from "../forms/UserDetailsForm";
-import CheckoutFooter from "./CheckoutFooter";
 import CheckoutHeader from "./CheckoutHeader";
 
 const Checkout = () => {
-  const { keyboardStatus } = useKeyboardStatus();
   const { orderData, reloadOrder, isLoading, cancelOrder, returnOrderToCart } =
     useOrderContext();
 
@@ -50,41 +47,25 @@ const Checkout = () => {
 
   return (
     <KeyboardAwareScrollView
-      style={styles.container}
-      showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl refreshing={isLoading} onRefresh={reloadOrder} />
       }
+      contentContainerStyle={{}}
+      bottomOffset={100}
+      showsVerticalScrollIndicator={false}
     >
-      <>
-        <CheckoutHeader orderId={orderData.id} />
-        <OrderSummary data={orderData.totals} />
-        <UserDetailsForm data={userData} />
-        <AddressDetailsForm data={addressData} />
-        <CheckoutButtons
-          editOrderLabel="Edit Order"
-          cancelOrderLabel="Cancel Order"
-          onCancelOrder={handleCancelOrder}
-          onEditOrder={handleReturnOrderToCart}
-        />
-      </>
-      {keyboardStatus === "shown" && Platform.OS === "ios" ? (
-        <View style={styles.footer}>{<CheckoutFooter />}</View>
-      ) : null}
+      <CheckoutHeader orderId={orderData.id} />
+      <OrderSummary data={orderData.totals} />
+      <UserDetailsForm data={userData} />
+      <AddressDetailsForm data={addressData} />
+      <CheckoutButtons
+        editOrderLabel="Edit Order"
+        cancelOrderLabel="Cancel Order"
+        onCancelOrder={handleCancelOrder}
+        onEditOrder={handleReturnOrderToCart}
+      />
     </KeyboardAwareScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: "100%",
-  },
-  footer: {
-    width: "100%",
-    height: 70,
-    paddingVertical: 8,
-  },
-});
 
 export default Checkout;

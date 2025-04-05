@@ -1,0 +1,32 @@
+appId: "com.robertobustos.myfakeecommerce"
+---
+- launchApp
+- assertVisible: "Products"
+- scrollUntilVisible:
+    element:
+      id: "ProductCard-10" # or any other selector
+    direction: DOWN # DOWN|UP|LEFT|RIGHT (optional, default: DOWN)
+    timeout: 50000 # (optional, default: 20000) ms
+    speed: 40 # 0-100 (optional, default: 40) Scroll speed. Higher values scroll faster.
+    visibilityPercentage: 100 # 0-100 (optional, default: 100) Percentage of element visible in viewport
+    centerElement: true # true|false (optional, default: false)
+- tapOn: { id: "ProductCard-10" }
+- assertVisible: "Product Details"
+- assertVisible: "Add to Cart"
+- tapOn: { id: "incrementButton" }
+- tapOn: { id: "incrementButton" }
+- tapOn: { id: "incrementButton" }
+- assertVisible: "4"
+- tapOn: { id: "productFooterButton" }
+- assertVisible: "Products"
+- assertVisible: "View Cart"
+- tapOn: { id: "catalogFooterButton" }
+- assertVisible: "My Cart"
+- assertVisible: "Create Order"
+- tapOn: { id: "removeFromCartButton" }
+- assertVisible: "Remove this item from cart?"
+- tapOn: "OK"
+- assertVisible: "Go Back"
+- tapOn: { id: "cartFooterButton" }
+- assertVisible: "Products"
+- assertNotVisible: "View Cart"

@@ -17,6 +17,7 @@ export type CustomCardPropsType = PropsWithChildren & {
   variant?: "warning" | "error" | "info";
   headerText?: string;
   isLoading?: boolean;
+  testID?: string;
 };
 
 const CustomCard = ({
@@ -27,6 +28,7 @@ const CustomCard = ({
   variant,
   headerText,
   isLoading,
+  testID,
 }: CustomCardPropsType) => {
   const mixedStyles: StyleProp<ViewStyle> = { ...styles.container };
   const direction = orientation === "vertical" ? "column" : "row";
@@ -38,7 +40,11 @@ const CustomCard = ({
   return isLoading ? (
     <FormSkeleton rows={1} rowHeight={80} />
   ) : (
-    <TouchableWithoutFeedback onPress={onPress} disabled={disabled}>
+    <TouchableWithoutFeedback
+      onPress={onPress}
+      disabled={disabled}
+      testID={testID}
+    >
       <View style={mixedStyles}>
         {headerText ? (
           <Text style={styles.headerText}>{headerText}</Text>

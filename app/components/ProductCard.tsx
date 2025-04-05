@@ -25,6 +25,7 @@ const ProductCard = ({ data, disabled }: ProductCardPropsType) => {
         navigation.navigate("Product", { productId: data.id });
       }}
       disabled={disabled}
+      testID={`ProductCard-${data.id}`}
     >
       <View style={styles.description}>
         <Text style={styles.title}>{data.title}</Text>

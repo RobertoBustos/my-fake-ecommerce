@@ -46,6 +46,7 @@ const CartItemCard = ({ data, disabled }: CartItemCardPropsType) => {
       <CustomButton
         onPress={handleRemoveFromCart}
         buttonComponent={<DeleteButton color={colors.error} size={30} />}
+        testID="removeFromCartButton"
       />
     </CustomCard>
   );

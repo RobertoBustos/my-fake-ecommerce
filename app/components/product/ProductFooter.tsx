@@ -19,6 +19,7 @@ const ProductFooter = () => {
         onPress={handleClick}
         disabled={data?.stock === 0 || cartId === "" || isAdding}
         isLoading={isAdding}
+        testID="productFooterButton"
       />
     </CustomFooter>
   );

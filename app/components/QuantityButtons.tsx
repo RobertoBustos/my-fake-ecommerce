@@ -38,6 +38,7 @@ const QuantityButtons = ({
             backgroundColor={value <= min ? colors.dark : colors.primary}
           />
         }
+        testID="decrementButton"
       />
       {showValue ? (
         <Text style={styles.quantity}>{value.toString()}</Text>
@@ -52,6 +53,7 @@ const QuantityButtons = ({
             backgroundColor={value >= max ? colors.dark : colors.primary}
           />
         }
+        testID="incrementButton"
       />
     </View>
   );

@@ -6,6 +6,7 @@ export type FooterButtonPropsType = {
   onPress: () => void;
   disabled?: boolean;
   isLoading?: boolean;
+  testID?: string;
 };
 
 const FooterButton: React.FC<FooterButtonPropsType> = ({
@@ -13,6 +14,7 @@ const FooterButton: React.FC<FooterButtonPropsType> = ({
   onPress,
   disabled,
   isLoading,
+  testID,
 }) => {
   return (
     <CustomButton
@@ -21,6 +23,7 @@ const FooterButton: React.FC<FooterButtonPropsType> = ({
         <DefaultButton text={text} disabled={disabled} isLoading={isLoading} />
       }
       disabled={disabled || isLoading}
+      testID={testID}
     />
   );
 };

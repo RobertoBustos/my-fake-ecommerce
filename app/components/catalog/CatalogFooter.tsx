@@ -15,6 +15,7 @@ const CatalogFooter = () => {
         onPress={() => {
           navigation.navigate("Cart");
         }}
+        testID="catalogFooterButton"
       />
     </CustomFooter>
   ) : null;

@@ -1,4 +1,5 @@
 import { useQuery } from "@apollo/client";
+import { ProductType } from "../constants/types";
 import { GET_PRODUCTS } from "../graphql/queries";
 
 export type UseProductPropsType = {
@@ -13,13 +14,7 @@ const useProduct = ({ filter }: UseProductPropsType) => {
         variables: { filter: filter }, notifyOnNetworkStatusChange: true
     });
 
-    const shapeData = () => {
-        if (!response) return undefined
-        if (response.products.length === 1) return response.products[0]
-        return response.products
-    }
-
-    const data = shapeData()
+    const data: ProductType[] = response ? response.products : []
 
     return { isLoading, data, refetch, error }
 }

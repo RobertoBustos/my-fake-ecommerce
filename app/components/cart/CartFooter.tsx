@@ -16,6 +16,7 @@ const CartFooter = () => {
         onPress={handleRedirect}
         isLoading={isLoading}
         disabled={isLoading}
+        testID="CartScreen.Footer"
       />
     </CustomFooter>
   );

@@ -1,14 +1,19 @@
 import { useImage } from "expo-image";
 import { Image } from "react-native";
-import ImageSkeleton from "../skeletons/ImageSkeleton";
 
 export type CustomImagePropsType = {
   imageUrl: string;
   width: number;
   height: number;
+  testID?: string;
 };
 
-const CustomImage = ({ imageUrl, width, height }: CustomImagePropsType) => {
+const CustomImage = ({
+  imageUrl,
+  width,
+  height,
+  testID,
+}: CustomImagePropsType) => {
   const image = useImage(imageUrl, {
     maxHeight: height,
     maxWidth: width,
@@ -16,11 +21,16 @@ const CustomImage = ({ imageUrl, width, height }: CustomImagePropsType) => {
   });
 
   if (!image) {
-    return <ImageSkeleton width={width} height={height} />;
+    return null;
   }
 
   return (
-    <Image src={imageUrl} style={{ width, height }} resizeMode="contain" />
+    <Image
+      src={imageUrl}
+      style={{ width, height }}
+      resizeMode="contain"
+      testID={testID}
+    />
   );
 };
 

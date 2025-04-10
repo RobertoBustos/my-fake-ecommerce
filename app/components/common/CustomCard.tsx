@@ -8,7 +8,6 @@ import {
   ViewStyle,
 } from "react-native";
 import { GLOBAL_THEME_BORDER_RADIUS, colors } from "../../constants/colors";
-import FormSkeleton from "../skeletons/FormSkeleton";
 
 export type CustomCardPropsType = PropsWithChildren & {
   onPress?: () => void;
@@ -17,6 +16,7 @@ export type CustomCardPropsType = PropsWithChildren & {
   variant?: "warning" | "error" | "info";
   headerText?: string;
   isLoading?: boolean;
+  testID?: string;
 };
 
 const CustomCard = ({
@@ -35,9 +35,7 @@ const CustomCard = ({
     mixedStyles.backgroundColor = colors.warning;
   }
 
-  return isLoading ? (
-    <FormSkeleton rows={1} rowHeight={80} />
-  ) : (
+  return isLoading ? null : (
     <TouchableWithoutFeedback onPress={onPress} disabled={disabled}>
       <View style={mixedStyles}>
         {headerText ? (

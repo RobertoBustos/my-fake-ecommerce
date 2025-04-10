@@ -2,9 +2,9 @@ import { NavigationIndependentTree } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../constants/types";
 import CartScreen from "../screens/CartScreen";
+import CatalogScreen from "../screens/CatalogScreen";
 import CheckoutScreen from "../screens/CheckoutScreen";
 import ConfirmationScreen from "../screens/ConfirmationScreen";
-import HomeScreen from "../screens/HomeScreen";
 import ProductScreen from "../screens/ProductScreen";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -15,7 +15,7 @@ const RootStack = () => {
       <Stack.Navigator>
         <Stack.Screen
           name="Products"
-          component={HomeScreen}
+          component={CatalogScreen}
           options={{ title: "Products" }}
         />
         <Stack.Screen

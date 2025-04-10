@@ -1,6 +1,6 @@
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { useCallback } from "react";
-import { AddressType, UserType } from "../constants/types";
+import { AddressType, IncompleteOrderType, OrderType, UserType } from "../constants/types";
 import { CANCEL_ORDER, CREATE_ORDER, CREATE_ORDER_PAYMENT, UPDATE_ORDER } from "../graphql/mutations";
 import { GET_INCOMPLETE_ORDERS, GET_ORDERS } from "../graphql/queries";
 
@@ -98,8 +98,8 @@ const useOrder = () => {
         }
     }, [cancelOrder])
 
-    const incompleteOrders = incompleteOrdersResponse ? incompleteOrdersResponse.incompleteOrders : undefined
-    const orders = ordersResponse ? ordersResponse.orders : undefined
+    const incompleteOrders: IncompleteOrderType[] = incompleteOrdersResponse ? incompleteOrdersResponse.incompleteOrders : []
+    const orders: OrderType[] = ordersResponse ? ordersResponse.orders : []
 
     return { fetchIncompleteOrders, incompleteOrders, refetchIncompleteOrders, fetchOrder, orders, isLoading, error, refetchOrder, createNewOrder, isCreating, updateExistingOrder, isUpdating, createPayment, isCreatingPayment, cancelExistingOrder, isCancelling }
 }

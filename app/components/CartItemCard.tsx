@@ -36,16 +36,23 @@ const CartItemCard = ({ data, disabled }: CartItemCardPropsType) => {
       orientation="horizontal"
       onPress={handlePress}
       disabled={disabled}
+      testID={`CartItemCard.CardContainer`}
     >
-      <View style={styles.description}>
+      <View style={styles.description} testID={`CartItemCard.CardDescription`}>
         <Text style={styles.title}>{data.product.title}</Text>
         <Text style={priceStyles}>{getPriceText}</Text>
         <Text style={styles.subtotal}>{formatCurrency(data.subtotal)}</Text>
       </View>
-      <CustomImage imageUrl={data.product.image} width={120} height={120} />
+      <CustomImage
+        imageUrl={data.product.image}
+        width={120}
+        height={120}
+        testID={`CartItemCard.CardImage`}
+      />
       <CustomButton
         onPress={handleRemoveFromCart}
         buttonComponent={<DeleteButton color={colors.error} size={30} />}
+        testID={`CartItemCard.CardButton`}
       />
     </CustomCard>
   );

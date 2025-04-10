@@ -27,7 +27,7 @@ const QuantityButtons = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="QuantityButtons.Container">
       <CustomButton
         onPress={decrementQuantity}
         disabled={value <= min}
@@ -38,9 +38,12 @@ const QuantityButtons = ({
             backgroundColor={value <= min ? colors.dark : colors.primary}
           />
         }
+        testID="QuantityButtons.Decrement"
       />
       {showValue ? (
-        <Text style={styles.quantity}>{value.toString()}</Text>
+        <Text style={styles.quantity} testID="QuantityButtons.Quantity">
+          {value.toString()}
+        </Text>
       ) : null}
       <CustomButton
         onPress={incrementQuantity}
@@ -52,6 +55,7 @@ const QuantityButtons = ({
             backgroundColor={value >= max ? colors.dark : colors.primary}
           />
         }
+        testID="QuantityButtons.Increment"
       />
     </View>
   );

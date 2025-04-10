@@ -60,6 +60,15 @@ export type OrderType = {
     details: CartItemType[]
 }
 
+export type IncompleteOrderType = {
+    id: string;
+    status: string;
+    totals: {
+        total: number;
+    };
+    details: CartItemType[]
+};
+
 export type CustomerType = {
     id: string
     email: string

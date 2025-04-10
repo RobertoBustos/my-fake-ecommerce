@@ -1,28 +1,14 @@
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect } from "react";
-import { StyleSheet, Text } from "react-native";
-import { colors } from "../constants/colors";
-import useAppNavigation from "../hooks/useAppNavigation";
 import useOrder from "../hooks/useOrder";
+import { setCartFromOrder } from "../redux/cart/reducer";
 import { selectCartId } from "../redux/cart/selectors";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setSelectedOrderId } from "../redux/order/reducer";
-import { selectSelectedOrderId } from "../redux/order/selectors";
-import { formatCurrency } from "../utils/formatCurrency";
-import CustomCard from "./common/CustomCard";
-
-export type IncompleteOrder = {
-  id: string;
-  status: string;
-  totals: {
-    total: number;
-  };
-};
+import IncompleteOrderCard from "./IncompleteOrderCard";
 
 const IncompleteOrdersList = () => {
   const dispatch = useAppDispatch();
-  const navigation = useAppNavigation();
-  const currentOrderId = useAppSelector(selectSelectedOrderId);
   const cartId = useAppSelector(selectCartId);
   const { fetchIncompleteOrders, incompleteOrders } = useOrder();
   const isFocused = useIsFocused();
@@ -34,41 +20,19 @@ const IncompleteOrdersList = () => {
     return () => {};
   }, [cartId, fetchIncompleteOrders, isFocused]);
 
-  const handleRedirect = (orderId: string) => {
-    if (currentOrderId !== orderId) {
-      dispatch(setSelectedOrderId(orderId));
+  useEffect(() => {
+    if (incompleteOrders.length === 1 && isFocused) {
+      dispatch(setSelectedOrderId(incompleteOrders[0].id));
+      dispatch(setCartFromOrder(incompleteOrders[0].details));
     }
-    navigation.navigate("Checkout", { orderId });
-  };
+    return () => {};
+  }, [dispatch, incompleteOrders, isFocused]);
 
-  if (!incompleteOrders) {
-    return null;
+  if (incompleteOrders.length === 1) {
+    return <IncompleteOrderCard data={incompleteOrders[0]} />;
   }
 
-  const invalidIncompleteStatus = ["cancelled", "complete"];
-  return incompleteOrders.map((order: IncompleteOrder, index: number) => {
-    return invalidIncompleteStatus.includes(order.status) ? null : (
-      <CustomCard
-        variant="warning"
-        key={index}
-        onPress={() => handleRedirect(order.id)}
-      >
-        <Text style={styles.text}>{`Complete order number ${
-          order.id
-        } for $${formatCurrency(order.totals.total)}`}</Text>
-      </CustomCard>
-    );
-  });
+  return null;
 };
-
-const styles = StyleSheet.create({
-  text: {
-    fontSize: 16,
-    textAlign: "center",
-    padding: 8,
-    color: colors.primary,
-    fontWeight: 500,
-  },
-});
 
 export default IncompleteOrdersList;

@@ -3,13 +3,21 @@ import { StyleSheet, View } from "react-native";
 import ToastMessage from "./common/ToastMessage";
 
 export type LayoutPropsType = PropsWithChildren & {
+  headerComponent?: ReactNode;
   footerComponent?: ReactNode;
+  testID?: string;
 };
 
-const Layout = ({ children, footerComponent }: LayoutPropsType) => {
+const Layout = ({
+  children,
+  headerComponent,
+  footerComponent,
+  testID,
+}: LayoutPropsType) => {
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID={testID}>
       <ToastMessage />
+      {headerComponent}
       {children}
       {footerComponent}
     </View>

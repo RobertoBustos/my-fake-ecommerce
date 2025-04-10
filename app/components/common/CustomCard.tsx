@@ -27,6 +27,7 @@ const CustomCard = ({
   variant,
   headerText,
   isLoading,
+  testID,
 }: CustomCardPropsType) => {
   const mixedStyles: StyleProp<ViewStyle> = { ...styles.container };
   const direction = orientation === "vertical" ? "column" : "row";
@@ -36,7 +37,11 @@ const CustomCard = ({
   }
 
   return isLoading ? null : (
-    <TouchableWithoutFeedback onPress={onPress} disabled={disabled}>
+    <TouchableWithoutFeedback
+      onPress={onPress}
+      disabled={disabled}
+      testID={testID}
+    >
       <View style={mixedStyles}>
         {headerText ? (
           <Text style={styles.headerText}>{headerText}</Text>

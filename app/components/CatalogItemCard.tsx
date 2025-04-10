@@ -25,11 +25,11 @@ const CatalogItemCard = ({ data, disabled }: CatalogItemCardPropsType) => {
         navigation.navigate("Product", { productId: data.id });
       }}
       disabled={disabled}
-      testID={`CatalogItemCard.CardContainer`}
+      testID={`CatalogItemCard.CardContainer-${data.id}`}
     >
       <View
         style={styles.description}
-        testID={`CatalogItemCard.CardDescription`}
+        testID={`CatalogItemCard.CardDescription-${data.id}`}
       >
         <Text style={styles.title}>{data.title}</Text>
         <Text style={styles.price}>
@@ -40,7 +40,7 @@ const CatalogItemCard = ({ data, disabled }: CatalogItemCardPropsType) => {
         imageUrl={data.image}
         width={120}
         height={120}
-        testID={`CatalogItemCard.CardImage`}
+        testID={`CatalogItemCard.CardImage-${data.id}`}
       />
     </CustomCard>
   );

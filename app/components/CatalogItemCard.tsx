@@ -8,12 +8,12 @@ import { formatCurrency } from "../utils/formatCurrency";
 import CustomCard from "./common/CustomCard";
 import CustomImage from "./common/CustomImage";
 
-export type ProductCardPropsType = {
+export type CatalogItemCardPropsType = {
   data: ProductType;
   disabled?: boolean;
 };
 
-const ProductCard = ({ data, disabled }: ProductCardPropsType) => {
+const CatalogItemCard = ({ data, disabled }: CatalogItemCardPropsType) => {
   const navigation = useAppNavigation();
   const dispatch = useAppDispatch();
 
@@ -25,14 +25,23 @@ const ProductCard = ({ data, disabled }: ProductCardPropsType) => {
         navigation.navigate("Product", { productId: data.id });
       }}
       disabled={disabled}
+      testID={`CatalogItemCard.CardContainer-${data.id}`}
     >
-      <View style={styles.description}>
+      <View
+        style={styles.description}
+        testID={`CatalogItemCard.CardDescription-${data.id}`}
+      >
         <Text style={styles.title}>{data.title}</Text>
         <Text style={styles.price}>
           {formatCurrency(data.unitPrice, data.currency)}
         </Text>
       </View>
-      <CustomImage imageUrl={data.image} width={120} height={120} />
+      <CustomImage
+        imageUrl={data.image}
+        width={120}
+        height={120}
+        testID={`CatalogItemCard.CardImage-${data.id}`}
+      />
     </CustomCard>
   );
 };
@@ -57,4 +66,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProductCard;
+export default CatalogItemCard;

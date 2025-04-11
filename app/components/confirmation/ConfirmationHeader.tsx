@@ -8,10 +8,13 @@ export type ConfirmationHeaderPropsType = {
 
 const ConfirmationHeader = ({ orderId }: ConfirmationHeaderPropsType) => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>{`Order Number ${orderId}`}</Text>
+    <View style={styles.container} testID="ConfirmationHeader.Container">
+      <Text
+        style={styles.text}
+        testID="ConfirmationHeader.OrderIdText"
+      >{`Order Number ${orderId}`}</Text>
       <FontAwesome name="shopping-bag" size={150} color={colors.primary} />
-      <Text style={styles.text}>
+      <Text style={styles.text} testID="ConfirmationHeader.Text">
         Thanks for your purchase, here's your order confirmation details
       </Text>
     </View>

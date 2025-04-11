@@ -85,6 +85,18 @@ query GetIncompleteOrders ($filter: Filter) {
     totals {
       total
     }
+    details {
+      id
+        productId
+        quantity
+        unitPrice
+        subtotal
+        product {
+          image
+          title
+          id
+        }
+    }
   }
 }`;
 

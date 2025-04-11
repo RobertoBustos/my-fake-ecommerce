@@ -3,22 +3,21 @@ import FooterButton from "../FooterButton";
 import CustomFooter from "../common/CustomFooter";
 
 const ProductFooter = () => {
-  const { isAdding, addProductToCart, data, cartId, orderId } =
+  const { isAdding, addProductToCart, isDisabled, footerText } =
     useProductContext();
 
   const handleClick = () => {
     addProductToCart();
   };
 
-  const footerText = orderId ? "Add to Order" : "Add to Cart";
-
   return (
     <CustomFooter>
       <FooterButton
         text={footerText}
         onPress={handleClick}
-        disabled={data?.stock === 0 || cartId === "" || isAdding}
+        disabled={isDisabled}
         isLoading={isAdding}
+        testID="ProductScreen.Footer"
       />
     </CustomFooter>
   );

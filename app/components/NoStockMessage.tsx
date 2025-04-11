@@ -4,9 +4,9 @@ import { colors } from "../constants/colors";
 
 const NoStockMessage = () => {
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="NoStockMessage.Container">
       <FontAwesome6 name="face-frown-open" size={48} color={colors.dark} />
-      <Text style={styles.text}>
+      <Text style={styles.text} testID="NoStockMessage.Text">
         This Product is out of stock or not available for now. Please try again
         later
       </Text>

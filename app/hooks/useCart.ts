@@ -16,7 +16,7 @@ export type RemoveFromCartInput = {
 }
 
 const useCart = () => {
-    const [getCart, { loading: isLoading, refetch: reloadCart }] = useLazyQuery(GET_CART)
+    const [getCart, { loading: isLoading, refetch: reloadCart }] = useLazyQuery(GET_CART, { fetchPolicy: "no-cache" })
     const [addToCart, { loading: isAdding }] = useMutation(ADD_PRODUCT);
     const [removeFromCart, { loading: isRemoving }] = useMutation(REMOVE_PRODUCT);
 

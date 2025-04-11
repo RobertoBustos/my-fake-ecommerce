@@ -3,11 +3,12 @@ import { colors } from "../../constants/colors";
 
 const LoadingScreen = () => {
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="LoadingScreen.Container">
       <ActivityIndicator
         size={"large"}
         color={colors.primary}
         style={styles.loader}
+        testID="LoadingScreen.Loader"
       />
     </View>
   );

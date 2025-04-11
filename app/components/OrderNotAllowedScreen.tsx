@@ -21,14 +21,16 @@ const OrderNotAllowedScreen = ({
   }, [dispatch]);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="OrderNotAllowed.Container">
       <FontAwesome6
         name="face-grin-beam-sweat"
         size={100}
         color={colors.primary}
         style={styles.icon}
       />
-      <Text style={styles.text}>{textToDisplay}</Text>
+      <Text style={styles.text} testID="OrderNotAllowed.Text">
+        {textToDisplay}
+      </Text>
     </View>
   );
 };

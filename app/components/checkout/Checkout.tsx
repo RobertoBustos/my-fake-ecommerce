@@ -3,11 +3,11 @@ import { RefreshControl } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { useOrderContext } from "../../contexts/OrderContext";
 import CheckoutButtons from "../CheckoutButtons";
+import EmptyOrder from "../EmptyOrder";
 import OrderNotAllowedScreen from "../OrderNotAllowedScreen";
 import OrderSummary from "../OrderSummary";
 import AddressDetailsForm from "../forms/AddressDetailsForm";
 import UserDetailsForm from "../forms/UserDetailsForm";
-import CheckoutHeader from "./CheckoutHeader";
 
 const Checkout = () => {
   const { orderData, reloadOrder, isLoading, cancelOrder, returnOrderToCart } =
@@ -36,7 +36,7 @@ const Checkout = () => {
   };
 
   if (!orderData) {
-    return null;
+    return <EmptyOrder onRetry={reloadOrder} />;
   }
 
   if (orderData && orderData.status === "COMPLETE") {
@@ -50,11 +50,10 @@ const Checkout = () => {
       refreshControl={
         <RefreshControl refreshing={isLoading} onRefresh={reloadOrder} />
       }
-      contentContainerStyle={{}}
       bottomOffset={100}
       showsVerticalScrollIndicator={false}
+      testID="Checkout.Container"
     >
-      <CheckoutHeader orderId={orderData.id} />
       <OrderSummary data={orderData.totals} />
       <UserDetailsForm data={userData} />
       <AddressDetailsForm data={addressData} />

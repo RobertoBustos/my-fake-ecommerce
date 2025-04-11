@@ -1,5 +1,6 @@
 import { ApolloError } from "@apollo/client";
 import { PropsWithChildren, createContext, useContext, useState } from "react";
+import LoadingScreen from "../components/common/LoadingScreen";
 import { ProductType } from "../constants/types";
 import useAppNavigation from "../hooks/useAppNavigation";
 import useCart from "../hooks/useCart";
@@ -15,11 +16,13 @@ export type ProdctContextType = {
   orderId: string | undefined;
   isAdding: boolean;
   isLoading: boolean;
+  isDisabled: boolean;
   addProductToCart: () => void;
   reloadProduct: () => void;
   error: ApolloError | undefined;
   quantity: number;
   setQuantity: (value: number) => void;
+  footerText: string;
 };
 
 const ProductContext = createContext<ProdctContextType>({
@@ -28,11 +31,13 @@ const ProductContext = createContext<ProdctContextType>({
   orderId: undefined,
   isAdding: false,
   isLoading: false,
+  isDisabled: false,
   addProductToCart: () => {},
   reloadProduct: () => {},
   error: undefined,
   quantity: 1,
   setQuantity: (value: number) => {},
+  footerText: "",
 });
 
 export type ProductStorePropsType = PropsWithChildren & {
@@ -49,12 +54,23 @@ const ProductStore = ({ children, productId }: ProductStorePropsType) => {
     filter: { field: "id", value: productId },
   });
   const { addProduct, isAdding } = useCart();
+  const product = data ? data[0] : undefined;
+  const isDisabled = cartId === "" || isAdding;
+  const footerText =
+    !product || product.stock === 0
+      ? "Go Back"
+      : orderId
+      ? "Add to Order"
+      : "Add to Cart";
 
   const addProductToCart = () => {
-    if (!data) return;
+    if (!product || product.stock === 0) {
+      navigation.goBack();
+      return;
+    }
     addProduct({
       cartId: cartId,
-      productId: data.id,
+      productId: product.id,
       quantity: quantity,
       orderId: orderId || null,
     }).then((data) => {
@@ -67,19 +83,25 @@ const ProductStore = ({ children, productId }: ProductStorePropsType) => {
     refetch();
   };
 
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
   return (
     <ProductContext.Provider
       value={{
-        data,
+        data: product,
         cartId,
         orderId,
         isAdding,
         isLoading,
+        isDisabled,
         addProductToCart,
         reloadProduct,
         error,
         quantity,
         setQuantity,
+        footerText,
       }}
     >
       {children}

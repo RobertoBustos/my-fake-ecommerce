@@ -8,16 +8,21 @@ const CatalogFooter = () => {
   const navigation = useAppNavigation();
   const isCartEmpty = useAppSelector(selectIsCartEmpty);
 
-  return !isCartEmpty ? (
+  if (isCartEmpty) {
+    return null;
+  }
+
+  return (
     <CustomFooter>
       <FooterButton
         text={"View Cart"}
         onPress={() => {
           navigation.navigate("Cart");
         }}
+        testID="CatalogScreen.Footer"
       />
     </CustomFooter>
-  ) : null;
+  );
 };
 
 export default CatalogFooter;

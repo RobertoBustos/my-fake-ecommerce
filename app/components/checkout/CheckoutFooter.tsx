@@ -17,6 +17,7 @@ const CheckoutFooter = () => {
         onPress={handleClick}
         isLoading={isProcessing}
         disabled={isDisabled || isProcessing}
+        testID="CheckoutScreen.Footer"
       />
     </CustomFooter>
   );

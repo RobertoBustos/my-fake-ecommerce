@@ -43,7 +43,11 @@ const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
   };
 
   return (
-    <CustomCard headerText="User Details" isLoading={isLoading}>
+    <CustomCard
+      headerText="User Details"
+      isLoading={isLoading}
+      testID="UserDetailsForm.Container"
+    >
       <Controller
         control={control}
         name="email"
@@ -59,11 +63,14 @@ const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
             value={value}
             style={styles.input}
             placeholderTextColor={colors.dark}
+            testID="UserDetailsForm.EmailInput"
           />
         )}
       />
       {errors.email && (
-        <Text style={styles.errorText}>{errors.email?.message}</Text>
+        <Text style={styles.errorText} testID="UserDetailsForm.EmailErrorText">
+          {errors.email?.message}
+        </Text>
       )}
       <Controller
         control={control}
@@ -80,11 +87,14 @@ const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
             value={value}
             style={styles.input}
             placeholderTextColor={colors.dark}
+            testID="UserDetailsForm.NameInput"
           />
         )}
       />
       {errors.name && (
-        <Text style={styles.errorText}>{errors.name.message}</Text>
+        <Text style={styles.errorText} testID="UserDetailsForm.NameErrorText">
+          {errors.name.message}
+        </Text>
       )}
     </CustomCard>
   );

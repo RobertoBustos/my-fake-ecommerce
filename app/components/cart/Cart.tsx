@@ -1,18 +1,22 @@
 import { useCartContext } from "@/app/contexts/CartContext";
-import CartList from "../CartList";
+import { FlatList } from "react-native";
+import CartItemCard from "../CartItemCard";
 import EmptyCart from "../EmptyCart";
-import CartHeader from "./CartHeader";
 
 const Cart = () => {
-  const { isCartEmpty } = useCartContext();
+  const { cartItems, isCartEmpty } = useCartContext();
 
-  return isCartEmpty ? (
-    <EmptyCart />
-  ) : (
-    <>
-      <CartHeader />
-      <CartList />
-    </>
+  if (isCartEmpty) {
+    return <EmptyCart />;
+  }
+
+  return (
+    <FlatList
+      data={cartItems}
+      renderItem={({ item }) => <CartItemCard data={item} disabled />}
+      showsVerticalScrollIndicator={false}
+      testID="CartList.Container"
+    />
   );
 };
 

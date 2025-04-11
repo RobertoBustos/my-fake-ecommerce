@@ -1,4 +1,3 @@
-import { StyleSheet, View } from "react-native";
 import Layout from "../components/Layout";
 import Cart from "../components/cart/Cart";
 import CartFooter from "../components/cart/CartFooter";
@@ -13,16 +12,10 @@ const CartScreen = () => {
         footerComponent={<CartFooter />}
         testID="CartScreen.Layout"
       >
-        <View style={styles.container}>
-          <Cart />
-        </View>
+        <Cart />
       </Layout>
     </CartStore>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { flex: 1, width: "100%" },
-});
 
 export default CartScreen;

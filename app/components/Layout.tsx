@@ -18,7 +18,7 @@ const Layout = ({
     <View style={styles.container} testID={testID}>
       <ToastMessage />
       {headerComponent}
-      {children}
+      <View style={styles.content}>{children}</View>
       {footerComponent}
     </View>
   );
@@ -30,6 +30,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     paddingHorizontal: 16,
+  },
+  content: {
+    flex: 1,
+    width: "100%",
   },
 });
 

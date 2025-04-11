@@ -1,5 +1,4 @@
 import { StaticScreenProps } from "@react-navigation/native";
-import { StyleSheet, View } from "react-native";
 import Layout from "../components/Layout";
 import Confirmation from "../components/confirmation/Confirmation";
 import ConfirmationFooter from "../components/confirmation/ConfirmationFooter";
@@ -19,19 +18,10 @@ const ConfirmationScreen = ({ route }: ConfirmationScreenPropsType) => {
         footerComponent={<ConfirmationFooter />}
         testID="ConfirmationScreen.Layout"
       >
-        <View style={styles.container}>
-          <Confirmation />
-        </View>
+        <Confirmation />
       </Layout>
     </OrderStore>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: "100%",
-  },
-});
 
 export default ConfirmationScreen;

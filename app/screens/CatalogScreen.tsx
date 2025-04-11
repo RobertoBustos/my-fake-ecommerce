@@ -1,4 +1,3 @@
-import { StyleSheet, View } from "react-native";
 import IncompleteOrdersList from "../components/IncompleteOrdersList";
 import Layout from "../components/Layout";
 import Catalog from "../components/catalog/Catalog";
@@ -14,15 +13,9 @@ const CatalogScreen = () => {
       footerComponent={<CatalogFooter />}
       testID="CatalogScreen.Layout"
     >
-      <View style={styles.container}>
-        <Catalog />
-      </View>
+      <Catalog />
     </Layout>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { flex: 1, width: "100%" },
-});
 
 export default CatalogScreen;

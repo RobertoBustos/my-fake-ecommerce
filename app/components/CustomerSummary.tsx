@@ -13,10 +13,26 @@ const CustomerSummary = ({ data, isLoading }: CustomerSummaryPropsType) => {
   }
 
   return (
-    <CustomCard headerText="Customer Information" isLoading={isLoading}>
-      <SummaryCardRow concept={"Customer Id"} value={data.id} />
-      <SummaryCardRow concept={"Email"} value={data.email} />
-      <SummaryCardRow concept={"Full Name"} value={data.name} />
+    <CustomCard
+      headerText="Customer Information"
+      isLoading={isLoading}
+      testID="CustomerSummary.Container"
+    >
+      <SummaryCardRow
+        concept={"Customer Id"}
+        value={data.id}
+        testID="CustomerSummary.CustomerId"
+      />
+      <SummaryCardRow
+        concept={"Email"}
+        value={data.email}
+        testID="CustomerSummary.Email"
+      />
+      <SummaryCardRow
+        concept={"Full Name"}
+        value={data.name}
+        testID="CustomerSummary.Name"
+      />
     </CustomCard>
   );
 };

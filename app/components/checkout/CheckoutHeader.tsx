@@ -8,14 +8,17 @@ export type CheckoutHeaderPropsType = {
 
 const CheckoutHeader = ({ orderId }: CheckoutHeaderPropsType) => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>{`Order Number ${orderId}`}</Text>
+    <View style={styles.container} testID="CheckoutHeader.Container">
+      <Text
+        style={styles.text}
+        testID="CheckoutHeader.OrderIdText"
+      >{`Order Number ${orderId}`}</Text>
       <FontAwesome5
         name="file-invoice-dollar"
         size={150}
         color={colors.primary}
       />
-      <Text style={styles.text}>
+      <Text style={styles.text} testID="CheckoutHeader.Text">
         Please fill your payment information to complete your order
       </Text>
     </View>

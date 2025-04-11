@@ -14,17 +14,31 @@ const OrderSummary = ({ data, isLoading }: OrderSummaryPropsType) => {
   }
 
   return (
-    <CustomCard headerText="Order Summary" isLoading={isLoading}>
+    <CustomCard
+      headerText="Order Summary"
+      isLoading={isLoading}
+      testID="OrderSummary.Container"
+    >
       <SummaryCardRow
         concept={`${data.items} items`}
         value={formatCurrency(data.subTotal)}
+        testID="OrderSummary.SubTotal"
       />
-      <SummaryCardRow concept={`Taxes`} value={formatCurrency(data.taxes)} />
+      <SummaryCardRow
+        concept={`Taxes`}
+        value={formatCurrency(data.taxes)}
+        testID="OrderSummary.Taxes"
+      />
       <SummaryCardRow
         concept={`Discount`}
         value={formatCurrency(data.discount)}
+        testID="OrderSummary.Discount"
       />
-      <SummaryCardRow concept={`Total`} value={formatCurrency(data.total)} />
+      <SummaryCardRow
+        concept={`Total`}
+        value={formatCurrency(data.total)}
+        testID="OrderSummary.Total"
+      />
     </CustomCard>
   );
 };

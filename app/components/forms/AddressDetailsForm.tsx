@@ -46,7 +46,11 @@ const AddressDetailsForm = ({
   };
 
   return (
-    <CustomCard headerText="Address Details" isLoading={isLoading}>
+    <CustomCard
+      headerText="Address Details"
+      isLoading={isLoading}
+      testID="AddressDetailsForm.Container"
+    >
       <Controller
         control={control}
         name="address"
@@ -67,11 +71,17 @@ const AddressDetailsForm = ({
             multiline={true}
             numberOfLines={4}
             placeholderTextColor={colors.dark}
+            testID="AddressDetailsForm.AddressInput"
           />
         )}
       />
       {errors.address && (
-        <Text style={styles.errorText}>{errors.address.message}</Text>
+        <Text
+          style={styles.errorText}
+          testID="AddressDetailsForm.AddressErrorText"
+        >
+          {errors.address.message}
+        </Text>
       )}
       <Controller
         control={control}
@@ -89,11 +99,17 @@ const AddressDetailsForm = ({
             value={value}
             style={styles.input}
             placeholderTextColor={colors.dark}
+            testID="AddressDetailsForm.ZipCodeInput"
           />
         )}
       />
       {errors.zipCode && (
-        <Text style={styles.errorText}>{errors.zipCode.message}</Text>
+        <Text
+          style={styles.errorText}
+          testID="AddressDetailsForm.ZipCodeErrorText"
+        >
+          {errors.zipCode.message}
+        </Text>
       )}
     </CustomCard>
   );

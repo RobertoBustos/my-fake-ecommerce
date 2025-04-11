@@ -13,9 +13,21 @@ const AddressSummary = ({ data, isLoading }: AddressSummaryPropsType) => {
   }
 
   return (
-    <CustomCard headerText="Address Information" isLoading={isLoading}>
-      <SummaryCardRow concept={"Address"} value={data.address} />
-      <SummaryCardRow concept={"Zip Code"} value={data.zipCode} />
+    <CustomCard
+      headerText="Address Information"
+      isLoading={isLoading}
+      testID="AddressSummary.Container"
+    >
+      <SummaryCardRow
+        concept={"Address"}
+        value={data.address}
+        testID="AddressSummary.Address"
+      />
+      <SummaryCardRow
+        concept={"Zip Code"}
+        value={data.zipCode}
+        testID="AddressSummary.ZipCode"
+      />
     </CustomCard>
   );
 };

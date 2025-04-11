@@ -17,7 +17,7 @@ const CheckoutButtons = ({
   onCancelOrder,
 }: CheckoutButtonsPropsType) => {
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="CheckoutButtons.Container">
       <View style={{ flex: 1, width: "100%" }}>
         <CustomButton
           onPress={onEditOrder}
@@ -27,6 +27,7 @@ const CheckoutButtons = ({
               backgroundColor={colors.warning}
             />
           }
+          testID="CheckoutButtons.EditOrderButton"
         />
       </View>
       <View style={{ flex: 1, width: "100%" }}>
@@ -38,6 +39,7 @@ const CheckoutButtons = ({
               backgroundColor={colors.error}
             />
           }
+          testID="CheckoutButtons.CancelOrderButton"
         />
       </View>
     </View>

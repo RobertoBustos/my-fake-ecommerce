@@ -11,7 +11,11 @@ const ConfirmationFooter = () => {
 
   return (
     <CustomFooter>
-      <FooterButton text={footerText} onPress={handleReturnHome} />
+      <FooterButton
+        text={footerText}
+        onPress={handleReturnHome}
+        testID="ConfirmationScreen.Footer"
+      />
     </CustomFooter>
   );
 };

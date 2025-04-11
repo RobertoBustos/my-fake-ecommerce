@@ -22,21 +22,39 @@ const CardPaymentSummary = ({
 }: CardPaymentSummaryPropsType) => {
   const renderCard = (brand: string) => {
     if (brand === "visa") {
-      return <VisaCardIcon height={size} width={size} />;
+      return (
+        <VisaCardIcon
+          height={size}
+          width={size}
+          testID="CardPaymentSummary.VidaCardImage"
+        />
+      );
     }
     if (brand === "mastercard") {
-      return <MastercardCardIcon height={size} width={size} />;
+      return (
+        <MastercardCardIcon
+          height={size}
+          width={size}
+          testID="CardPaymentSummary.MasterCardImage"
+        />
+      );
     }
     if (brand === "amex") {
-      return <AmericanExpressCardIcon height={size} width={size} />;
+      return (
+        <AmericanExpressCardIcon
+          height={size}
+          width={size}
+          testID="CardPaymentSummary.AmexCardImage"
+        />
+      );
     }
     return null;
   };
 
   return (
-    <CustomCard orientation="horizontal">
+    <CustomCard orientation="horizontal" testID="CardPaymentSummary.Container">
       {renderCard(brand)}
-      <View style={styles.container}>
+      <View style={styles.container} testID="CardPaymentSummary.Description">
         <Text
           style={styles.text}
         >{`${brand.toUpperCase()} terminated in ${last4}`}</Text>

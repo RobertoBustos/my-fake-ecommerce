@@ -11,12 +11,14 @@ export type UseProductPropsType = {
 
 const useProduct = ({ filter }: UseProductPropsType) => {
     const { loading: isLoading, data: response, refetch, error } = useQuery(GET_PRODUCTS, {
-        variables: { filter: filter }, notifyOnNetworkStatusChange: true
+        variables: { filter: filter }, notifyOnNetworkStatusChange: true, fetchPolicy: "no-cache"
     });
 
     const data: ProductType[] = response ? response.products : []
 
-    return { isLoading, data, refetch, error }
+    const isCatalogEmpty = data.length === 0
+
+    return { isLoading, data, refetch, error, isCatalogEmpty }
 }
 
 export default useProduct

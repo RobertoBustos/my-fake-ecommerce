@@ -1,10 +1,13 @@
 import { FlatList } from "react-native";
 import useProduct from "../../hooks/useProduct";
 import CatalogItemCard from "../CatalogItemCard";
+import EmptyCatalog from "../EmptyCatalog";
 import LoadingScreen from "../common/LoadingScreen";
 
 const Catalog = () => {
-  const { isLoading, data, refetch } = useProduct({ filter: null });
+  const { isLoading, data, refetch, isCatalogEmpty } = useProduct({
+    filter: null,
+  });
 
   const handleRefresh = () => {
     refetch();
@@ -12,6 +15,10 @@ const Catalog = () => {
 
   if (isLoading) {
     return <LoadingScreen />;
+  }
+
+  if (isCatalogEmpty) {
+    return <EmptyCatalog onRetry={handleRefresh} />;
   }
 
   return (

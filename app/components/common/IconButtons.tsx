@@ -80,6 +80,31 @@ export const MinusButton = ({
   );
 };
 
+export const ReloadButton = ({
+  size = 30,
+  color = colors.black,
+  backgroundColor = colors.white,
+}: IconButtonPropsType) => {
+  return (
+    <View
+      style={{
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: backgroundColor,
+        width: 100,
+        height: 50,
+        borderTopLeftRadius: GLOBAL_THEME_BORDER_RADIUS,
+        borderBottomLeftRadius: GLOBAL_THEME_BORDER_RADIUS,
+        borderTopRightRadius: GLOBAL_THEME_BORDER_RADIUS,
+        borderBottomRightRadius: GLOBAL_THEME_BORDER_RADIUS,
+      }}
+    >
+      <FontAwesome name="refresh" size={size} color={color} />
+      <Text>RETRY</Text>
+    </View>
+  );
+};
+
 export type DefaultButtonPropsType = {
   text: string;
   disabled?: boolean;
@@ -130,9 +155,6 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontWeight: "bold",
     fontSize: 16,
-  },
-  deleteButton: {
-    paddingHorizontal: 8,
   },
   loader: {
     flex: 1,

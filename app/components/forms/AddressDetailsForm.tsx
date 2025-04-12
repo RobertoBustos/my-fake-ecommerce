@@ -1,8 +1,10 @@
+import addressDetailsFormStyleSheet from "@/app/styles/components/AddressDetailsForm";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { StyleSheet, Text, TextInput } from "react-native";
+import { Text, TextInput } from "react-native";
+import { useStyles } from "react-native-unistyles";
 import { ZodType, z } from "zod";
-import { colors } from "../../constants/colors";
 import { AddressType } from "../../constants/types";
 import { useAppDispatch } from "../../redux/hooks";
 import { setAddressData } from "../../redux/order/reducer";
@@ -26,6 +28,7 @@ const AddressDetailsForm = ({
   isLoading,
 }: AddressDetailsFormPropsType) => {
   const dispatch = useAppDispatch();
+  const { styles, theme } = useStyles(addressDetailsFormStyleSheet);
 
   const {
     control,
@@ -44,6 +47,16 @@ const AddressDetailsForm = ({
     const values = getValues();
     dispatch(setAddressData(values));
   };
+
+  const getInputStyles = useCallback(
+    (error?: string) => {
+      if (error) {
+        return { ...styles.input, borderColor: theme.colors.error };
+      }
+      return styles.input;
+    },
+    [styles.input, theme.colors.error]
+  );
 
   return (
     <CustomCard
@@ -67,10 +80,10 @@ const AddressDetailsForm = ({
               saveToStore();
             }}
             value={value}
-            style={styles.input}
+            style={getInputStyles(errors.address?.message)}
             multiline={true}
             numberOfLines={4}
-            placeholderTextColor={colors.dark}
+            placeholderTextColor={theme.colors.typography}
             testID="AddressDetailsForm.AddressInput"
           />
         )}
@@ -97,8 +110,8 @@ const AddressDetailsForm = ({
               saveToStore();
             }}
             value={value}
-            style={styles.input}
-            placeholderTextColor={colors.dark}
+            style={getInputStyles(errors.zipCode?.message)}
+            placeholderTextColor={theme.colors.typography}
             testID="AddressDetailsForm.ZipCodeInput"
           />
         )}
@@ -114,23 +127,5 @@ const AddressDetailsForm = ({
     </CustomCard>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  input: {
-    alignItems: "center",
-    width: "100%",
-    minHeight: 40,
-    paddingHorizontal: 8,
-    backgroundColor: colors.light,
-    marginVertical: 4,
-    fontSize: 16,
-  },
-  errorText: {
-    color: colors.error,
-  },
-});
 
 export default AddressDetailsForm;

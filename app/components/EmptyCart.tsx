@@ -1,32 +1,23 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { StyleSheet, Text, View } from "react-native";
-import { colors } from "../constants/colors";
+import { Text, View } from "react-native";
+import { useStyles } from "react-native-unistyles";
+import emptyCartStyleSheet from "../styles/components/EmptyCart";
 
 const EmptyCart = () => {
+  const { styles, theme } = useStyles(emptyCartStyleSheet);
+
   return (
     <View style={styles.container} testID="EmptyCart.Container">
-      <FontAwesome name="shopping-cart" size={200} color={colors.dark} />
+      <FontAwesome
+        name="shopping-cart"
+        size={200}
+        color={theme.colors.disabled}
+      />
       <Text style={styles.message} testID="EmptyCart.Text">
         There are no items in your cart
       </Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: "100%",
-    height: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  message: {
-    fontSize: 32,
-    textAlign: "center",
-    marginTop: 24,
-    color: colors.dark,
-  },
-});
 
 export default EmptyCart;

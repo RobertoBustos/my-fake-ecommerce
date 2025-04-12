@@ -1,9 +1,10 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { colors } from "../constants/colors";
+import { Text, View } from "react-native";
+import { useStyles } from "react-native-unistyles";
 import { useAppDispatch } from "../redux/hooks";
 import { setSelectedOrderId } from "../redux/order/reducer";
+import orderNotAllowedScreenStyleSheet from "../styles/components/OrderNotAllowedScreen";
 
 export type OrderNotAllowedScreenPropsType = {
   textToDisplay: string;
@@ -13,6 +14,7 @@ const OrderNotAllowedScreen = ({
   textToDisplay,
 }: OrderNotAllowedScreenPropsType) => {
   const dispatch = useAppDispatch();
+  const { styles, theme } = useStyles(orderNotAllowedScreenStyleSheet);
 
   useEffect(() => {
     return () => {
@@ -25,7 +27,7 @@ const OrderNotAllowedScreen = ({
       <FontAwesome6
         name="face-grin-beam-sweat"
         size={100}
-        color={colors.primary}
+        color={theme.colors.disabled}
         style={styles.icon}
       />
       <Text style={styles.text} testID="OrderNotAllowed.Text">
@@ -34,22 +36,5 @@ const OrderNotAllowedScreen = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  icon: {
-    marginBottom: 32,
-  },
-  text: {
-    fontSize: 32,
-    textAlign: "center",
-    color: colors.primary,
-    fontWeight: 500,
-  },
-});
 
 export default OrderNotAllowedScreen;

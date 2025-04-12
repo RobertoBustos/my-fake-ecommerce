@@ -1,12 +1,14 @@
+import checkoutHeaderStyleSheet from "@/app/styles/components/CheckoutHeader";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { StyleSheet, Text, View } from "react-native";
-import { colors } from "../../constants/colors";
+import { Text, View } from "react-native";
+import { useStyles } from "react-native-unistyles";
 
 export type CheckoutHeaderPropsType = {
   orderId: string;
 };
 
 const CheckoutHeader = ({ orderId }: CheckoutHeaderPropsType) => {
+  const { styles, theme } = useStyles(checkoutHeaderStyleSheet);
   return (
     <View style={styles.container} testID="CheckoutHeader.Container">
       <Text
@@ -16,7 +18,7 @@ const CheckoutHeader = ({ orderId }: CheckoutHeaderPropsType) => {
       <FontAwesome5
         name="file-invoice-dollar"
         size={150}
-        color={colors.primary}
+        color={theme.colors.primary}
       />
       <Text style={styles.text} testID="CheckoutHeader.Text">
         Please fill your payment information to complete your order
@@ -24,20 +26,5 @@ const CheckoutHeader = ({ orderId }: CheckoutHeaderPropsType) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-    marginVertical: 10,
-  },
-  text: {
-    fontSize: 16,
-    fontWeight: "600",
-    textAlign: "center",
-    marginVertical: 8,
-  },
-});
 
 export default CheckoutHeader;

@@ -1,6 +1,7 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import Svg, { NumberProp, Path, Rect } from "react-native-svg";
-import { colors } from "../constants/colors";
+import { useStyles } from "react-native-unistyles";
+import cardPaymentStyleSheet from "../styles/components/CardPaymentSummary";
 import CustomCard from "./common/CustomCard";
 
 export type CardPaymentSummaryPropsType = {
@@ -20,6 +21,8 @@ const CardPaymentSummary = ({
   expYear,
   autorization,
 }: CardPaymentSummaryPropsType) => {
+  const { styles } = useStyles(cardPaymentStyleSheet);
+
   const renderCard = (brand: string) => {
     if (brand === "visa") {
       return (
@@ -64,19 +67,6 @@ const CardPaymentSummary = ({
     </CustomCard>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  text: {
-    marginVertical: 4,
-    fontSize: 16,
-    color: colors.black,
-  },
-});
 
 export const VisaCardIcon = (props: any) => (
   <Svg

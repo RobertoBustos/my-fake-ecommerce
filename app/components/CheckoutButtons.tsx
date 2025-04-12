@@ -1,5 +1,6 @@
-import { StyleSheet, View } from "react-native";
-import { colors } from "../constants/colors";
+import { View } from "react-native";
+import { useStyles } from "react-native-unistyles";
+import checkoutButtonsStyleSheet from "../styles/components/CheckoutButtons";
 import CustomButton from "./common/CustomButton";
 import DefaultButton from "./common/IconButtons";
 
@@ -16,27 +17,29 @@ const CheckoutButtons = ({
   onEditOrder,
   onCancelOrder,
 }: CheckoutButtonsPropsType) => {
+  const { styles, theme } = useStyles(checkoutButtonsStyleSheet);
+
   return (
     <View style={styles.container} testID="CheckoutButtons.Container">
-      <View style={{ flex: 1, width: "100%" }}>
+      <View style={styles.buttonContainer}>
         <CustomButton
           onPress={onEditOrder}
           buttonComponent={
             <DefaultButton
               text={editOrderLabel}
-              backgroundColor={colors.warning}
+              backgroundColor={theme.colors.warning}
             />
           }
           testID="CheckoutButtons.EditOrderButton"
         />
       </View>
-      <View style={{ flex: 1, width: "100%" }}>
+      <View style={styles.buttonContainer}>
         <CustomButton
           onPress={onCancelOrder}
           buttonComponent={
             <DefaultButton
               text={cancelOrderLabel}
-              backgroundColor={colors.error}
+              backgroundColor={theme.colors.error}
             />
           }
           testID="CheckoutButtons.CancelOrderButton"
@@ -45,15 +48,5 @@ const CheckoutButtons = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    height: 70,
-    paddingVertical: 8,
-    flexDirection: "row",
-    gap: 32,
-  },
-});
 
 export default CheckoutButtons;

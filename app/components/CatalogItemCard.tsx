@@ -1,9 +1,10 @@
-import { StyleSheet, Text, View } from "react-native";
-import { colors } from "../constants/colors";
+import { Text, View } from "react-native";
+import { useStyles } from "react-native-unistyles";
 import { ProductType } from "../constants/types";
 import useAppNavigation from "../hooks/useAppNavigation";
 import { setSelectedProductId } from "../redux/cart/reducer";
 import { useAppDispatch } from "../redux/hooks";
+import catalogItemCardStyleSheet from "../styles/components/CatalogItemCard";
 import { formatCurrency } from "../utils/formatCurrency";
 import CustomCard from "./common/CustomCard";
 import CustomImage from "./common/CustomImage";
@@ -16,6 +17,7 @@ export type CatalogItemCardPropsType = {
 const CatalogItemCard = ({ data, disabled }: CatalogItemCardPropsType) => {
   const navigation = useAppNavigation();
   const dispatch = useAppDispatch();
+  const { styles } = useStyles(catalogItemCardStyleSheet);
 
   return (
     <CustomCard
@@ -45,25 +47,5 @@ const CatalogItemCard = ({ data, disabled }: CatalogItemCardPropsType) => {
     </CustomCard>
   );
 };
-
-const styles = StyleSheet.create({
-  description: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "space-evenly",
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 16,
-  },
-  price: {
-    color: colors.primary,
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
-  },
-});
 
 export default CatalogItemCard;

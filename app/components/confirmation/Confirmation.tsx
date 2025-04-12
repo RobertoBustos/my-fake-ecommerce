@@ -1,7 +1,9 @@
 import { useOrderContext } from "@/app/contexts/OrderContext";
+import confirmationStyleSheet from "@/app/styles/components/Confirmation";
+import orderConfirmationItemStyleSheet from "@/app/styles/components/OrderConfirmationItem";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { colors } from "../../constants/colors";
+import { ScrollView, Text, View } from "react-native";
+import { useStyles } from "react-native-unistyles";
 import { CartItemType } from "../../constants/types";
 import { formatCurrency } from "../../utils/formatCurrency";
 import AddressSummary from "../AddressSummary";
@@ -13,6 +15,7 @@ import LoadingScreen from "../common/LoadingScreen";
 
 const Confirmation = () => {
   const { orderData, reloadOrder } = useOrderContext();
+  const { styles } = useStyles(confirmationStyleSheet);
 
   if (!orderData || orderData.payment === null) {
     reloadOrder();
@@ -36,13 +39,6 @@ const Confirmation = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  scrollContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
-
 export default Confirmation;
 
 export type OrderConfirmationItemPropsType = {
@@ -52,9 +48,10 @@ export type OrderConfirmationItemPropsType = {
 export const OrderConfirmationItem = ({
   data,
 }: OrderConfirmationItemPropsType) => {
+  const { styles, theme } = useStyles(orderConfirmationItemStyleSheet);
   return (
     <View
-      style={styles2.container}
+      style={styles.container}
       testID={`OrderConfirmationItem.Container-${data.id}`}
     >
       <CustomImage
@@ -63,21 +60,21 @@ export const OrderConfirmationItem = ({
         height={45}
         testID={`OrderConfirmationItem.Image-${data.id}`}
       />
-      <FontAwesome name="times" size={24} color="black" />
+      <FontAwesome name="times" size={24} color={theme.colors.typography} />
       <Text
-        style={styles2.text}
+        style={styles.text}
         testID={`OrderConfirmationItem.Quantity-${data.id}`}
       >
         {data.quantity}
       </Text>
       <Text
-        style={styles2.text}
+        style={styles.text}
         testID={`OrderConfirmationItem._UnitPrice-${data.id}`}
       >
         {formatCurrency(data.unitPrice)}
       </Text>
       <Text
-        style={styles2.subtotal}
+        style={styles.subtotal}
         testID={`OrderConfirmationItem.SubTotal-${data.id}`}
       >
         {formatCurrency(data.subtotal)}
@@ -85,21 +82,3 @@ export const OrderConfirmationItem = ({
     </View>
   );
 };
-
-const styles2 = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-evenly",
-    width: "100%",
-  },
-  text: {
-    color: colors.black,
-    fontSize: 14,
-  },
-  subtotal: {
-    color: colors.primary,
-    fontWeight: 600,
-    fontSize: 16,
-  },
-});

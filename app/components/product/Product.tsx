@@ -1,7 +1,8 @@
 import { useProductContext } from "@/app/contexts/ProductContext";
+import productStyleSheet from "@/app/styles/components/Product";
 import { useMemo } from "react";
-import { RefreshControl, ScrollView, StyleSheet, Text } from "react-native";
-import { colors } from "../../constants/colors";
+import { RefreshControl, ScrollView, Text } from "react-native";
+import { useStyles } from "react-native-unistyles";
 import { formatCurrency } from "../../utils/formatCurrency";
 import EmptyProduct from "../EmptyProduct";
 import NoStockMessage from "../NoStockMessage";
@@ -11,6 +12,7 @@ import CustomImage from "../common/CustomImage";
 const Product = () => {
   const { data, reloadProduct, isLoading, quantity, setQuantity } =
     useProductContext();
+  const { styles } = useStyles(productStyleSheet);
 
   const handleRefresh = () => {
     reloadProduct();
@@ -70,43 +72,5 @@ const Product = () => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  scrollContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  loader: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginTop: 20,
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  price: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginTop: 20,
-    color: colors.primary,
-  },
-  descriptionTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginTop: 20,
-    textAlign: "left",
-  },
-  description: {
-    textAlign: "justify",
-    marginTop: 8,
-  },
-  stock: {
-    fontSize: 16,
-    marginTop: 20,
-    color: colors.black,
-  },
-});
 
 export default Product;

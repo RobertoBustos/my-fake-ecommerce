@@ -1,5 +1,6 @@
-import { Platform, StyleSheet, Text, View } from "react-native";
-import { colors } from "../constants/colors";
+import { Text, View } from "react-native";
+import { useStyles } from "react-native-unistyles";
+import quantityButtonsStyleSheet from "../styles/components/QuantityButtons";
 import CustomButton from "./common/CustomButton";
 import { MinusButton, PlusButton } from "./common/IconButtons";
 
@@ -18,6 +19,8 @@ const QuantityButtons = ({
   onChange,
   showValue = true,
 }: AddToCartPropsType) => {
+  const { styles } = useStyles(quantityButtonsStyleSheet);
+
   const incrementQuantity = () => {
     onChange(value + 1);
   };
@@ -31,13 +34,7 @@ const QuantityButtons = ({
       <CustomButton
         onPress={decrementQuantity}
         disabled={value <= min}
-        buttonComponent={
-          <MinusButton
-            color={colors.light}
-            size={30}
-            backgroundColor={value <= min ? colors.dark : colors.primary}
-          />
-        }
+        buttonComponent={<MinusButton size={30} disabled={value <= min} />}
         testID="QuantityButtons.Decrement"
       />
       {showValue ? (
@@ -48,39 +45,11 @@ const QuantityButtons = ({
       <CustomButton
         onPress={incrementQuantity}
         disabled={value >= max}
-        buttonComponent={
-          <PlusButton
-            color={colors.light}
-            size={30}
-            backgroundColor={value >= max ? colors.dark : colors.primary}
-          />
-        }
+        buttonComponent={<PlusButton size={30} disabled={value >= max} />}
         testID="QuantityButtons.Increment"
       />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    height: "auto",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 20,
-  },
-  quantity: {
-    flex: 1,
-    fontSize: 24,
-    height: "100%",
-    textAlign: "center",
-    textAlignVertical: "center",
-    paddingVertical: Platform.OS === "ios" ? 7 : 0,
-    borderTopWidth: 2,
-    borderBottomWidth: 2,
-    borderTopColor: colors.dark,
-    borderBottomColor: colors.dark,
-  },
-});
 
 export default QuantityButtons;

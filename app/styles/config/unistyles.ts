@@ -1,4 +1,3 @@
-import { Platform } from 'react-native'
 import { UnistylesRegistry } from 'react-native-unistyles'
 import { breakpoints } from './breakpoints'
 import { darkTheme, lightTheme } from './themes'
@@ -22,7 +21,6 @@ UnistylesRegistry
     })
     .addConfig({
         adaptiveThemes: true,
-        initialTheme: Platform.OS === "android" ? "dark" : "light"
     })
 
 export default {}

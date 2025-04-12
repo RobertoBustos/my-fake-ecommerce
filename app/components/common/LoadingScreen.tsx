@@ -1,28 +1,20 @@
-import { ActivityIndicator, StyleSheet, View } from "react-native";
-import { colors } from "../../constants/colors";
+import loadingScreenStyleSheet from "@/app/styles/components/LoadingScreen";
+import { ActivityIndicator, View } from "react-native";
+import { useStyles } from "react-native-unistyles";
 
 const LoadingScreen = () => {
+  const { styles, theme } = useStyles(loadingScreenStyleSheet);
+
   return (
     <View style={styles.container} testID="LoadingScreen.Container">
       <ActivityIndicator
         size={"large"}
-        color={colors.primary}
+        color={theme.colors.typography}
         style={styles.loader}
         testID="LoadingScreen.Loader"
       />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: "100%",
-    height: "100%",
-  },
-  loader: {
-    flex: 1,
-  },
-});
 
 export default LoadingScreen;

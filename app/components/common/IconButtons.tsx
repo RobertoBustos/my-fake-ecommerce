@@ -1,106 +1,81 @@
+import defaultButtonStyleSheet from "@/app/styles/components/DefaultButton";
+import deleteButtonStyleSheet from "@/app/styles/components/DeleteButton";
+import minusButtonStyleSheet from "@/app/styles/components/MinusButton";
+import plusButtonStyleSheet from "@/app/styles/components/PlusButton";
+import reloadButtonStyleSheet from "@/app/styles/components/ReloadButton";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {
   ActivityIndicator,
   ColorValue,
   StyleProp,
-  StyleSheet,
   Text,
   View,
   ViewStyle,
 } from "react-native";
-import { GLOBAL_THEME_BORDER_RADIUS, colors } from "../../constants/colors";
+import { useStyles } from "react-native-unistyles";
 
 export type IconButtonPropsType = {
   size?: number;
   color?: string;
-  backgroundColor?: string;
+  disabled?: boolean;
 };
 
-export const DeleteButton = ({
-  size = 30,
-  color = colors.black,
-  backgroundColor = colors.white,
-}: IconButtonPropsType) => {
+export const DeleteButton = ({ size = 30, disabled }: IconButtonPropsType) => {
+  const { styles, theme } = useStyles(deleteButtonStyleSheet);
+  const mixedStyles: StyleProp<ViewStyle> = { ...styles.button };
+
+  if (disabled) {
+    mixedStyles.backgroundColor = theme.colors.disabled;
+  }
+
   return (
-    <View
-      style={{
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        paddingHorizontal: 16,
-        backgroundColor: backgroundColor,
-      }}
-    >
-      <FontAwesome name="remove" size={size} color={color} />
+    <View style={mixedStyles}>
+      <FontAwesome name="remove" size={size} color={theme.colors.error} />
     </View>
   );
 };
 
-export const PlusButton = ({
-  size = 30,
-  color = colors.black,
-  backgroundColor = colors.white,
-}: IconButtonPropsType) => {
+export const PlusButton = ({ size = 30, disabled }: IconButtonPropsType) => {
+  const { styles, theme } = useStyles(plusButtonStyleSheet);
+  const mixedStyles: StyleProp<ViewStyle> = { ...styles.button };
+
+  if (disabled) {
+    mixedStyles.backgroundColor = theme.colors.disabled;
+  }
+
   return (
-    <View
-      style={{
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: backgroundColor,
-        width: 100,
-        height: 50,
-        borderTopRightRadius: GLOBAL_THEME_BORDER_RADIUS,
-        borderBottomRightRadius: GLOBAL_THEME_BORDER_RADIUS,
-      }}
-    >
-      <FontAwesome name="plus" size={size} color={color} />
+    <View style={mixedStyles}>
+      <FontAwesome name="plus" size={size} color={theme.colors.onPrimary} />
     </View>
   );
 };
 
-export const MinusButton = ({
-  size = 30,
-  color = colors.black,
-  backgroundColor = colors.white,
-}: IconButtonPropsType) => {
+export const MinusButton = ({ size = 30, disabled }: IconButtonPropsType) => {
+  const { styles, theme } = useStyles(minusButtonStyleSheet);
+  const mixedStyles: StyleProp<ViewStyle> = { ...styles.button };
+
+  if (disabled) {
+    mixedStyles.backgroundColor = theme.colors.disabled;
+  }
+
   return (
-    <View
-      style={{
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: backgroundColor,
-        width: 100,
-        height: 50,
-        borderTopLeftRadius: GLOBAL_THEME_BORDER_RADIUS,
-        borderBottomLeftRadius: GLOBAL_THEME_BORDER_RADIUS,
-      }}
-    >
-      <FontAwesome name="minus" size={size} color={color} />
+    <View style={mixedStyles}>
+      <FontAwesome name="minus" size={size} color={theme.colors.onPrimary} />
     </View>
   );
 };
 
-export const ReloadButton = ({
-  size = 30,
-  color = colors.black,
-  backgroundColor = colors.white,
-}: IconButtonPropsType) => {
+export const ReloadButton = ({ size = 30, disabled }: IconButtonPropsType) => {
+  const { styles, theme } = useStyles(reloadButtonStyleSheet);
+  const mixedStyles: StyleProp<ViewStyle> = { ...styles.button };
+
+  if (disabled) {
+    mixedStyles.backgroundColor = theme.colors.disabled;
+  }
   return (
-    <View
-      style={{
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: backgroundColor,
-        width: 100,
-        height: 50,
-        borderTopLeftRadius: GLOBAL_THEME_BORDER_RADIUS,
-        borderBottomLeftRadius: GLOBAL_THEME_BORDER_RADIUS,
-        borderTopRightRadius: GLOBAL_THEME_BORDER_RADIUS,
-        borderBottomRightRadius: GLOBAL_THEME_BORDER_RADIUS,
-      }}
-    >
-      <FontAwesome name="refresh" size={size} color={color} />
-      <Text>RETRY</Text>
+    <View style={mixedStyles}>
+      <FontAwesome name="refresh" size={size} color={theme.colors.typography} />
+      <Text style={styles.buttonText}>RETRY</Text>
     </View>
   );
 };
@@ -118,6 +93,7 @@ const DefaultButton = ({
   isLoading,
   backgroundColor,
 }: DefaultButtonPropsType) => {
+  const { styles, theme } = useStyles(defaultButtonStyleSheet);
   const mixedStyles: StyleProp<ViewStyle> = { ...styles.button };
 
   if (backgroundColor) {
@@ -125,14 +101,15 @@ const DefaultButton = ({
   }
 
   if (disabled || isLoading) {
-    mixedStyles.backgroundColor = colors.dark;
+    mixedStyles.backgroundColor = theme.colors.disabled;
   }
+
   return (
     <View style={mixedStyles}>
       {isLoading ? (
         <ActivityIndicator
           size="small"
-          color={colors.white}
+          color={theme.colors.onPrimary}
           style={styles.loader}
         />
       ) : (
@@ -141,24 +118,5 @@ const DefaultButton = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  button: {
-    width: "100%",
-    height: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.primary,
-    borderRadius: GLOBAL_THEME_BORDER_RADIUS,
-  },
-  buttonText: {
-    color: colors.white,
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  loader: {
-    flex: 1,
-  },
-});
 
 export default DefaultButton;

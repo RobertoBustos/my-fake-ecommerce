@@ -1,5 +1,7 @@
 import { PropsWithChildren, ReactNode } from "react";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
+import { useStyles } from "react-native-unistyles";
+import layoutStyleSheet from "../styles/components/Layout";
 import ToastMessage from "./common/ToastMessage";
 
 export type LayoutPropsType = PropsWithChildren & {
@@ -14,6 +16,8 @@ const Layout = ({
   footerComponent,
   testID,
 }: LayoutPropsType) => {
+  const { styles } = useStyles(layoutStyleSheet);
+
   return (
     <View style={styles.container} testID={testID}>
       <ToastMessage />
@@ -23,18 +27,5 @@ const Layout = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "flex-start",
-    paddingHorizontal: 16,
-  },
-  content: {
-    flex: 1,
-    width: "100%",
-  },
-});
 
 export default Layout;

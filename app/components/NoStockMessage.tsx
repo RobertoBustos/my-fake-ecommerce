@@ -1,11 +1,18 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { StyleSheet, Text, View } from "react-native";
-import { colors } from "../constants/colors";
+import { Text, View } from "react-native";
+import { useStyles } from "react-native-unistyles";
+import noStockMessageStyleSheet from "../styles/components/NoStockMessages";
 
 const NoStockMessage = () => {
+  const { styles, theme } = useStyles(noStockMessageStyleSheet);
+
   return (
     <View style={styles.container} testID="NoStockMessage.Container">
-      <FontAwesome6 name="face-frown-open" size={48} color={colors.dark} />
+      <FontAwesome6
+        name="face-frown-open"
+        size={48}
+        color={theme.colors.error}
+      />
       <Text style={styles.text} testID="NoStockMessage.Text">
         This Product is out of stock or not available for now. Please try again
         later
@@ -13,20 +20,5 @@ const NoStockMessage = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "flex-start",
-    marginTop: 30,
-  },
-  text: {
-    fontSize: 16,
-    textAlign: "center",
-    marginTop: 30,
-    paddingHorizontal: 24,
-  },
-});
 
 export default NoStockMessage;

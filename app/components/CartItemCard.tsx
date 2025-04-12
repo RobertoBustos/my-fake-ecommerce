@@ -1,8 +1,9 @@
 import { useMemo } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { colors } from "../constants/colors";
+import { Text, View } from "react-native";
+import { useStyles } from "react-native-unistyles";
 import { CartItemType } from "../constants/types";
 import { useCartContext } from "../contexts/CartContext";
+import cartItemCardStyleSheet from "../styles/components/CartItemCard";
 import { formatCurrency } from "../utils/formatCurrency";
 import CustomButton from "./common/CustomButton";
 import CustomCard from "./common/CustomCard";
@@ -16,6 +17,7 @@ export type CartItemCardPropsType = {
 
 const CartItemCard = ({ data, disabled }: CartItemCardPropsType) => {
   const { removeFromCart, redirectToProduct } = useCartContext();
+  const { styles } = useStyles(cartItemCardStyleSheet);
 
   const handleRemoveFromCart = () => {
     removeFromCart(data.id);
@@ -24,8 +26,6 @@ const CartItemCard = ({ data, disabled }: CartItemCardPropsType) => {
   const handlePress = () => {
     redirectToProduct(data.product.id);
   };
-
-  const priceStyles = { ...styles.price, color: colors.black };
 
   const getPriceText = useMemo(() => {
     return data.quantity + " X " + formatCurrency(data.unitPrice);
@@ -43,7 +43,7 @@ const CartItemCard = ({ data, disabled }: CartItemCardPropsType) => {
         testID={`CartItemCard.CardDescription-${data.productId}`}
       >
         <Text style={styles.title}>{data.product.title}</Text>
-        <Text style={priceStyles}>{getPriceText}</Text>
+        <Text style={styles.price}>{getPriceText}</Text>
         <Text style={styles.subtotal}>{formatCurrency(data.subtotal)}</Text>
       </View>
       <CustomImage
@@ -54,35 +54,11 @@ const CartItemCard = ({ data, disabled }: CartItemCardPropsType) => {
       />
       <CustomButton
         onPress={handleRemoveFromCart}
-        buttonComponent={<DeleteButton color={colors.error} size={30} />}
+        buttonComponent={<DeleteButton size={30} />}
         testID={`CartItemCard.CardButton-${data.productId}`}
       />
     </CustomCard>
   );
 };
-
-const styles = StyleSheet.create({
-  description: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "space-evenly",
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 16,
-  },
-  price: {
-    color: colors.primary,
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 16,
-  },
-  subtotal: {
-    color: colors.primary,
-    fontSize: 24,
-  },
-});
 
 export default CartItemCard;

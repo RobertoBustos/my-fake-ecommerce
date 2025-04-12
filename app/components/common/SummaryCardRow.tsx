@@ -1,5 +1,6 @@
-import { StyleSheet, Text, View } from "react-native";
-import { colors } from "../../constants/colors";
+import summaryCardRowStyleSheet from "@/app/styles/components/SummaryCardRow";
+import { Text, View } from "react-native";
+import { useStyles } from "react-native-unistyles";
 
 export type SummaryCardRowPropsType = {
   concept: string;
@@ -12,6 +13,8 @@ export const SummaryCardRow = ({
   value,
   testID,
 }: SummaryCardRowPropsType) => {
+  const { styles } = useStyles(summaryCardRowStyleSheet);
+
   return (
     <View style={styles.rowContainer} testID={testID}>
       <Text style={styles.rowText}>{concept}</Text>
@@ -19,19 +22,5 @@ export const SummaryCardRow = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  rowContainer: {
-    paddingVertical: 4,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    borderBottomWidth: 1,
-    borderBottomColor: colors.black,
-  },
-  rowText: {
-    fontSize: 16,
-  },
-});
 
 export default SummaryCardRow;

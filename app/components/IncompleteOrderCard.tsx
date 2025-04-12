@@ -1,10 +1,11 @@
-import { StyleSheet, Text } from "react-native";
-import { colors } from "../constants/colors";
+import { Text } from "react-native";
+import { useStyles } from "react-native-unistyles";
 import { IncompleteOrderType } from "../constants/types";
 import useAppNavigation from "../hooks/useAppNavigation";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setSelectedOrderId } from "../redux/order/reducer";
 import { selectSelectedOrderId } from "../redux/order/selectors";
+import incompleteOrderStyleSheet from "../styles/components/IncompleteOrderCard";
 import { formatCurrency } from "../utils/formatCurrency";
 import CustomCard from "./common/CustomCard";
 
@@ -22,6 +23,7 @@ const IncompleteOrderCard = ({
   const dispatch = useAppDispatch();
   const navigation = useAppNavigation();
   const currentOrderId = useAppSelector(selectSelectedOrderId);
+  const { styles } = useStyles(incompleteOrderStyleSheet);
 
   const handleRedirect = () => {
     if (currentOrderId !== data.id) {
@@ -50,15 +52,5 @@ const IncompleteOrderCard = ({
     </CustomCard>
   );
 };
-
-const styles = StyleSheet.create({
-  text: {
-    fontSize: 16,
-    textAlign: "center",
-    padding: 8,
-    color: colors.primary,
-    fontWeight: 500,
-  },
-});
 
 export default IncompleteOrderCard;

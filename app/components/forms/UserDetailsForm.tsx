@@ -1,8 +1,10 @@
+import userDetailsFormStyleSheet from "@/app/styles/components/UserDetailsForm";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { StyleSheet, Text, TextInput } from "react-native";
+import { Text, TextInput } from "react-native";
+import { useStyles } from "react-native-unistyles";
 import { ZodType, z } from "zod";
-import { colors } from "../../constants/colors";
 import { UserType } from "../../constants/types";
 import { useAppDispatch } from "../../redux/hooks";
 import { setCustomerData } from "../../redux/order/reducer";
@@ -23,6 +25,7 @@ export type UserDetailsFormPropsType = {
 
 const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
   const dispatch = useAppDispatch();
+  const { styles, theme } = useStyles(userDetailsFormStyleSheet);
 
   const {
     control,
@@ -41,6 +44,16 @@ const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
     const values = getValues();
     dispatch(setCustomerData(values));
   };
+
+  const getInputStyles = useCallback(
+    (error?: string) => {
+      if (error) {
+        return { ...styles.input, borderColor: theme.colors.error };
+      }
+      return styles.input;
+    },
+    [styles.input, theme.colors.error]
+  );
 
   return (
     <CustomCard
@@ -61,8 +74,8 @@ const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
               saveToStore();
             }}
             value={value}
-            style={styles.input}
-            placeholderTextColor={colors.dark}
+            style={getInputStyles(errors.email?.message)}
+            placeholderTextColor={theme.colors.typography}
             testID="UserDetailsForm.EmailInput"
           />
         )}
@@ -85,8 +98,8 @@ const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
               saveToStore();
             }}
             value={value}
-            style={styles.input}
-            placeholderTextColor={colors.dark}
+            style={getInputStyles(errors.name?.message)}
+            placeholderTextColor={theme.colors.typography}
             testID="UserDetailsForm.NameInput"
           />
         )}
@@ -99,23 +112,5 @@ const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
     </CustomCard>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  input: {
-    alignItems: "center",
-    width: "100%",
-    height: 40,
-    paddingHorizontal: 8,
-    backgroundColor: colors.light,
-    marginVertical: 4,
-    fontSize: 16,
-  },
-  errorText: {
-    color: colors.error,
-  },
-});
 
 export default UserDetailsForm;

@@ -8,6 +8,7 @@ import OrderNotAllowedScreen from "../OrderNotAllowedScreen";
 import OrderSummary from "../OrderSummary";
 import AddressDetailsForm from "../forms/AddressDetailsForm";
 import UserDetailsForm from "../forms/UserDetailsForm";
+import CheckoutHeader from "./CheckoutHeader";
 
 const Checkout = () => {
   const { orderData, reloadOrder, isLoading, cancelOrder, returnOrderToCart } =
@@ -54,6 +55,7 @@ const Checkout = () => {
       showsVerticalScrollIndicator={false}
       testID="Checkout.Container"
     >
+      <CheckoutHeader orderId={orderData.id} />
       <OrderSummary data={orderData.totals} />
       <UserDetailsForm data={userData} />
       <AddressDetailsForm data={addressData} />

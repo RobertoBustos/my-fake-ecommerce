@@ -2,7 +2,6 @@ import { StaticScreenProps } from "@react-navigation/native";
 import Layout from "../components/Layout";
 import Checkout from "../components/checkout/Checkout";
 import CheckoutFooter from "../components/checkout/CheckoutFooter";
-import CheckoutHeader from "../components/checkout/CheckoutHeader";
 import { RootStackParamList } from "../constants/types";
 import OrderStore from "../contexts/OrderContext";
 
@@ -14,7 +13,6 @@ const CheckoutScreen = ({ route }: CheckoutScreenPropsType) => {
   return (
     <OrderStore orderId={route.params.orderId}>
       <Layout
-        headerComponent={<CheckoutHeader orderId={route.params.orderId} />}
         footerComponent={<CheckoutFooter />}
         testID="CheckoutScreen.Layout"
       >

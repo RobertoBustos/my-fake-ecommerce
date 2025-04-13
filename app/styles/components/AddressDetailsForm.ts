@@ -11,7 +11,8 @@ const addressDetailsFormStyleSheet = createStyleSheet((theme) => ({
         fontSize: 16,
         borderColor: theme.colors.inputBackGround,
         borderWidth: 1,
-        borderRadius: theme.borders.radius / 2
+        borderRadius: theme.borders.radius / 2,
+        color: theme.colors.typography
     }
 }));
 

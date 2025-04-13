@@ -16,10 +16,12 @@ export const lightTheme = {
         md: 4,
         lg: 8,
         xl: 12
-    }, borders: {
+    },
+    borders: {
         radius: 25,
         color: "#a3a3a3"
-    }
+    },
+    headerIconSize: 100
 } as const
 
 export const darkTheme = {
@@ -44,7 +46,8 @@ export const darkTheme = {
     borders: {
         radius: 25,
         color: "#a3a3a3"
-    }
+    },
+    headerIconSize: 100
 } as const
 
 export default {

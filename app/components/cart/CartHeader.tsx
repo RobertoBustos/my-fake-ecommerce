@@ -16,7 +16,7 @@ const CartHeader = () => {
     <View style={styles.container} testID="CartHeader.Container">
       <FontAwesome5
         name="file-invoice"
-        size={150}
+        size={theme.headerIconSize}
         color={theme.colors.primary}
       />
       <Text style={styles.text} testID="CartHeader.Text">

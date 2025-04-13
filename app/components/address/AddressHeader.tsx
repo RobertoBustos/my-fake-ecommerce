@@ -11,7 +11,7 @@ const AddressHeader = () => {
     <View style={styles.container} testID="AddressHeader.Container">
       <FontAwesome6
         name="location-dot"
-        size={150}
+        size={theme.headerIconSize}
         color={theme.colors.primary}
       />
       <Text style={styles.text} testID="AddressHeader.Text">

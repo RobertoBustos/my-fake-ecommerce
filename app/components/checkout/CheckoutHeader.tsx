@@ -17,7 +17,7 @@ const CheckoutHeader = ({ orderId }: CheckoutHeaderPropsType) => {
       >{`Order Number ${orderId}`}</Text>
       <FontAwesome5
         name="file-invoice-dollar"
-        size={150}
+        size={theme.headerIconSize}
         color={theme.colors.primary}
       />
       <Text style={styles.text} testID="CheckoutHeader.Text">

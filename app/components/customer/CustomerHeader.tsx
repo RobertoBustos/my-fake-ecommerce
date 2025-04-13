@@ -11,7 +11,7 @@ const CustomerHeader = () => {
     <View style={styles.container} testID="CustomerHeader.Container">
       <FontAwesome6
         name="user-shield"
-        size={150}
+        size={theme.headerIconSize}
         color={theme.colors.primary}
       />
       <Text style={styles.text} testID="CustomerHeader.Text">

@@ -11,6 +11,7 @@ import CartScreen from "../screens/CartScreen";
 import CatalogScreen from "../screens/CatalogScreen";
 import CheckoutScreen from "../screens/CheckoutScreen";
 import ConfirmationScreen from "../screens/ConfirmationScreen";
+import CustomerScreen from "../screens/CustomerScreen";
 import ProductScreen from "../screens/ProductScreen";
 import NavigationHeader from "./NavigationHeader";
 
@@ -71,10 +72,17 @@ const RootStack = () => {
         })}
       />
       <Stack.Screen
+        name="Customer"
+        component={CustomerScreen}
+        options={({ route }) => ({
+          title: `Customer Information`,
+        })}
+      />
+      <Stack.Screen
         name="Address"
         component={AddressScreen}
         options={({ route }) => ({
-          title: `Address`,
+          title: `Address Information`,
         })}
       />
       <Stack.Screen

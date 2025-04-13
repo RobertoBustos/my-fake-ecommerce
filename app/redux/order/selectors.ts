@@ -8,7 +8,8 @@ export const selectCustomerData = () => {
         return {
             customerId: orderState.customerData?.id || "",
             email: orderState.customerData?.email || "",
-            name: orderState.customerData?.name || ""
+            name: orderState.customerData?.name || "",
+            phone: orderState.customerData?.phone || ""
         }
     }
     );
@@ -16,7 +17,7 @@ export const selectCustomerData = () => {
 
 export const selectIsCustomerDataValid = () => {
     return createSelector([selectCustomerData()], (customerData) => {
-        return customerData.email !== "" && customerData.name !== ""
+        return customerData.email !== "" && customerData.name !== "" && customerData.phone.length === 10
     }
     );
 }

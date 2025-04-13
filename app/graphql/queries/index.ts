@@ -27,6 +27,7 @@ query GetOrders($filter: Filter){
       id
       email
       name
+      phone
     }
     address {
       address

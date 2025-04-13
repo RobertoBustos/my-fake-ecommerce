@@ -33,6 +33,11 @@ const CustomerSummary = ({ data, isLoading }: CustomerSummaryPropsType) => {
         value={data.name}
         testID="CustomerSummary.Name"
       />
+      <SummaryCardRow
+        concept={"Phone Number"}
+        value={data.phone}
+        testID="CustomerSummary.Phone"
+      />
     </CustomCard>
   );
 };

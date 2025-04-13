@@ -1,129 +1,58 @@
+import { useAppDispatch } from "@/app/redux/hooks";
+import { setAddressData } from "@/app/redux/order/reducer";
 import addressDetailsFormStyleSheet from "@/app/styles/components/AddressDetailsForm";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { Text, TextInput } from "react-native";
+import { formatAddress } from "@/app/utils/formatAddress";
+import { useEffect, useRef } from "react";
+import {
+  GooglePlacesAutocomplete,
+  GooglePlacesAutocompleteRef,
+} from "react-native-google-places-autocomplete";
 import { useStyles } from "react-native-unistyles";
-import { ZodType, z } from "zod";
-import { AddressType } from "../../constants/types";
-import { useAppDispatch } from "../../redux/hooks";
-import { setAddressData } from "../../redux/order/reducer";
+import { GOOGLEMAPS_API_KEY } from "../../constants/config";
 import CustomCard from "../common/CustomCard";
 
-const validationSchema: ZodType<AddressType> = z.object({
-  address: z.string().min(1, { message: "Address required" }),
-  zipCode: z
-    .string()
-    .min(5, { message: "Zipcode must contain exact 5 characters" })
-    .max(5, { message: "Zipcode must contain exact 5 characters" }),
-});
-
 export type AddressDetailsFormPropsType = {
-  data: { address: string; zipCode: string };
+  address?: string;
   isLoading?: boolean;
 };
 
 const AddressDetailsForm = ({
-  data,
+  address,
   isLoading,
 }: AddressDetailsFormPropsType) => {
   const dispatch = useAppDispatch();
   const { styles, theme } = useStyles(addressDetailsFormStyleSheet);
+  const ref = useRef<GooglePlacesAutocompleteRef>(null);
 
-  const {
-    control,
-    getValues,
-    formState: { errors },
-  } = useForm<AddressType>({
-    defaultValues: {
-      address: data.address,
-      zipCode: data.zipCode,
-    },
-    resolver: zodResolver(validationSchema),
-    mode: "all",
-  });
-
-  const saveToStore = () => {
-    const values = getValues();
-    dispatch(setAddressData(values));
-  };
-
-  const getInputStyles = useCallback(
-    (error?: string) => {
-      if (error) {
-        return { ...styles.input, borderColor: theme.colors.error };
-      }
-      return styles.input;
-    },
-    [styles.input, theme.colors.error]
-  );
+  useEffect(() => {
+    if (!address) return;
+    ref.current?.setAddressText(address);
+  }, [address]);
 
   return (
-    <CustomCard
-      headerText="Address Details"
-      isLoading={isLoading}
-      testID="AddressDetailsForm.Container"
-    >
-      <Controller
-        control={control}
-        name="address"
-        rules={{
-          required: true,
+    <CustomCard isLoading={isLoading} testID="AddressDetailsForm.Container">
+      <GooglePlacesAutocomplete
+        ref={ref}
+        debounce={700}
+        placeholder="Search Your Address"
+        fetchDetails={true}
+        onPress={(data, details = null) => {
+          if (details === null) return;
+          const values = formatAddress(details);
+          dispatch(setAddressData(values));
         }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            inputMode="text"
-            placeholder="STREET NAME  NUMBER"
-            onBlur={onBlur}
-            onChangeText={(e) => {
-              onChange(e);
-              saveToStore();
-            }}
-            value={value}
-            style={getInputStyles(errors.address?.message)}
-            multiline={true}
-            numberOfLines={4}
-            placeholderTextColor={theme.colors.typography}
-            testID="AddressDetailsForm.AddressInput"
-          />
-        )}
+        query={{
+          key: GOOGLEMAPS_API_KEY,
+          language: "en",
+        }}
+        textInputProps={{
+          testID: "Address.SearchInput",
+          placeholderTextColor: theme.colors.typography,
+          multiline: true,
+          numberOfLines: 4,
+          style: styles.input,
+        }}
       />
-      {errors.address && (
-        <Text
-          style={styles.errorText}
-          testID="AddressDetailsForm.AddressErrorText"
-        >
-          {errors.address.message}
-        </Text>
-      )}
-      <Controller
-        control={control}
-        name="zipCode"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            inputMode="numeric"
-            keyboardType="numeric"
-            placeholder="ZIP CODE"
-            onBlur={onBlur}
-            onChangeText={(e) => {
-              onChange(e);
-              saveToStore();
-            }}
-            value={value}
-            style={getInputStyles(errors.zipCode?.message)}
-            placeholderTextColor={theme.colors.typography}
-            testID="AddressDetailsForm.ZipCodeInput"
-          />
-        )}
-      />
-      {errors.zipCode && (
-        <Text
-          style={styles.errorText}
-          testID="AddressDetailsForm.ZipCodeErrorText"
-        >
-          {errors.zipCode.message}
-        </Text>
-      )}
     </CustomCard>
   );
 };

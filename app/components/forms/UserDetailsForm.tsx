@@ -16,10 +16,14 @@ const validationSchema: ZodType<UserType> = z.object({
     .string()
     .min(4, { message: "Your name must contain from 4 up to 60 characters" })
     .max(60, { message: "Your name must contain from 4 up to 60 characters" }),
+  phone: z
+    .string()
+    .min(10, { message: "Your phone number must contain 10 digits" })
+    .max(10, { message: "Your phone number must contain 10 digits" }),
 });
 
 export type UserDetailsFormPropsType = {
-  data: { email: string; name: string };
+  data: UserType;
   isLoading?: boolean;
 };
 
@@ -35,6 +39,7 @@ const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
     defaultValues: {
       email: data.email,
       name: data.name,
+      phone: data.phone,
     },
     resolver: zodResolver(validationSchema),
     mode: "all",
@@ -56,11 +61,7 @@ const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
   );
 
   return (
-    <CustomCard
-      headerText="User Details"
-      isLoading={isLoading}
-      testID="UserDetailsForm.Container"
-    >
+    <CustomCard isLoading={isLoading} testID="UserDetailsForm.Container">
       <Controller
         control={control}
         name="email"
@@ -107,6 +108,34 @@ const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
       {errors.name && (
         <Text style={styles.errorText} testID="UserDetailsForm.NameErrorText">
           {errors.name.message}
+        </Text>
+      )}
+      <Controller
+        control={control}
+        name="phone"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            inputMode="numeric"
+            keyboardType="numeric"
+            placeholder="PHONE NUMBER"
+            onBlur={onBlur}
+            onChangeText={(e) => {
+              onChange(e);
+              saveToStore();
+            }}
+            value={value}
+            style={getInputStyles(errors.phone?.message)}
+            placeholderTextColor={theme.colors.typography}
+            testID="AddressDetailsForm.ZipCodeInput"
+          />
+        )}
+      />
+      {errors.phone && (
+        <Text
+          style={styles.errorText}
+          testID="AddressDetailsForm.ZipCodeErrorText"
+        >
+          {errors.phone.message}
         </Text>
       )}
     </CustomCard>

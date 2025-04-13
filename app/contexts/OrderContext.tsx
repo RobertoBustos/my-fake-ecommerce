@@ -30,10 +30,11 @@ export type OrderContextType = {
   processCheckout: () => void;
   footerText: string;
   isProcessing: boolean;
-  isDisabled: boolean;
   returnFromConfirmation: () => void;
   updateOrderAddress: () => void;
   isAddressValid: boolean;
+  updateOrderCustomer: () => void;
+  isCustomerValid: boolean;
 };
 
 const OrderContext = createContext<OrderContextType>({
@@ -45,10 +46,11 @@ const OrderContext = createContext<OrderContextType>({
   processCheckout: () => {},
   footerText: "",
   isProcessing: false,
-  isDisabled: false,
   returnFromConfirmation: () => {},
   updateOrderAddress: () => {},
   isAddressValid: false,
+  updateOrderCustomer: () => {},
+  isCustomerValid: false,
 });
 
 export type OrderStoreContextType = PropsWithChildren & {
@@ -72,12 +74,11 @@ const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
   const dispatch = useAppDispatch();
   const customerData = useAppSelector(selectCustomerData());
   const addressData = useAppSelector(selectAddressData());
-  const isCustomerDataValid = useAppSelector(selectIsCustomerDataValid());
+  const isCustomerValid = useAppSelector(selectIsCustomerDataValid());
   const isAddressValid = useAppSelector(selectIsAddressDataValid());
   const orderData: OrderType | undefined =
     orders && orders.length && orders.length === 1 ? orders[0] : undefined;
   const isProcessing = isUpdating || isLoading || isCreatingPayment;
-  const isDisabled = !isCustomerDataValid || !isAddressValid;
 
   useEffect(() => {
     fetchOrder(orderId);
@@ -90,6 +91,7 @@ const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
         setCustomerData({
           email: orderData.customer.email,
           name: orderData.customer.name,
+          phone: orderData.customer.phone,
         })
       );
     }
@@ -110,7 +112,7 @@ const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
       return `Complete Your Payment for ${formatCurrency(
         orderData.totals.total
       )}`;
-    return "Next";
+    return "Continue";
   };
 
   const reloadOrder = () => {
@@ -181,34 +183,44 @@ const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
     ]);
   };
 
-  const updateOrder = () => {
-    if (!orderData) return;
-    updateExistingOrder({
-      id: orderData.id,
-      customer: { email: customerData.email, name: customerData.name },
-      address: { address: addressData.address, zipCode: addressData.zipCode },
-      status: "PAYMENT_PENDING",
-    })
-      .then((data) => {
-        refetchOrder();
-      })
-      .catch((error) => Alert.alert(error));
-  };
-
   const updateOrderAddress = () => {
     if (!orderData) return;
     updateExistingOrder({
       id: orderData.id,
       customer: null,
       address: { address: addressData.address, zipCode: addressData.zipCode },
-      status: "INCOMPLETE",
+      status: null,
     })
       .then((data) => {
         refetchOrder();
         navigation.navigate("Checkout", { orderId: orderData.id });
         return;
       })
-      .catch((error) => Alert.alert(error));
+      .catch((error) => {
+        Alert.alert(error.message);
+      });
+  };
+
+  const updateOrderCustomer = () => {
+    if (!orderData) return;
+    updateExistingOrder({
+      id: orderData.id,
+      customer: {
+        email: customerData.email,
+        name: customerData.name,
+        phone: customerData.phone,
+      },
+      address: null,
+      status: null,
+    })
+      .then((data) => {
+        refetchOrder();
+        navigation.navigate("Address", { orderId: orderData.id });
+        return;
+      })
+      .catch((error) => {
+        Alert.alert(error.message);
+      });
   };
 
   const completeOrder = () => {
@@ -248,10 +260,7 @@ const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
 
   const processCheckout = () => {
     if (!orderData) return;
-    if (orderData.status === "PAYMENT_PENDING") {
-      return completeOrder();
-    }
-    return updateOrder();
+    completeOrder();
   };
 
   const returnFromConfirmation = () => {
@@ -286,9 +295,10 @@ const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
         returnFromConfirmation,
         footerText: getFooterText(),
         isProcessing,
-        isDisabled,
         updateOrderAddress,
         isAddressValid,
+        updateOrderCustomer,
+        isCustomerValid,
       }}
     >
       {children}

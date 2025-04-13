@@ -29,7 +29,7 @@ const IncompleteOrderCard = ({
     if (currentOrderId !== data.id) {
       dispatch(setSelectedOrderId(data.id));
     }
-    navigation.navigate("Address", { orderId: data.id });
+    navigation.navigate("Customer", { orderId: data.id });
   };
 
   if (invalidIncompleteStatus.includes(data.status)) {

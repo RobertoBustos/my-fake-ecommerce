@@ -1,20 +1,10 @@
-import { GOOGLEMAPS_API_KEY } from "@env";
 import React, { useEffect, useRef } from "react";
-import { View } from "react-native";
-import {
-  GooglePlacesAutocomplete,
-  GooglePlacesAutocompleteRef,
-} from "react-native-google-places-autocomplete";
-import { useStyles } from "react-native-unistyles";
+import { GooglePlacesAutocompleteRef } from "react-native-google-places-autocomplete";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { useOrderContext } from "../../contexts/OrderContext";
-import { useAppDispatch } from "../../redux/hooks";
-import { setAddressData } from "../../redux/order/reducer";
-import addressStyleSheet from "../../styles/components/Address";
-import { formatAddress } from "../../utils/formatAddress";
+import AddressDetailsForm from "../forms/AddressDetailsForm";
 
 const Address = () => {
-  const dispatch = useAppDispatch();
-  const { styles, theme } = useStyles(addressStyleSheet);
   const { orderData } = useOrderContext();
   const ref = useRef<GooglePlacesAutocompleteRef>(null);
 
@@ -24,30 +14,13 @@ const Address = () => {
   }, [orderData]);
 
   return (
-    <View style={styles.container}>
-      <GooglePlacesAutocomplete
-        ref={ref}
-        debounce={700}
-        placeholder="Search Your Address"
-        fetchDetails={true}
-        onPress={(data, details = null) => {
-          if (details === null) return;
-          const values = formatAddress(details);
-          dispatch(setAddressData(values));
-        }}
-        query={{
-          key: GOOGLEMAPS_API_KEY,
-          language: "en",
-        }}
-        textInputProps={{
-          testID: "Address.SearchInput",
-          placeholderTextColor: theme.colors.typography,
-          multiline: true,
-          numberOfLines: 4,
-          style: styles.input,
-        }}
-      />
-    </View>
+    <KeyboardAwareScrollView
+      bottomOffset={100}
+      showsVerticalScrollIndicator={false}
+      testID="Address.Container"
+    >
+      <AddressDetailsForm address={orderData?.address?.address} />
+    </KeyboardAwareScrollView>
   );
 };
 

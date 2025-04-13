@@ -1,32 +1,17 @@
-import { useMemo } from "react";
 import { RefreshControl } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { useOrderContext } from "../../contexts/OrderContext";
+import AddressSummary from "../AddressSummary";
 import CheckoutButtons from "../CheckoutButtons";
+import CustomerSummary from "../CustomerSummary";
 import EmptyOrder from "../EmptyOrder";
 import OrderNotAllowedScreen from "../OrderNotAllowedScreen";
 import OrderSummary from "../OrderSummary";
-import AddressDetailsForm from "../forms/AddressDetailsForm";
-import UserDetailsForm from "../forms/UserDetailsForm";
 import CheckoutHeader from "./CheckoutHeader";
 
 const Checkout = () => {
   const { orderData, reloadOrder, isLoading, cancelOrder, returnOrderToCart } =
     useOrderContext();
-
-  const userData = useMemo(() => {
-    return {
-      email: orderData?.customer?.email || "",
-      name: orderData?.customer?.name || "",
-    };
-  }, [orderData]);
-
-  const addressData = useMemo(() => {
-    return {
-      address: orderData?.address?.address || "",
-      zipCode: orderData?.address?.zipCode || "",
-    };
-  }, [orderData]);
 
   const handleReturnOrderToCart = () => {
     returnOrderToCart();
@@ -57,8 +42,8 @@ const Checkout = () => {
     >
       <CheckoutHeader orderId={orderData.id} />
       <OrderSummary data={orderData.totals} />
-      <UserDetailsForm data={userData} />
-      <AddressDetailsForm data={addressData} />
+      <CustomerSummary data={orderData.customer} />
+      <AddressSummary data={orderData.address} />
       <CheckoutButtons
         editOrderLabel="Edit Order"
         cancelOrderLabel="Cancel Order"

@@ -18,7 +18,7 @@ const ConfirmationHeader = ({ orderId }: ConfirmationHeaderPropsType) => {
       >{`Order Number ${orderId}`}</Text>
       <FontAwesome
         name="shopping-bag"
-        size={150}
+        size={theme.headerIconSize}
         color={theme.colors.primary}
       />
       <Text style={styles.text} testID="ConfirmationHeader.Text">

@@ -64,13 +64,13 @@ const CartStore = ({ children }: PropsWithChildren) => {
       createNewOrder({ cartId: cartId })
         .then((data) => {
           dispatch(setSelectedOrderId(data.id));
-          navigation.navigate("Checkout", { orderId: data.id });
+          navigation.navigate("Customer", { orderId: data.id });
           return;
         })
         .catch((error) => Alert.alert(error));
     }
     if (orderId) {
-      navigation.navigate("Checkout", { orderId });
+      navigation.navigate("Customer", { orderId });
     }
   };
 

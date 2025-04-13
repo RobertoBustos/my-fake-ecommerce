@@ -2,6 +2,8 @@ export type RootStackParamList = {
     Products: undefined
     Product: { productId: string };
     Cart: undefined
+    Customer: { orderId: string }
+    Address: { orderId: string }
     Checkout: { orderId: string }
     Confirmation: { orderId: string }
 }
@@ -42,6 +44,7 @@ export type CartItemType = {
 export type UserType = {
     email: string
     name: string
+    phone: string
 }
 
 export type AddressType = {
@@ -73,6 +76,7 @@ export type CustomerType = {
     id: string
     email: string
     name: string
+    phone: string
 }
 
 export type PaymentType = {

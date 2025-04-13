@@ -32,6 +32,8 @@ export type OrderContextType = {
   isProcessing: boolean;
   isDisabled: boolean;
   returnFromConfirmation: () => void;
+  updateOrderAddress: () => void;
+  isAddressValid: boolean;
 };
 
 const OrderContext = createContext<OrderContextType>({
@@ -45,6 +47,8 @@ const OrderContext = createContext<OrderContextType>({
   isProcessing: false,
   isDisabled: false,
   returnFromConfirmation: () => {},
+  updateOrderAddress: () => {},
+  isAddressValid: false,
 });
 
 export type OrderStoreContextType = PropsWithChildren & {
@@ -69,11 +73,11 @@ const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
   const customerData = useAppSelector(selectCustomerData());
   const addressData = useAppSelector(selectAddressData());
   const isCustomerDataValid = useAppSelector(selectIsCustomerDataValid());
-  const isAddressDataValid = useAppSelector(selectIsAddressDataValid());
+  const isAddressValid = useAppSelector(selectIsAddressDataValid());
   const orderData: OrderType | undefined =
     orders && orders.length && orders.length === 1 ? orders[0] : undefined;
   const isProcessing = isUpdating || isLoading || isCreatingPayment;
-  const isDisabled = !isCustomerDataValid || !isAddressDataValid;
+  const isDisabled = !isCustomerDataValid || !isAddressValid;
 
   useEffect(() => {
     fetchOrder(orderId);
@@ -106,7 +110,7 @@ const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
       return `Complete Your Payment for ${formatCurrency(
         orderData.totals.total
       )}`;
-    return "Confirm Your Order Information";
+    return "Next";
   };
 
   const reloadOrder = () => {
@@ -191,6 +195,22 @@ const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
       .catch((error) => Alert.alert(error));
   };
 
+  const updateOrderAddress = () => {
+    if (!orderData) return;
+    updateExistingOrder({
+      id: orderData.id,
+      customer: null,
+      address: { address: addressData.address, zipCode: addressData.zipCode },
+      status: "INCOMPLETE",
+    })
+      .then((data) => {
+        refetchOrder();
+        navigation.navigate("Checkout", { orderId: orderData.id });
+        return;
+      })
+      .catch((error) => Alert.alert(error));
+  };
+
   const completeOrder = () => {
     if (!orderData) return;
     createPayment({ orderId: orderData.id })
@@ -267,6 +287,8 @@ const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
         footerText: getFooterText(),
         isProcessing,
         isDisabled,
+        updateOrderAddress,
+        isAddressValid,
       }}
     >
       {children}

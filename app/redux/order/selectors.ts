@@ -33,7 +33,7 @@ export const selectAddressData = () => {
 
 export const selectIsAddressDataValid = () => {
     return createSelector([selectAddressData()], (addressData) => {
-        return addressData.address !== "" && addressData.zipCode !== ""
+        return addressData.address !== "" && addressData.zipCode.length === 5
     }
     );
 }

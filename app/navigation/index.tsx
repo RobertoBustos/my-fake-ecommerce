@@ -6,6 +6,7 @@ import { RootStackParamList } from "../constants/types";
 import useCart from "../hooks/useCart";
 import { setCartFromOrder, setCartId } from "../redux/cart/reducer";
 import { useAppDispatch } from "../redux/hooks";
+import AddressScreen from "../screens/AddressScreen";
 import CartScreen from "../screens/CartScreen";
 import CatalogScreen from "../screens/CatalogScreen";
 import CheckoutScreen from "../screens/CheckoutScreen";
@@ -67,6 +68,13 @@ const RootStack = () => {
         component={CartScreen}
         options={({ route }) => ({
           title: `My Cart`,
+        })}
+      />
+      <Stack.Screen
+        name="Address"
+        component={AddressScreen}
+        options={({ route }) => ({
+          title: `Address`,
         })}
       />
       <Stack.Screen

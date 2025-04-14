@@ -1,6 +1,6 @@
 import { Text } from "react-native";
 import { useStyles } from "react-native-unistyles";
-import { IncompleteOrderType } from "../constants/types";
+import { IncompleteOrderType, Status } from "../constants/types";
 import useAppNavigation from "../hooks/useAppNavigation";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setSelectedOrderId } from "../redux/order/reducer";
@@ -29,7 +29,10 @@ const IncompleteOrderCard = ({
     if (currentOrderId !== data.id) {
       dispatch(setSelectedOrderId(data.id));
     }
-    navigation.navigate("Customer", { orderId: data.id });
+    if (data.status === Status.PAYMENT_PENDING) {
+      return navigation.navigate("Checkout", { orderId: data.id });
+    }
+    return navigation.navigate("Customer", { orderId: data.id });
   };
 
   if (invalidIncompleteStatus.includes(data.status)) {

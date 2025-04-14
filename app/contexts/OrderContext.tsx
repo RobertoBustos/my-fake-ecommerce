@@ -35,6 +35,8 @@ export type OrderContextType = {
   isAddressValid: boolean;
   updateOrderCustomer: () => void;
   isCustomerValid: boolean;
+  editCustomerRedirect: () => void;
+  editAddressRedirect: () => void;
 };
 
 const OrderContext = createContext<OrderContextType>({
@@ -51,13 +53,20 @@ const OrderContext = createContext<OrderContextType>({
   isAddressValid: false,
   updateOrderCustomer: () => {},
   isCustomerValid: false,
+  editCustomerRedirect: () => {},
+  editAddressRedirect: () => {},
 });
 
 export type OrderStoreContextType = PropsWithChildren & {
   orderId: string;
+  forceGoBack?: boolean;
 };
 
-const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
+const OrderStore = ({
+  children,
+  orderId,
+  forceGoBack,
+}: OrderStoreContextType) => {
   const navigation = useAppNavigation();
   const {
     fetchOrder,
@@ -100,6 +109,12 @@ const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
         setAddressData({
           address: orderData.address.address,
           zipCode: orderData.address.zipCode,
+          coords: {
+            latitude: orderData.address.coords.latitude,
+            latitudeDelta: orderData.address.coords.latitudeDelta,
+            longitude: orderData.address.coords.longitude,
+            longitudeDelta: orderData.address.coords.longitudeDelta,
+          },
         })
       );
     }
@@ -107,6 +122,9 @@ const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
   }, [dispatch, orderData]);
 
   const getFooterText = () => {
+    if (forceGoBack && forceGoBack === true) {
+      return "Save";
+    }
     if (orderData?.status === "COMPLETE") return "Return to Home";
     if (orderData?.status === "PAYMENT_PENDING")
       return `Complete Your Payment for ${formatCurrency(
@@ -184,15 +202,22 @@ const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
   };
 
   const updateOrderAddress = () => {
-    if (!orderData) return;
+    if (!orderData || !addressData.coords) return;
     updateExistingOrder({
       id: orderData.id,
       customer: null,
-      address: { address: addressData.address, zipCode: addressData.zipCode },
+      address: {
+        address: addressData.address,
+        zipCode: addressData.zipCode,
+        coords: addressData.coords,
+      },
       status: null,
     })
       .then((data) => {
         refetchOrder();
+        if (forceGoBack && forceGoBack === true) {
+          return navigation.goBack();
+        }
         navigation.navigate("Checkout", { orderId: orderData.id });
         return;
       })
@@ -215,6 +240,9 @@ const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
     })
       .then((data) => {
         refetchOrder();
+        if (forceGoBack && forceGoBack === true) {
+          return navigation.goBack();
+        }
         navigation.navigate("Address", { orderId: orderData.id });
         return;
       })
@@ -273,6 +301,22 @@ const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
     return;
   };
 
+  const editCustomerRedirect = () => {
+    if (!orderData) return;
+    return navigation.navigate("Customer", {
+      orderId: orderData.id,
+      goBack: true,
+    });
+  };
+
+  const editAddressRedirect = () => {
+    if (!orderData) return;
+    return navigation.navigate("Address", {
+      orderId: orderData.id,
+      goBack: true,
+    });
+  };
+
   if (isLoading) {
     return <LoadingScreen />;
   }
@@ -299,6 +343,8 @@ const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
         isAddressValid,
         updateOrderCustomer,
         isCustomerValid,
+        editCustomerRedirect,
+        editAddressRedirect,
       }}
     >
       {children}

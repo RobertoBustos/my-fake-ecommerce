@@ -18,16 +18,26 @@ const customCardStyleSheet = createStyleSheet(theme => ({
         shadowRadius: 1,
         elevation: 8,
     },
+    content: {
+        flexDirection: "row"
+    },
+    headerContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        borderBottomWidth: 3,
+        borderBottomColor: theme.colors.primary,
+        marginBottom: 8,
+        height: 40
+    },
     headerText: {
         color: theme.colors.primary,
         fontSize: 16,
         fontWeight: "bold",
-        borderBottomWidth: 3,
-        borderBottomColor: theme.colors.primary,
-        marginBottom: 8,
     },
-    content: {
-        flexDirection: "row"
+    editLabel: {
+        fontSize: 16,
+        fontWeight: "bold",
     }
 }));
 

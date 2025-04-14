@@ -11,6 +11,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
   ios: {
+    config: {
+      googleMapsApiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY
+    },
     supportsTablet: true,
     bundleIdentifier: process.env.UNIQUE_IDENTIFIER,
     infoPlist: {
@@ -23,6 +26,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     }
   },
   android: {
+    config: {
+      googleMaps: {
+        apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY
+      }
+    },
     adaptiveIcon: {
       foregroundImage: "./assets/icons/adaptive-icon.png",
       monochromeImage: "./assets/icons/adaptive-icon.png",

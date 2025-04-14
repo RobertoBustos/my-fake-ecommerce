@@ -1,9 +1,11 @@
+import { Region } from "react-native-maps";
+
 export type RootStackParamList = {
     Products: undefined
     Product: { productId: string };
     Cart: undefined
-    Customer: { orderId: string }
-    Address: { orderId: string }
+    Customer: { orderId: string, goBack?: boolean }
+    Address: { orderId: string, goBack?: boolean }
     Checkout: { orderId: string }
     Confirmation: { orderId: string }
 }
@@ -50,6 +52,14 @@ export type UserType = {
 export type AddressType = {
     address: string
     zipCode: string
+    coords: Region
+}
+
+export enum Status {
+    INCOMPLETE = "INCOMPLETE",
+    PAYMENT_PENDING = "PAYMENT_PENDING",
+    COMPLETE = "COMPLETE",
+    CANCELLED = "CANCELLED"
 }
 
 export type OrderType = {
@@ -65,7 +75,7 @@ export type OrderType = {
 
 export type IncompleteOrderType = {
     id: string;
-    status: string;
+    status: Status
     totals: {
         total: number;
     };

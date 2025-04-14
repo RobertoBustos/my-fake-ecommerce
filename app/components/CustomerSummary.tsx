@@ -5,9 +5,20 @@ import SummaryCardRow from "./common/SummaryCardRow";
 export type CustomerSummaryPropsType = {
   data: CustomerType | null;
   isLoading?: boolean;
+  onPress?: () => void;
 };
 
-const CustomerSummary = ({ data, isLoading }: CustomerSummaryPropsType) => {
+const CustomerSummary = ({
+  data,
+  isLoading,
+  onPress,
+}: CustomerSummaryPropsType) => {
+  let showEditLabel = false;
+
+  if (onPress) {
+    showEditLabel = true;
+  }
+
   if (data === null) {
     return null;
   }
@@ -17,6 +28,8 @@ const CustomerSummary = ({ data, isLoading }: CustomerSummaryPropsType) => {
       headerText="Customer Information"
       isLoading={isLoading}
       testID="CustomerSummary.Container"
+      onPress={onPress}
+      showEditLabel={showEditLabel}
     >
       <SummaryCardRow
         concept={"Customer Id"}

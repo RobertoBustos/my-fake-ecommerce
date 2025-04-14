@@ -5,9 +5,20 @@ import SummaryCardRow from "./common/SummaryCardRow";
 export type AddressSummaryPropsType = {
   data: AddressType | null;
   isLoading?: boolean;
+  onPress?: () => void;
 };
 
-const AddressSummary = ({ data, isLoading }: AddressSummaryPropsType) => {
+const AddressSummary = ({
+  data,
+  isLoading,
+  onPress,
+}: AddressSummaryPropsType) => {
+  let showEditLabel = false;
+
+  if (onPress) {
+    showEditLabel = true;
+  }
+
   if (data === null) {
     return null;
   }
@@ -17,6 +28,8 @@ const AddressSummary = ({ data, isLoading }: AddressSummaryPropsType) => {
       headerText="Address Information"
       isLoading={isLoading}
       testID="AddressSummary.Container"
+      onPress={onPress}
+      showEditLabel={showEditLabel}
     >
       <SummaryCardRow value={data.address} testID="AddressSummary.Address" />
     </CustomCard>

@@ -10,8 +10,15 @@ import OrderSummary from "../OrderSummary";
 import CheckoutHeader from "./CheckoutHeader";
 
 const Checkout = () => {
-  const { orderData, reloadOrder, isLoading, cancelOrder, returnOrderToCart } =
-    useOrderContext();
+  const {
+    orderData,
+    reloadOrder,
+    isLoading,
+    cancelOrder,
+    returnOrderToCart,
+    editAddressRedirect,
+    editCustomerRedirect,
+  } = useOrderContext();
 
   const handleReturnOrderToCart = () => {
     returnOrderToCart();
@@ -42,8 +49,11 @@ const Checkout = () => {
     >
       <CheckoutHeader orderId={orderData.id} />
       <OrderSummary data={orderData.totals} />
-      <CustomerSummary data={orderData.customer} />
-      <AddressSummary data={orderData.address} />
+      <CustomerSummary
+        data={orderData.customer}
+        onPress={editCustomerRedirect}
+      />
+      <AddressSummary data={orderData.address} onPress={editAddressRedirect} />
       <CheckoutButtons
         editOrderLabel="Edit Order"
         cancelOrderLabel="Cancel Order"

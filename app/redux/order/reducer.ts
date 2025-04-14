@@ -20,7 +20,7 @@ const orderSlice = createSlice({
         },
         setAddressData: (state, action: PayloadAction<AddressType>) => {
             state.addressData = action.payload
-        }
+        },
     }
 });
 

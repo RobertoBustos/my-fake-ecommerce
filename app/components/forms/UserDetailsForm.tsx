@@ -1,4 +1,3 @@
-import userDetailsFormStyleSheet from "@/app/styles/components/UserDetailsForm";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -8,6 +7,7 @@ import { ZodType, z } from "zod";
 import { UserType } from "../../constants/types";
 import { useAppDispatch } from "../../redux/hooks";
 import { setCustomerData } from "../../redux/order/reducer";
+import userDetailsFormStyleSheet from "../../styles/components/UserDetailsForm";
 import CustomCard from "../common/CustomCard";
 
 const validationSchema: ZodType<UserType> = z.object({
@@ -126,15 +126,12 @@ const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
             value={value}
             style={getInputStyles(errors.phone?.message)}
             placeholderTextColor={theme.colors.typography}
-            testID="AddressDetailsForm.ZipCodeInput"
+            testID="UserDetailsForm.PhoneInput"
           />
         )}
       />
       {errors.phone && (
-        <Text
-          style={styles.errorText}
-          testID="AddressDetailsForm.ZipCodeErrorText"
-        >
+        <Text style={styles.errorText} testID="UserDetailsForm.PhoneInput">
           {errors.phone.message}
         </Text>
       )}

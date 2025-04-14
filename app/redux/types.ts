@@ -1,4 +1,5 @@
 import { Action, EnhancedStore, StoreEnhancer, ThunkAction, ThunkDispatch, Tuple, UnknownAction } from "@reduxjs/toolkit";
+import { Region } from "react-native-maps";
 import { AddressType, CartItemType, CustomerType } from "../constants/types";
 
 export type RootStateType = {
@@ -25,6 +26,7 @@ export type OrderStateType = {
     selectedOrderId: string | undefined,
     customerData: CustomerType | null
     addressData: AddressType | null
+    addressCoords: Region | null
 }
 
 export type CartStateType = {

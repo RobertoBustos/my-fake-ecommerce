@@ -3,6 +3,8 @@ import { RootStateType } from "../types";
 
 export const selectOrderState = (state: RootStateType) => state.order
 
+export const selectAdressCoords = (state: RootStateType) => state.order.addressCoords
+
 export const selectCustomerData = () => {
     return createSelector([selectOrderState], (orderState) => {
         return {

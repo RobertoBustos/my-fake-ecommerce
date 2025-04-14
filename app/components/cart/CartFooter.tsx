@@ -1,4 +1,4 @@
-import { useCartContext } from "@/app/contexts/CartContext";
+import { useCartContext } from "../../contexts/CartContext";
 import FooterButton from "../FooterButton";
 import CustomFooter from "../common/CustomFooter";
 

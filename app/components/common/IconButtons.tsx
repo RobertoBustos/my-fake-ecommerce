@@ -1,8 +1,3 @@
-import defaultButtonStyleSheet from "@/app/styles/components/DefaultButton";
-import deleteButtonStyleSheet from "@/app/styles/components/DeleteButton";
-import minusButtonStyleSheet from "@/app/styles/components/MinusButton";
-import plusButtonStyleSheet from "@/app/styles/components/PlusButton";
-import reloadButtonStyleSheet from "@/app/styles/components/ReloadButton";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {
   ActivityIndicator,
@@ -13,6 +8,11 @@ import {
   ViewStyle,
 } from "react-native";
 import { useStyles } from "react-native-unistyles";
+import defaultButtonStyleSheet from "../../styles/components/DefaultButton";
+import deleteButtonStyleSheet from "../../styles/components/DeleteButton";
+import minusButtonStyleSheet from "../../styles/components/MinusButton";
+import plusButtonStyleSheet from "../../styles/components/PlusButton";
+import reloadButtonStyleSheet from "../../styles/components/ReloadButton";
 
 export type IconButtonPropsType = {
   size?: number;

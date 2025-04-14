@@ -1,5 +1,5 @@
-import { useCartContext } from "@/app/contexts/CartContext";
 import { FlatList } from "react-native";
+import { useCartContext } from "../../contexts/CartContext";
 import CartItemCard from "../CartItemCard";
 import EmptyCart from "../EmptyCart";
 

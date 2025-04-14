@@ -1,8 +1,8 @@
-import customFooterStyleSheet from "@/app/styles/components/CustomFooter";
 import { PropsWithChildren } from "react";
 import { Platform } from "react-native";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import { useStyles } from "react-native-unistyles";
+import customFooterStyleSheet from "../../styles/components/CustomFooter";
 
 const CustomFooter = ({ children }: PropsWithChildren) => {
   const { styles } = useStyles(customFooterStyleSheet);

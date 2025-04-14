@@ -1,6 +1,6 @@
-import loadingScreenStyleSheet from "@/app/styles/components/LoadingScreen";
 import { ActivityIndicator, View } from "react-native";
 import { useStyles } from "react-native-unistyles";
+import loadingScreenStyleSheet from "../../styles/components/LoadingScreen";
 
 const LoadingScreen = () => {
   const { styles, theme } = useStyles(loadingScreenStyleSheet);

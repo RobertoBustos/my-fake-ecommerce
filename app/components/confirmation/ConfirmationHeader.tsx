@@ -1,7 +1,7 @@
-import confirmationHeaderStyleSheet from "@/app/styles/components/ConfirmationHeader";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Text, View } from "react-native";
 import { useStyles } from "react-native-unistyles";
+import confirmationHeaderStyleSheet from "../../styles/components/ConfirmationHeader";
 
 export type ConfirmationHeaderPropsType = {
   orderId: string;

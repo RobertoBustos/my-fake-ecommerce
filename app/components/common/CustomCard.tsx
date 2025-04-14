@@ -1,4 +1,3 @@
-import customCardStyleSheet from "@/app/styles/components/CustomCard";
 import { PropsWithChildren } from "react";
 import {
   StyleProp,
@@ -8,6 +7,7 @@ import {
   ViewStyle,
 } from "react-native";
 import { useStyles } from "react-native-unistyles";
+import customCardStyleSheet from "../../styles/components/CustomCard";
 
 export type CustomCardPropsType = PropsWithChildren & {
   onPress?: () => void;

@@ -1,8 +1,8 @@
-import { useCartContext } from "@/app/contexts/CartContext";
-import cartHeaderStyleSheet from "@/app/styles/components/CartHeader";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { Text, View } from "react-native";
 import { useStyles } from "react-native-unistyles";
+import { useCartContext } from "../../contexts/CartContext";
+import cartHeaderStyleSheet from "../../styles/components/CartHeader";
 
 const CartHeader = () => {
   const { styles, theme } = useStyles(cartHeaderStyleSheet);

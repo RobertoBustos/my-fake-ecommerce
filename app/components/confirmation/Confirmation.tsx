@@ -1,10 +1,10 @@
-import { useOrderContext } from "@/app/contexts/OrderContext";
-import confirmationStyleSheet from "@/app/styles/components/Confirmation";
-import orderConfirmationItemStyleSheet from "@/app/styles/components/OrderConfirmationItem";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { ScrollView, Text, View } from "react-native";
 import { useStyles } from "react-native-unistyles";
 import { CartItemType } from "../../constants/types";
+import { useOrderContext } from "../../contexts/OrderContext";
+import confirmationStyleSheet from "../../styles/components/Confirmation";
+import orderConfirmationItemStyleSheet from "../../styles/components/OrderConfirmationItem";
 import { formatCurrency } from "../../utils/formatCurrency";
 import AddressSummary from "../AddressSummary";
 import CustomerSummary from "../CustomerSummary";

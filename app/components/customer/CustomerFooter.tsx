@@ -4,13 +4,13 @@ import FooterButton from "../FooterButton";
 import CustomFooter from "../common/CustomFooter";
 
 const CustomerFooter = () => {
-  const { isProcessing, updateOrderCustomer, isCustomerValid } =
+  const { isProcessing, updateOrderCustomer, isCustomerValid, footerText } =
     useOrderContext();
 
   return (
     <CustomFooter>
       <FooterButton
-        text={"Continue"}
+        text={footerText}
         onPress={updateOrderCustomer}
         isLoading={isProcessing}
         disabled={!isCustomerValid || isProcessing}

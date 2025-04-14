@@ -17,6 +17,7 @@ export type CustomCardPropsType = PropsWithChildren & {
   headerText?: string;
   isLoading?: boolean;
   testID?: string;
+  showEditLabel?: boolean;
 };
 
 const CustomCard = ({
@@ -28,6 +29,7 @@ const CustomCard = ({
   headerText,
   isLoading,
   testID,
+  showEditLabel,
 }: CustomCardPropsType) => {
   const { styles, theme } = useStyles(customCardStyleSheet);
   const mixedStyles: StyleProp<ViewStyle> = { ...styles.container };
@@ -49,7 +51,11 @@ const CustomCard = ({
     >
       <View style={mixedStyles}>
         {headerText ? (
-          <Text style={styles.headerText}>{headerText}</Text>
+          <CustomCardHeader
+            text={headerText}
+            style={styles}
+            showEditLabel={showEditLabel}
+          />
         ) : null}
         <View style={mixedContentStyles}>{children}</View>
       </View>
@@ -58,3 +64,24 @@ const CustomCard = ({
 };
 
 export default CustomCard;
+
+export type CustomCardHeaderPropsType = {
+  text: string;
+  style: StyleProp<any>;
+  showEditLabel?: boolean;
+};
+
+const CustomCardHeader = ({
+  text,
+  style,
+  showEditLabel,
+}: CustomCardHeaderPropsType) => {
+  return (
+    <View style={style.headerContainer}>
+      <Text style={style.headerText}>{text}</Text>
+      {showEditLabel ? (
+        <Text style={style.editLabel}>{"Press to edit"}</Text>
+      ) : null}
+    </View>
+  );
+};

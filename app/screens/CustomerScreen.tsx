@@ -13,7 +13,10 @@ type CustomerScreenPropsType = StaticScreenProps<
 
 const CustomerScreen = ({ route }: CustomerScreenPropsType) => {
   return (
-    <OrderStore orderId={route.params.orderId}>
+    <OrderStore
+      orderId={route.params.orderId}
+      forceGoBack={route.params.goBack}
+    >
       <Layout
         headerComponent={<CustomerHeader />}
         footerComponent={<CustomerFooter />}

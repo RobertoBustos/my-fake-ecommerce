@@ -32,6 +32,12 @@ query GetOrders($filter: Filter){
     address {
       address
       zipCode
+      coords {
+        latitude
+        longitude
+        latitudeDelta
+        longitudeDelta
+      }
     }
     totals {
       currency

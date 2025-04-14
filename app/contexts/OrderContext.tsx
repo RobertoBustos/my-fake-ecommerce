@@ -100,6 +100,12 @@ const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
         setAddressData({
           address: orderData.address.address,
           zipCode: orderData.address.zipCode,
+          coords: {
+            latitude: orderData.address.coords.latitude,
+            latitudeDelta: orderData.address.coords.latitudeDelta,
+            longitude: orderData.address.coords.longitude,
+            longitudeDelta: orderData.address.coords.longitudeDelta,
+          },
         })
       );
     }
@@ -184,11 +190,15 @@ const OrderStore = ({ children, orderId }: OrderStoreContextType) => {
   };
 
   const updateOrderAddress = () => {
-    if (!orderData) return;
+    if (!orderData || !addressData.coords) return;
     updateExistingOrder({
       id: orderData.id,
       customer: null,
-      address: { address: addressData.address, zipCode: addressData.zipCode },
+      address: {
+        address: addressData.address,
+        zipCode: addressData.zipCode,
+        coords: addressData.coords,
+      },
       status: null,
     })
       .then((data) => {

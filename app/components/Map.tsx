@@ -21,16 +21,24 @@ const Map = () => {
   const { styles } = useStyles(mapStyleSheet);
   const mapRef = useRef<MapView>(null);
   const coords = useAppSelector(selectAdressCoords);
-  const marker = coords !== null ? { ...coords, name: "You" } : undefined;
+  const marker = coords ? { ...coords, name: "You" } : undefined;
 
   useEffect(() => {
-    if (coords === null) return;
+    if (!coords) return;
     mapRef.current?.animateCamera(
       { center: coords, zoom: 18 },
       { duration: 2000 }
     );
     return () => {};
   }, [coords]);
+
+  const handleMapLoaded = () => {
+    if (!coords) return;
+    mapRef.current?.animateCamera(
+      { center: coords, zoom: 18 },
+      { duration: 2000 }
+    );
+  };
 
   return (
     <Animated.View style={styles.container} testID="Map.Container">
@@ -42,6 +50,7 @@ const Map = () => {
         showsUserLocation
         showsMyLocationButton
         testID="Map.Map"
+        onMapLoaded={handleMapLoaded}
       >
         {marker ? <Marker coordinate={marker} /> : null}
       </MapView>

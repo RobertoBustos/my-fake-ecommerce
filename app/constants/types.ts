@@ -1,3 +1,5 @@
+import { Region } from "react-native-maps";
+
 export type RootStackParamList = {
     Products: undefined
     Product: { productId: string };
@@ -50,6 +52,7 @@ export type UserType = {
 export type AddressType = {
     address: string
     zipCode: string
+    coords: Region
 }
 
 export type OrderType = {

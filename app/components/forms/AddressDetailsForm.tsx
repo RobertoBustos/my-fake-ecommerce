@@ -6,20 +6,16 @@ import {
 import { useStyles } from "react-native-unistyles";
 import { GOOGLE_MAPS_API_KEY } from "../../constants/config";
 import { useAppDispatch } from "../../redux/hooks";
-import { setAddressCoords, setAddressData } from "../../redux/order/reducer";
+import { setAddressData } from "../../redux/order/reducer";
 import addressDetailsFormStyleSheet from "../../styles/components/AddressDetailsForm";
 import { formatAddress } from "../../utils/formatAddress";
 import CustomCard from "../common/CustomCard";
 
 export type AddressDetailsFormPropsType = {
   address?: string;
-  isLoading?: boolean;
 };
 
-const AddressDetailsForm = ({
-  address,
-  isLoading,
-}: AddressDetailsFormPropsType) => {
+const AddressDetailsForm = ({ address }: AddressDetailsFormPropsType) => {
   const dispatch = useAppDispatch();
   const { styles, theme } = useStyles(addressDetailsFormStyleSheet);
   const ref = useRef<GooglePlacesAutocompleteRef>(null);
@@ -30,30 +26,26 @@ const AddressDetailsForm = ({
   }, [address]);
 
   return (
-    <CustomCard isLoading={isLoading} testID="AddressDetailsForm.Container">
+    <CustomCard orientation="horizontal" testID="AddressDetailsForm.Container">
       <GooglePlacesAutocomplete
-        ref={ref}
         debounce={700}
-        placeholder="Search Your Address"
+        enablePoweredByContainer={false}
         fetchDetails={true}
+        listViewDisplayed={false}
+        minLength={5}
         onPress={(data, details = null) => {
           if (details === null) return;
           ref.current?.setAddressText(details?.formatted_address);
           const values = formatAddress(details);
           dispatch(setAddressData(values));
-          dispatch(
-            setAddressCoords({
-              latitude: details.geometry.location.lat,
-              longitude: details.geometry.location.lng,
-              latitudeDelta: 2,
-              longitudeDelta: 2,
-            })
-          );
         }}
+        placeholder="Search Your Address"
+        keyboardShouldPersistTaps="always"
         query={{
           key: GOOGLE_MAPS_API_KEY,
           language: "en",
         }}
+        ref={ref}
         textInputProps={{
           testID: "AddressDetailsForm.SearchInput",
           placeholderTextColor: theme.colors.typography,
@@ -61,7 +53,6 @@ const AddressDetailsForm = ({
           numberOfLines: 4,
           style: styles.input,
         }}
-        listViewDisplayed={false}
       />
     </CustomCard>
   );

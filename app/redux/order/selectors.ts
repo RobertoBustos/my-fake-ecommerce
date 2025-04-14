@@ -3,7 +3,7 @@ import { RootStateType } from "../types";
 
 export const selectOrderState = (state: RootStateType) => state.order
 
-export const selectAdressCoords = (state: RootStateType) => state.order.addressCoords
+export const selectAdressCoords = (state: RootStateType) => state.order.addressData?.coords
 
 export const selectCustomerData = () => {
     return createSelector([selectOrderState], (orderState) => {
@@ -29,6 +29,7 @@ export const selectAddressData = () => {
         return {
             address: orderState.addressData?.address || "",
             zipCode: orderState.addressData?.zipCode || "",
+            coords: orderState.addressData?.coords || undefined
         }
     }
     );
@@ -36,7 +37,7 @@ export const selectAddressData = () => {
 
 export const selectIsAddressDataValid = () => {
     return createSelector([selectAddressData()], (addressData) => {
-        return addressData.address !== "" && addressData.zipCode.length === 5
+        return addressData.address !== "" && addressData.zipCode.length === 5 && addressData.coords !== undefined
     }
     );
 }

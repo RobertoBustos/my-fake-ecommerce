@@ -30,47 +30,14 @@ const AddressDetailsForm = ({
   }, [address]);
 
   return (
-    <>
-      <CustomCard isLoading={isLoading} testID="AddressDetailsForm.Container">
-        <GooglePlacesAutocomplete
-          ref={ref}
-          debounce={700}
-          placeholder="Search Your Address"
-          fetchDetails={true}
-          onPress={(data, details = null) => {
-            console.log("details", details);
-            ref.current?.setAddressText(details?.formatted_address);
-            const values = formatAddress(details);
-            dispatch(setAddressData(values));
-            dispatch(
-              setAddressCoords({
-                latitude: details.geometry.location.lat,
-                longitude: details.geometry.location.lng,
-                latitudeDelta: 2,
-                longitudeDelta: 2,
-              })
-            );
-          }}
-          query={{
-            key: GOOGLE_MAPS_API_KEY,
-            language: "en",
-          }}
-          textInputProps={{
-            testID: "AddressDetailsForm.SearchInput",
-            placeholderTextColor: theme.colors.typography,
-            multiline: true,
-            numberOfLines: 4,
-            style: styles.input,
-          }}
-        />
-      </CustomCard>
+    <CustomCard isLoading={isLoading} testID="AddressDetailsForm.Container">
       <GooglePlacesAutocomplete
         ref={ref}
         debounce={700}
         placeholder="Search Your Address"
         fetchDetails={true}
         onPress={(data, details = null) => {
-          console.log("details", details);
+          if (details === null) return;
           ref.current?.setAddressText(details?.formatted_address);
           const values = formatAddress(details);
           dispatch(setAddressData(values));
@@ -94,8 +61,9 @@ const AddressDetailsForm = ({
           numberOfLines: 4,
           style: styles.input,
         }}
+        listViewDisplayed={false}
       />
-    </>
+    </CustomCard>
   );
 };
 

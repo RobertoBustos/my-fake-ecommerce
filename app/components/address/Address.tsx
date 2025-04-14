@@ -19,6 +19,7 @@ const Address = () => {
       bottomOffset={100}
       showsVerticalScrollIndicator={false}
       testID="Address.Container"
+      keyboardShouldPersistTaps="always"
     >
       <AddressDetailsForm address={orderData?.address?.address} />
       <Map />

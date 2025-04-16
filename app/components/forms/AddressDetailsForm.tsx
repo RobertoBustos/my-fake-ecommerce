@@ -1,4 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useOrderContext } from "@/app/contexts/OrderContext";
+import useLocation from "@/app/hooks/useLocation";
+import { useCallback, useEffect, useRef } from "react";
 import {
   GooglePlacesAutocomplete,
   GooglePlacesAutocompleteRef,
@@ -11,19 +13,29 @@ import addressDetailsFormStyleSheet from "../../styles/components/AddressDetails
 import { formatAddress } from "../../utils/formatAddress";
 import CustomCard from "../common/CustomCard";
 
-export type AddressDetailsFormPropsType = {
-  address?: string;
-};
-
-const AddressDetailsForm = ({ address }: AddressDetailsFormPropsType) => {
+const AddressDetailsForm = () => {
   const dispatch = useAppDispatch();
   const { styles, theme } = useStyles(addressDetailsFormStyleSheet);
   const ref = useRef<GooglePlacesAutocompleteRef>(null);
+  const { getFormatedAddress } = useLocation();
+  const { orderData } = useOrderContext();
+
+  const getLocationAddress = useCallback(() => {
+    getFormatedAddress().then((address) => {
+      ref.current?.setAddressText(address.address);
+      console.log("address", address);
+      dispatch(setAddressData(address));
+    });
+    return () => {};
+  }, [dispatch, getFormatedAddress]);
 
   useEffect(() => {
-    if (!address) return;
-    ref.current?.setAddressText(address);
-  }, [address]);
+    if (!orderData || orderData.address === null) {
+      getLocationAddress();
+      return;
+    }
+    ref.current?.setAddressText(orderData.address.address);
+  }, [getLocationAddress, orderData]);
 
   return (
     <CustomCard orientation="horizontal" testID="AddressDetailsForm.Container">

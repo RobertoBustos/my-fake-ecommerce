@@ -1820,6 +1820,11 @@
     prompts "^2.4.2"
     semver "^7.5.2"
 
+"@react-native-community/geolocation@^3.4.0":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/geolocation/-/geolocation-3.4.0.tgz#8b6ee024a71cf94526ab796af1e9ae140684802c"
+  integrity sha512-bzZH89/cwmpkPMKKveoC72C4JH0yF4St5Ceg/ZM9pA1SqX9MlRIrIrrOGZ/+yi++xAvFDiYfihtn9TvXWU9/rA==
+
 "@react-native-masked-view/masked-view@0.3.2":
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/@react-native-masked-view/masked-view/-/masked-view-0.3.2.tgz#7064533a573e3539ec912f59c1f457371bf49dd9"

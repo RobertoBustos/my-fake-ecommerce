@@ -17,7 +17,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     supportsTablet: true,
     bundleIdentifier: process.env.UNIQUE_IDENTIFIER,
     infoPlist: {
-      "ITSAppUsesNonExemptEncryption": false
+      "ITSAppUsesNonExemptEncryption": false,
+      "NSLocationWhenInUseUsageDescription": "We use your location to display your current position on the map",
+      "NSLocationAlwaysAndWhenInUseUsageDescription": "We use your location to display your current position on the map",
+      "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera."
     },
     icon: {
       dark: "./assets/icons/ios-dark.png",
@@ -36,7 +39,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       monochromeImage: "./assets/icons/adaptive-icon.png",
       backgroundColor: "#ffffff"
     },
-    package: process.env.UNIQUE_IDENTIFIER
+    package: process.env.UNIQUE_IDENTIFIER,
+    permissions: ["CAMERA", "ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION", "ACCESS_BACKGROUND_LOCATION"]
   },
   web: {
     bundler: "metro",

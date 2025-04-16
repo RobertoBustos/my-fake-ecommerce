@@ -1542,6 +1542,27 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-geolocation (3.4.0):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-get-random-values (1.11.0):
     - React-Core
   - react-native-google-maps (1.18.0):
@@ -2293,6 +2314,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
+  - "react-native-geolocation (from `../node_modules/@react-native-community/geolocation`)"
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-google-maps (from `/Users/robertobustos/Developer/MyApps/my-fake-ecommerce/node_modules/react-native-maps`)
   - react-native-keyboard-controller (from `../node_modules/react-native-keyboard-controller`)
@@ -2475,6 +2497,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   React-microtasksnativemodule:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
+  react-native-geolocation:
+    :path: "../node_modules/@react-native-community/geolocation"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
   react-native-google-maps:
@@ -2624,6 +2648,7 @@ SPEC CHECKSUMS:
   React-logger: 5cad0c76d056809523289e589309012215a393b5
   React-Mapbuffer: a381120aea722d2244d4e4b663a10d4c3b2d4e51
   React-microtasksnativemodule: d9b946675010659cddd1c7611c074216579c8ad3
+  react-native-geolocation: 79343c06877301c296102ceef9d64e7e077a2af0
   react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
   react-native-google-maps: a3a01acdc5e15d1b74d600ba270c454bac6239b4
   react-native-keyboard-controller: 1f7048394390f0b7dd97ae7cf52c94ec5f8dd5f0

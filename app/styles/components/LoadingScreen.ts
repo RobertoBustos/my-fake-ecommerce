@@ -5,10 +5,7 @@ const loadingScreenStyleSheet = createStyleSheet((theme) => ({
         flex: 1,
         width: "100%",
         height: "100%",
-    },
-    loader: {
-        flex: 1,
-    },
+    }
 }));
 
 export default loadingScreenStyleSheet;

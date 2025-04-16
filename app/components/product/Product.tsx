@@ -1,8 +1,8 @@
-import { useProductContext } from "@/app/contexts/ProductContext";
-import productStyleSheet from "@/app/styles/components/Product";
 import { useMemo } from "react";
 import { RefreshControl, ScrollView, Text } from "react-native";
 import { useStyles } from "react-native-unistyles";
+import { useProductContext } from "../../contexts/ProductContext";
+import productStyleSheet from "../../styles/components/Product";
 import { formatCurrency } from "../../utils/formatCurrency";
 import EmptyProduct from "../EmptyProduct";
 import NoStockMessage from "../NoStockMessage";

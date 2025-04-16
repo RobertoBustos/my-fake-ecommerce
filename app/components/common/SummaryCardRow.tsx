@@ -1,6 +1,6 @@
-import summaryCardRowStyleSheet from "@/app/styles/components/SummaryCardRow";
 import { Text, View } from "react-native";
 import { useStyles } from "react-native-unistyles";
+import summaryCardRowStyleSheet from "../../styles/components/SummaryCardRow";
 
 export type SummaryCardRowPropsType = {
   concept?: string;

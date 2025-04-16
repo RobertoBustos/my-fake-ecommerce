@@ -1,4 +1,4 @@
-import { useProductContext } from "@/app/contexts/ProductContext";
+import { useProductContext } from "../../contexts/ProductContext";
 import FooterButton from "../FooterButton";
 import CustomFooter from "../common/CustomFooter";
 

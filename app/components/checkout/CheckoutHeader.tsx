@@ -1,7 +1,7 @@
-import checkoutHeaderStyleSheet from "@/app/styles/components/CheckoutHeader";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { Text, View } from "react-native";
 import { useStyles } from "react-native-unistyles";
+import checkoutHeaderStyleSheet from "../../styles/components/CheckoutHeader";
 
 export type CheckoutHeaderPropsType = {
   orderId: string;

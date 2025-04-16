@@ -1,10 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Text, TextInput } from "react-native";
 import { useStyles } from "react-native-unistyles";
 import { ZodType, z } from "zod";
 import { UserType } from "../../constants/types";
+import { useOrderContext } from "../../contexts/OrderContext";
 import { useAppDispatch } from "../../redux/hooks";
 import { setCustomerData } from "../../redux/order/reducer";
 import userDetailsFormStyleSheet from "../../styles/components/UserDetailsForm";
@@ -22,24 +23,21 @@ const validationSchema: ZodType<UserType> = z.object({
     .max(10, { message: "Your phone number must contain 10 digits" }),
 });
 
-export type UserDetailsFormPropsType = {
-  data: UserType;
-  isLoading?: boolean;
-};
-
-const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
+const UserDetailsForm = () => {
   const dispatch = useAppDispatch();
   const { styles, theme } = useStyles(userDetailsFormStyleSheet);
+  const { orderData } = useOrderContext();
 
   const {
     control,
     getValues,
     formState: { errors },
+    reset,
   } = useForm<UserType>({
     defaultValues: {
-      email: data.email,
-      name: data.name,
-      phone: data.phone,
+      email: "",
+      name: "",
+      phone: "",
     },
     resolver: zodResolver(validationSchema),
     mode: "all",
@@ -60,8 +58,14 @@ const UserDetailsForm = ({ data, isLoading }: UserDetailsFormPropsType) => {
     [styles.input, theme.colors.error]
   );
 
+  useEffect(() => {
+    if (!orderData || orderData.customer === null) return;
+    reset(orderData.customer);
+    return () => {};
+  }, [orderData, reset]);
+
   return (
-    <CustomCard isLoading={isLoading} testID="UserDetailsForm.Container">
+    <CustomCard testID="UserDetailsForm.Container">
       <Controller
         control={control}
         name="email"

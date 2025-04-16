@@ -1,4 +1,4 @@
-import { useOrderContext } from "@/app/contexts/OrderContext";
+import { useOrderContext } from "../../contexts/OrderContext";
 import FooterButton from "../FooterButton";
 import CustomFooter from "../common/CustomFooter";
 

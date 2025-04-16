@@ -1,5 +1,3 @@
-import { useOrderContext } from "@/app/contexts/OrderContext";
-import useLocation from "@/app/hooks/useLocation";
 import { useCallback, useEffect, useRef } from "react";
 import {
   GooglePlacesAutocomplete,
@@ -7,6 +5,8 @@ import {
 } from "react-native-google-places-autocomplete";
 import { useStyles } from "react-native-unistyles";
 import { GOOGLE_MAPS_API_KEY } from "../../constants/config";
+import { useOrderContext } from "../../contexts/OrderContext";
+import useLocation from "../../hooks/useLocation";
 import { useAppDispatch } from "../../redux/hooks";
 import { setAddressData } from "../../redux/order/reducer";
 import addressDetailsFormStyleSheet from "../../styles/components/AddressDetailsForm";
@@ -23,7 +23,6 @@ const AddressDetailsForm = () => {
   const getLocationAddress = useCallback(() => {
     getFormatedAddress().then((address) => {
       ref.current?.setAddressText(address.address);
-      console.log("address", address);
       dispatch(setAddressData(address));
     });
     return () => {};

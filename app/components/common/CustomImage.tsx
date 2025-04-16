@@ -1,5 +1,6 @@
 import { useImage } from "expo-image";
 import { Image } from "react-native";
+import EmptyImage from "../EmptyImage";
 
 export type CustomImagePropsType = {
   imageUrl: string;
@@ -21,7 +22,7 @@ const CustomImage = ({
   });
 
   if (!image) {
-    return null;
+    return <EmptyImage width={width} height={height} />;
   }
 
   return (

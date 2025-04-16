@@ -1,18 +1,12 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {
-  ActivityIndicator,
-  ColorValue,
-  StyleProp,
-  Text,
-  View,
-  ViewStyle,
-} from "react-native";
+import { ColorValue, StyleProp, Text, View, ViewStyle } from "react-native";
 import { useStyles } from "react-native-unistyles";
 import defaultButtonStyleSheet from "../../styles/components/DefaultButton";
 import deleteButtonStyleSheet from "../../styles/components/DeleteButton";
 import minusButtonStyleSheet from "../../styles/components/MinusButton";
 import plusButtonStyleSheet from "../../styles/components/PlusButton";
 import reloadButtonStyleSheet from "../../styles/components/ReloadButton";
+import LoadingSpinner from "../LoadingSpinner";
 
 export type IconButtonPropsType = {
   size?: number;
@@ -107,11 +101,7 @@ const DefaultButton = ({
   return (
     <View style={mixedStyles}>
       {isLoading ? (
-        <ActivityIndicator
-          size="small"
-          color={theme.colors.onPrimary}
-          style={styles.loader}
-        />
+        <LoadingSpinner size="small" color={theme.colors.onPrimary} />
       ) : (
         <Text style={styles.buttonText}>{text}</Text>
       )}

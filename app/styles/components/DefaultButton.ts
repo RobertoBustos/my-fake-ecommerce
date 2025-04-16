@@ -13,10 +13,7 @@ const defaultButtonStyleSheet = createStyleSheet(theme => ({
         color: theme.colors.onPrimary,
         fontWeight: "bold",
         fontSize: 16,
-    },
-    loader: {
-        flex: 1,
-    },
+    }
 }));
 
 export default defaultButtonStyleSheet

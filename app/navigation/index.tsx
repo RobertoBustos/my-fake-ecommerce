@@ -1,11 +1,8 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
 import { useStyles } from "react-native-unistyles";
 import { RootStackParamList } from "../constants/types";
-import useCart from "../hooks/useCart";
-import { setCartFromOrder, setCartId } from "../redux/cart/reducer";
-import { useAppDispatch } from "../redux/hooks";
+import useAppState from "../hooks/useAppState";
+import useInitialFetch from "../hooks/useInitialFetch";
 import AddressScreen from "../screens/AddressScreen";
 import CartScreen from "../screens/CartScreen";
 import CatalogScreen from "../screens/CatalogScreen";
@@ -15,32 +12,12 @@ import CustomerScreen from "../screens/CustomerScreen";
 import ProductScreen from "../screens/ProductScreen";
 import NavigationHeader from "./NavigationHeader";
 
-SplashScreen.preventAutoHideAsync();
-SplashScreen.setOptions({
-  duration: 2000,
-  fade: true,
-});
-
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const RootStack = () => {
   const { theme } = useStyles();
-  const dispatch = useAppDispatch();
-  const { fetchCart } = useCart();
-
-  useEffect(() => {
-    dispatch(setCartId())
-      .unwrap()
-      .then((cartId) => {
-        fetchCart(cartId).then((data) => {
-          SplashScreen.hide();
-          if (data.data.carts.length === 0) return;
-          dispatch(setCartFromOrder(data.data.carts));
-        });
-      });
-
-    return () => {};
-  }, [dispatch, fetchCart]);
+  useInitialFetch();
+  useAppState();
 
   return (
     <Stack.Navigator

@@ -176,9 +176,9 @@ const OrderStore = ({
       address: null,
       status: "INCOMPLETE",
     })
-      .then(() => {
-        if (orderData.details.length > 0) {
-          dispatch(setCartFromOrder(orderData.details));
+      .then((order) => {
+        if (order.details.length > 0) {
+          dispatch(setCartFromOrder(order.details));
         }
         navigation.navigate("Products");
         return;
@@ -213,13 +213,11 @@ const OrderStore = ({
       },
       status: null,
     })
-      .then((data) => {
-        refetchOrder();
+      .then((order) => {
         if (forceGoBack && forceGoBack === true) {
           return navigation.goBack();
         }
-        navigation.navigate("Checkout", { orderId: orderData.id });
-        return;
+        return navigation.navigate("Checkout", { orderId: order.id });
       })
       .catch((error) => {
         Alert.alert(error.message);
@@ -238,13 +236,14 @@ const OrderStore = ({
       address: null,
       status: null,
     })
-      .then((data) => {
-        refetchOrder();
+      .then((order) => {
         if (forceGoBack && forceGoBack === true) {
           return navigation.goBack();
         }
-        navigation.navigate("Address", { orderId: orderData.id });
-        return;
+        if (order.status === "PAYMENT_PENDING") {
+          return navigation.navigate("Checkout", { orderId: order.id });
+        }
+        return navigation.navigate("Address", { orderId: order.id });
       })
       .catch((error) => {
         Alert.alert(error.message);
@@ -254,36 +253,43 @@ const OrderStore = ({
   const completeOrder = () => {
     if (!orderData) return;
     createPayment({ orderId: orderData.id })
-      .then((response) => {
-        initPayment(orderData, response.ephimeralKey, response.clientSecret)
+      .then((payment) => {
+        initPayment(orderData, payment.ephimeralKey, payment.clientSecret)
           .then(() => {
             confirmPayment()
-              .then((response) => {
+              .then(() => {
                 updateExistingOrder({
                   id: orderData.id,
                   customer: null,
                   address: null,
                   status: "COMPLETE",
                 })
-                  .then((response) => {
-                    refetchOrder();
+                  .then((order) => {
                     navigation.reset({
                       index: 0,
                       routes: [
                         {
                           name: "Confirmation",
-                          params: { orderId: orderData.id },
+                          params: { orderId: order.id },
                         },
                       ],
                     });
                   })
-                  .catch((error) => Alert.alert(error));
+                  .catch((error) => {
+                    Alert.alert(error.message);
+                  });
               })
-              .catch((error) => Alert.alert(error));
+              .catch((error) => {
+                Alert.alert(error.message);
+              });
           })
-          .catch((error) => Alert.alert(error));
+          .catch((error) => {
+            Alert.alert(error.message);
+          });
       })
-      .catch((error) => Alert.alert(error));
+      .catch((error) => {
+        Alert.alert(error.message);
+      });
   };
 
   const processCheckout = () => {

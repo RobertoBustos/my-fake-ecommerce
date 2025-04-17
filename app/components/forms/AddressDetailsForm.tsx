@@ -22,6 +22,7 @@ const AddressDetailsForm = () => {
 
   const getLocationAddress = useCallback(() => {
     getFormatedAddress().then((address) => {
+      if (!address) return;
       ref.current?.setAddressText(address.address);
       dispatch(setAddressData(address));
     });
@@ -29,11 +30,14 @@ const AddressDetailsForm = () => {
   }, [dispatch, getFormatedAddress]);
 
   useEffect(() => {
-    if (!orderData || orderData.address === null) {
-      getLocationAddress();
+    if (!orderData) {
       return;
     }
+    if (orderData.address === null) {
+      return getLocationAddress();
+    }
     ref.current?.setAddressText(orderData.address.address);
+    return () => {};
   }, [getLocationAddress, orderData]);
 
   return (

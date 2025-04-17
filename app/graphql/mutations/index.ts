@@ -47,6 +47,69 @@ mutation UpdateOrder($input: UpdateOrder!){
     code
     success
     message
+    data {
+      id
+      cart
+      status
+      customer {
+        id
+        email
+        name
+        phone
+      }
+      address {
+        address
+        zipCode
+        coords {
+          latitude
+          longitude
+          latitudeDelta
+          longitudeDelta
+        }
+      }
+      totals {
+        currency
+        subTotal
+        taxes
+        discount
+        total
+        units
+        items
+      }
+      details {
+        id
+          productId
+          quantity
+          unitPrice
+          subtotal
+          product {
+            image
+            title
+            id
+          }
+      }
+      payment {
+        id
+        amount
+        status
+        customer
+        payment_method
+        paymentDetails {
+          id
+          card {
+            brand
+            display_brand
+            exp_month
+            exp_year
+            fingerprint
+            last4
+            checks {
+              cvc_check
+            }
+          }
+        }
+      }
+    }
   }
 }`
 

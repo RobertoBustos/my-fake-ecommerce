@@ -35,7 +35,7 @@ const useOrder = () => {
     const [updateOrder, { loading: isUpdating, }] = useMutation(UPDATE_ORDER);
     const [cancelOrder, { loading: isCancelling, }] = useMutation(CANCEL_ORDER);
     const [createOrderPayment, { loading: isCreatingPayment, }] = useMutation(CREATE_ORDER_PAYMENT);
-    const [getOrders, { loading: isLoading, data: ordersResponse, error, refetch: refetchOrder }] = useLazyQuery(GET_ORDERS);
+    const [getOrders, { loading: isLoading, data: ordersResponse, error, refetch: refetchOrder }] = useLazyQuery(GET_ORDERS, { fetchPolicy: "no-cache" });
     const [getIncompleteOrders, { data: incompleteOrdersResponse, refetch: refetchIncompleteOrders }] = useLazyQuery(GET_INCOMPLETE_ORDERS, { fetchPolicy: "no-cache" });
 
     const fetchIncompleteOrders = useCallback(async (cartId: string) => {
@@ -66,7 +66,7 @@ const useOrder = () => {
                     input: input,
                 },
             })
-            return response.data.updateOrder
+            return response.data.updateOrder.data
         } catch (error) {
             throw error as Error
         }

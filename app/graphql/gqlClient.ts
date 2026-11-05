@@ -2,7 +2,7 @@ import { ApolloClient, HttpLink, InMemoryCache, from } from "@apollo/client";
 import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
 import { onError } from "@apollo/client/link/error";
 import { Alert } from "react-native";
-import { getBaseUrl } from "../utils/getBaseUrl";
+import { API_URL } from "../constants/config";
 import { getDeviceId } from "../utils/getDeviceId";
 if (__DEV__) {
   loadDevMessages();
@@ -23,7 +23,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 })
 
 const link = from([
-  errorLink, new HttpLink({ uri: getBaseUrl() + "/api", })
+  errorLink, new HttpLink({ uri: API_URL })
 ])
 
 const gqlClient = new ApolloClient({

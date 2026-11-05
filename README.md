@@ -1,50 +1,46 @@
-# Welcome to your Expo app 👋
+# My Fake Ecommerce
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+React Native (Expo) store app. It talks to the [my-fake-ecommerce-api](https://github.com/RobertoBustos/my-fake-ecommerce-api) GraphQL API and signs users in with Firebase Auth.
 
-## Get started
+## Setup
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
+1. Install dependencies:
 
    ```bash
-    npx expo start
+   yarn install
    ```
 
-In the output, you'll find options to open the app in a
+2. Create your environment file and fill it in:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+   ```bash
+   cp .env.example .env.local
+   ```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+   | Variable | Where it comes from | Required |
+   | --- | --- | --- |
+   | `APP_NAME` | The app's display name; falls back to `MyApp` | No |
+   | `UNIQUE_IDENTIFIER` | iOS bundle identifier and Android package | For native builds |
+   | `EXPO_PUBLIC_API_URL` | GraphQL endpoint; defaults to production | No |
+   | `EXPO_PUBLIC_FIREBASE_API_KEY`, `EXPO_PUBLIC_FIREBASE_APP_ID` | Firebase console > Project settings > Your apps | Yes |
+   | `EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN`, `EXPO_PUBLIC_FIREBASE_PROJECT_ID` | Default to the production Firebase project | No |
+   | `EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe dashboard, test mode (`pk_test_...`) | Yes |
+   | `EXPO_PUBLIC_STRIPE_MERCHANT_ID` | Apple Pay merchant id | For Apple Pay |
+   | `EXPO_PUBLIC_GOOGLE_MAPS_API_KEY` | Google Cloud console (Maps and Places) | Yes |
 
-## Get a fresh project
+   Anything prefixed with `EXPO_PUBLIC_` is bundled into the app and can be extracted from it. Never put a secret there, such as a Stripe `sk_` key.
 
-When you're ready, run:
+3. Start the app on a development build:
 
-```bash
-npm run reset-project
-```
+   ```bash
+   yarn ios      # or: yarn android
+   yarn start    # later runs, once the build is installed
+   ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Scripts
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+| Command | What it does |
+| --- | --- |
+| `yarn start` | Starts Metro with a clean cache |
+| `yarn ios`, `yarn android` | Builds and runs the app natively |
+| `yarn lint` | Runs ESLint |
+| `npx tsc --noEmit` | Type-checks the project |

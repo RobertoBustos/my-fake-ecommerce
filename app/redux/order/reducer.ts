@@ -21,8 +21,9 @@ const orderSlice = createSlice({
         setAddressData: (state, action: PayloadAction<AddressType>) => {
             state.addressData = action.payload
         },
+        resetOrder: () => initialState,
     }
 });
 
-export const { setCustomerData, setAddressData, setSelectedOrderId } = orderSlice.actions
+export const { setCustomerData, setAddressData, setSelectedOrderId, resetOrder } = orderSlice.actions
 export default orderSlice.reducer

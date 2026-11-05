@@ -31,6 +31,11 @@ const cartSlice = createSlice({
         resetCart: (state) => {
             state.items = []
         },
+        clearCart: (state) => {
+            state.items = []
+            state.cartId = ""
+            state.selectedProductId = ""
+        },
         setCartFromOrder: (state, action: PayloadAction<CartItemType[]>) => {
             state.items = action.payload
         }
@@ -53,5 +58,5 @@ export const setCartId = createAsyncThunk("cart/setCartId", async (_, { rejectWi
     return cartId
 })
 
-export const { addItemToCart, removeItemFromCart, resetCart, setCartFromOrder, setSelectedProductId } = cartSlice.actions
+export const { addItemToCart, removeItemFromCart, resetCart, clearCart, setCartFromOrder, setSelectedProductId } = cartSlice.actions
 export default cartSlice.reducer

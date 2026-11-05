@@ -10,11 +10,13 @@ SplashScreen.setOptions({
     fade: true,
 });
 
-const useInitialFetch = () => {
+// The API needs a user, so the cart is loaded once the session exists
+const useInitialFetch = (userId: string | undefined) => {
     const dispatch = useAppDispatch();
     const { fetchCart } = useCart();
 
     useEffect(() => {
+        if (!userId) return
         dispatch(setCartId())
             .unwrap()
             .then((cartId) => {
@@ -26,7 +28,7 @@ const useInitialFetch = () => {
             });
 
         return () => { };
-    }, [dispatch, fetchCart]);
+    }, [dispatch, fetchCart, userId]);
 }
 
 export default useInitialFetch

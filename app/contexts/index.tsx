@@ -3,6 +3,7 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import { Provider as ReduxProvider } from "react-redux";
 import gqlClient from "../graphql/gqlClient";
 import store from "../redux/store";
+import AuthStore from "./AuthContext";
 import SiblingStore from "./SiblingContext";
 import StripeStore from "./StripeContext";
 
@@ -14,11 +15,13 @@ const RootContext = ({ children }: RootContextType) => {
   return (
     <ReduxProvider store={store}>
       <ApolloProvider client={gqlClient}>
-        <SiblingStore>
-          <StripeStore>
-            <KeyboardProvider>{children}</KeyboardProvider>
-          </StripeStore>
-        </SiblingStore>
+        <AuthStore>
+          <SiblingStore>
+            <StripeStore>
+              <KeyboardProvider>{children}</KeyboardProvider>
+            </StripeStore>
+          </SiblingStore>
+        </AuthStore>
       </ApolloProvider>
     </ReduxProvider>
   );

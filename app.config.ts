@@ -1,8 +1,15 @@
 import { ConfigContext, ExpoConfig } from "expo/config";
 
+const getAppName = (): string => {
+  if (!process.env.APP_NAME) {
+    throw new Error("APP_NAME is not set. Copy .env.example to .env.local and fill it in.");
+  }
+  return process.env.APP_NAME;
+};
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: process.env.APP_NAME || "MyApp",
+  name: getAppName(),
   slug: "my-fake-ecommerce",
   version: "1.0.0",
   orientation: "portrait",

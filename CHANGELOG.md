@@ -10,7 +10,7 @@ follows [Semantic Versioning](https://semver.org/).
 
 - Anonymous Firebase sessions: the app opens without an account, and an account
   is optional. Creating one keeps the cart.
-- A CI workflow, Dependabot updates, `CLAUDE.md` and this changelog.
+- A CI workflow, `CLAUDE.md` and this changelog.
 
 ### Changed
 

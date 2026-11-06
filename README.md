@@ -20,9 +20,8 @@ React Native (Expo) store app. It talks to the [my-fake-ecommerce-api](https://g
    | --- | --- | --- |
    | `APP_NAME` | The app's display name; falls back to `MyApp` | No |
    | `UNIQUE_IDENTIFIER` | iOS bundle identifier and Android package | For native builds |
-   | `EXPO_PUBLIC_API_URL` | GraphQL endpoint; defaults to production | No |
-   | `EXPO_PUBLIC_FIREBASE_API_KEY`, `EXPO_PUBLIC_FIREBASE_APP_ID` | Firebase console > Project settings > Your apps | Yes |
-   | `EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN`, `EXPO_PUBLIC_FIREBASE_PROJECT_ID` | Default to the production Firebase project | No |
+   | `EXPO_PUBLIC_API_URL` | GraphQL endpoint, production or local | Yes |
+   | `EXPO_PUBLIC_FIREBASE_API_KEY`, `EXPO_PUBLIC_FIREBASE_APP_ID`, `EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN`, `EXPO_PUBLIC_FIREBASE_PROJECT_ID` | Firebase console > Project settings > Your apps | Yes |
    | `EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe dashboard, test mode (`pk_test_...`) | Yes |
    | `EXPO_PUBLIC_STRIPE_MERCHANT_ID` | Apple Pay merchant id | For Apple Pay |
    | `EXPO_PUBLIC_GOOGLE_MAPS_API_KEY` | Google Cloud console (Maps and Places) | Yes |

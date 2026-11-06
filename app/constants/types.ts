@@ -1,6 +1,7 @@
 import { Region } from "react-native-maps";
 
 export type RootStackParamList = {
+    Login: undefined
     Products: undefined
     Product: { productId: string };
     Cart: undefined

@@ -1,6 +1,9 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect } from "react";
 import { useStyles } from "react-native-unistyles";
 import { RootStackParamList } from "../constants/types";
+import { useAuthContext } from "../contexts/AuthContext";
 import useAppState from "../hooks/useAppState";
 import useInitialFetch from "../hooks/useInitialFetch";
 import AddressScreen from "../screens/AddressScreen";
@@ -9,6 +12,7 @@ import CatalogScreen from "../screens/CatalogScreen";
 import CheckoutScreen from "../screens/CheckoutScreen";
 import ConfirmationScreen from "../screens/ConfirmationScreen";
 import CustomerScreen from "../screens/CustomerScreen";
+import LoginScreen from "../screens/LoginScreen";
 import ProductScreen from "../screens/ProductScreen";
 import NavigationHeader from "./NavigationHeader";
 
@@ -16,8 +20,20 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const RootStack = () => {
   const { theme } = useStyles();
-  useInitialFetch();
+  const { user, isInitializing } = useAuthContext();
+  useInitialFetch(user?.uid);
   useAppState();
+
+  // With a user, the splash screen is hidden once the cart is loaded.
+  // Without one the anonymous sign in failed, and it asks to try again
+  useEffect(() => {
+    if (!isInitializing && !user) SplashScreen.hide();
+    return () => {};
+  }, [isInitializing, user]);
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <Stack.Navigator
@@ -75,6 +91,11 @@ const RootStack = () => {
         options={({ route }) => ({
           title: `Order Complete`,
         })}
+      />
+      <Stack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{ title: "My Account" }}
       />
     </Stack.Navigator>
   );

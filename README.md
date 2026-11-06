@@ -18,7 +18,7 @@ React Native (Expo) store app. It talks to the [my-fake-ecommerce-api](https://g
 
    | Variable | Where it comes from | Required |
    | --- | --- | --- |
-   | `APP_NAME` | The app's display name; falls back to `MyApp` | No |
+   | `APP_NAME` | The app's display name | Yes |
    | `UNIQUE_IDENTIFIER` | iOS bundle identifier and Android package | For native builds |
    | `EXPO_PUBLIC_API_URL` | GraphQL endpoint, production or local | Yes |
    | `EXPO_PUBLIC_FIREBASE_API_KEY`, `EXPO_PUBLIC_FIREBASE_APP_ID`, `EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN`, `EXPO_PUBLIC_FIREBASE_PROJECT_ID` | Firebase console > Project settings > Your apps | Yes |

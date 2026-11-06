@@ -19,10 +19,13 @@ export type ProdctContextType = {
   isAdding: boolean;
   isLoading: boolean;
   isDisabled: boolean;
+  isAvailable: boolean;
   addProductToCart: () => void;
   reloadProduct: () => void;
   error: ApolloError | undefined;
   quantity: number;
+  minQuantity: number;
+  maxQuantity: number;
   setQuantity: (value: number) => void;
   footerText: string;
 };
@@ -34,10 +37,13 @@ const ProductContext = createContext<ProdctContextType>({
   isAdding: false,
   isLoading: false,
   isDisabled: false,
+  isAvailable: false,
   addProductToCart: () => {},
   reloadProduct: () => {},
   error: undefined,
   quantity: 1,
+  minQuantity: 1,
+  maxQuantity: 0,
   setQuantity: (value: number) => {},
   footerText: "",
 });
@@ -51,22 +57,29 @@ const ProductStore = ({ children, productId }: ProductStorePropsType) => {
   const navigation = useAppNavigation();
   const cartId = useAppSelector(selectCartId);
   const orderId = useAppSelector(selectSelectedOrderId);
-  const [quantity, setQuantity] = useState<number>(1);
-  const { data, isLoading, refetch, error } = useProduct({
-    filter: { field: "id", value: productId },
-  });
+  const [selectedQuantity, setQuantity] = useState<number>();
+  const { data, isLoading, refetch, error } = useProduct({ id: productId });
   const { addProduct, isAdding } = useCart();
   const product = data ? data[0] : undefined;
   const isDisabled = cartId === "" || isAdding;
-  const footerText =
-    !product || product.stock === 0
-      ? "Go Back"
-      : orderId
-      ? "Add to Order"
-      : "Add to Cart";
+  const minQuantity = product?.purchaseLimits.min || 1;
+  const maxQuantity = product
+    ? Math.min(product.purchaseLimits.max, product.stock)
+    : 0;
+  const isAvailable = maxQuantity >= minQuantity;
+  // Starts at the minimum, and reloading the product can change the limits
+  const quantity = Math.max(
+    minQuantity,
+    Math.min(selectedQuantity ?? minQuantity, maxQuantity)
+  );
+  const footerText = !isAvailable
+    ? "Go Back"
+    : orderId
+    ? "Add to Order"
+    : "Add to Cart";
 
   const addProductToCart = () => {
-    if (!product || product.stock === 0) {
+    if (!product || !isAvailable) {
       navigation.goBack();
       return;
     }
@@ -101,10 +114,13 @@ const ProductStore = ({ children, productId }: ProductStorePropsType) => {
         isAdding,
         isLoading,
         isDisabled,
+        isAvailable,
         addProductToCart,
         reloadProduct,
         error,
         quantity,
+        minQuantity,
+        maxQuantity,
         setQuantity,
         footerText,
       }}

@@ -1,18 +1,27 @@
 import { gql } from "@apollo/client";
 
 export const GET_PRODUCTS = gql`
-query GetProducts ($filter: Filter){
-  products (filter: $filter){
-    id
-    title
-    description
-    image
-    unitPrice
-    currency
-    stock
-    purchaseLimits {
-      min
-      max
+query GetProducts ($id: ID, $first: Int, $after: String){
+  products (id: $id, first: $first, after: $after){
+    edges {
+      node {
+        id
+        title
+        description
+        category
+        image
+        unitPrice
+        currency
+        stock
+        purchaseLimits {
+          min
+          max
+        }
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
     }
   }
 }`;

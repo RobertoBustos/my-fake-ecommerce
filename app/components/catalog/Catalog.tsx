@@ -1,19 +1,18 @@
-import { FlatList } from "react-native";
+import { ActivityIndicator, FlatList } from "react-native";
 import useProduct from "../../hooks/useProduct";
 import CatalogItemCard from "../CatalogItemCard";
 import EmptyCatalog from "../EmptyCatalog";
 import LoadingScreen from "../common/LoadingScreen";
 
 const Catalog = () => {
-  const { isLoading, data, refetch, isCatalogEmpty } = useProduct({
-    filter: null,
-  });
+  const { isLoading, isRefreshing, isLoadingMore, data, refetch, isCatalogEmpty, loadMore } =
+    useProduct({});
 
   const handleRefresh = () => {
     refetch();
   };
 
-  if (isLoading) {
+  if (isLoading && isCatalogEmpty) {
     return <LoadingScreen />;
   }
 
@@ -26,8 +25,11 @@ const Catalog = () => {
       data={data}
       renderItem={({ item }) => <CatalogItemCard data={item} />}
       showsVerticalScrollIndicator={false}
-      refreshing={isLoading}
+      refreshing={isRefreshing}
       onRefresh={handleRefresh}
+      onEndReached={loadMore}
+      onEndReachedThreshold={0.5}
+      ListFooterComponent={isLoadingMore ? <ActivityIndicator /> : null}
       testID="Catalog.Container"
     />
   );

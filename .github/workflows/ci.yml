@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [dev, main]
+  push:
+    branches: [dev, main]
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: yarn
+      - run: yarn install --frozen-lockfile
+      - run: yarn lint
+
+  # Not a required check until the type errors already in dev are fixed.
+  typecheck:
+    name: typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: yarn
+      - run: yarn install --frozen-lockfile
+      - run: npx tsc --noEmit
+
+  # The test script uses --watchAll, which never exits in CI.
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: yarn
+      - run: yarn install --frozen-lockfile
+      - run: npx jest --ci --passWithNoTests
+
+  # Production dependencies only. The exit code is a bitmask of the severities
+  # found (high = 8, critical = 16), whatever --level says. Not a required check.
+  audit:
+    name: audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: |
+          status=0
+          yarn audit --groups dependencies --level high --summary || status=$?
+          if [ "$status" -ge 8 ]; then
+            echo "::error::High or critical vulnerabilities in production dependencies." >&2
+            exit 1
+          fi
+
+  gitleaks:
+    name: gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Metro bundles for both platforms. Placeholders: app.config.ts needs a name,
+  # and no EXPO_PUBLIC_ value is used while bundling.
+  bundle:
+    name: bundle
+    runs-on: ubuntu-latest
+    env:
+      APP_NAME: ci
+      UNIQUE_IDENTIFIER: com.example.ci
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: yarn
+      - run: yarn install --frozen-lockfile
+      - run: npx expo export --platform ios --platform android
+
+  # main only receives releases and hotfixes. Required on main; on any other
+  # base branch the job is skipped, which GitHub counts as passing.
+  branch-guard:
+    name: branch-guard
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          case "$HEAD_REF" in
+            release/*|hotfix/*) echo "OK: $HEAD_REF may target main" ;;
+            *)
+              echo "::error::Pull requests into main must come from release/* or hotfix/* (got '$HEAD_REF')." >&2
+              exit 1
+              ;;
+          esac

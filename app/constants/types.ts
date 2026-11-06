@@ -18,15 +18,9 @@ export type ProductType = {
     image: string;
     unitPrice: number;
     currency: string
-    rating: RatingType
     title: string
     stock: number
     purchaseLimits: PurchaseLimitType
-}
-
-export type RatingType = {
-    count: number;
-    rate: number;
 }
 
 export type PurchaseLimitType = {
@@ -82,6 +76,21 @@ export type IncompleteOrderType = {
     };
     details: CartItemType[]
 };
+
+export type PageInfoType = {
+    hasNextPage: boolean
+    endCursor: string | null
+}
+
+// Lists come as Relay connections: edges { node cursor } and pageInfo
+export type ConnectionType<T> = {
+    edges: { node: T }[]
+    pageInfo?: PageInfoType
+}
+
+export const nodesOf = <T>(connection?: ConnectionType<T> | null): T[] => {
+    return connection ? connection.edges.map((edge) => edge.node) : []
+}
 
 export type CustomerType = {
     id: string

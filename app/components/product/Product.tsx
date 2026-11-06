@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { RefreshControl, ScrollView, Text } from "react-native";
 import { useStyles } from "react-native-unistyles";
 import { useProductContext } from "../../contexts/ProductContext";
@@ -10,20 +9,21 @@ import QuantityButtons from "../QuantityButtons";
 import CustomImage from "../common/CustomImage";
 
 const Product = () => {
-  const { data, reloadProduct, isLoading, quantity, setQuantity } =
-    useProductContext();
+  const {
+    data,
+    reloadProduct,
+    isLoading,
+    isAvailable,
+    quantity,
+    minQuantity,
+    maxQuantity,
+    setQuantity,
+  } = useProductContext();
   const { styles } = useStyles(productStyleSheet);
 
   const handleRefresh = () => {
     reloadProduct();
   };
-
-  const maxPurchaseLimit = useMemo(() => {
-    if (!data) return 0;
-    return data.purchaseLimits.max > data.stock
-      ? data.stock
-      : data.purchaseLimits.max;
-  }, [data]);
 
   if (!data) {
     return <EmptyProduct />;
@@ -50,11 +50,11 @@ const Product = () => {
       <Text style={styles.price} testID="Product.Price">
         {formatCurrency(data.unitPrice, data.currency)}
       </Text>
-      {data.stock >= 1 ? (
+      {isAvailable ? (
         <>
           <QuantityButtons
-            min={data.purchaseLimits.min || 1}
-            max={maxPurchaseLimit}
+            min={minQuantity}
+            max={maxQuantity}
             value={quantity}
             onChange={setQuantity}
           />

@@ -10,4 +10,7 @@ export const FIREBASE_CONFIG = {
     appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
 }
 
+// Cloud Run scales to zero: the first request after a while can take a few seconds more
+export const REQUEST_TIMEOUT_MS = 15000
+
 export default {}

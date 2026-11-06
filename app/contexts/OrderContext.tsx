@@ -20,6 +20,7 @@ import {
 } from "../redux/order/selectors";
 import { formatCurrency } from "../utils/formatCurrency";
 import { useStripeContext } from "./StripeContext";
+import { getErrorMessage } from "../utils/apiErrors";
 
 export type OrderContextType = {
   orderData: OrderType | undefined;
@@ -150,7 +151,7 @@ const OrderStore = ({
         });
         return;
       })
-      .catch((error) => Alert.alert(error));
+      .catch((error) => Alert.alert(getErrorMessage(error)));
   };
 
   const cancelOrder = () => {
@@ -183,7 +184,7 @@ const OrderStore = ({
         navigation.navigate("Products");
         return;
       })
-      .catch((error) => Alert.alert(error));
+      .catch((error) => Alert.alert(getErrorMessage(error)));
   };
 
   const returnOrderToCart = () => {
@@ -220,7 +221,7 @@ const OrderStore = ({
         return navigation.navigate("Checkout", { orderId: order.id });
       })
       .catch((error) => {
-        Alert.alert(error.message);
+        Alert.alert(getErrorMessage(error));
       });
   };
 
@@ -246,7 +247,7 @@ const OrderStore = ({
         return navigation.navigate("Address", { orderId: order.id });
       })
       .catch((error) => {
-        Alert.alert(error.message);
+        Alert.alert(getErrorMessage(error));
       });
   };
 
@@ -276,19 +277,19 @@ const OrderStore = ({
                     });
                   })
                   .catch((error) => {
-                    Alert.alert(error.message);
+                    Alert.alert(getErrorMessage(error));
                   });
               })
               .catch((error) => {
-                Alert.alert(error.message);
+                Alert.alert(getErrorMessage(error));
               });
           })
           .catch((error) => {
-            Alert.alert(error.message);
+            Alert.alert(getErrorMessage(error));
           });
       })
       .catch((error) => {
-        Alert.alert(error.message);
+        Alert.alert(getErrorMessage(error));
       });
   };
 

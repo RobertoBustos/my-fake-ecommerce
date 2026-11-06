@@ -16,6 +16,7 @@ import {
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setSelectedOrderId } from "../redux/order/reducer";
 import { selectSelectedOrderId } from "../redux/order/selectors";
+import { getErrorMessage } from "../utils/apiErrors";
 
 export type CartContextType = {
   cartItems: CartItemType[];
@@ -67,7 +68,7 @@ const CartStore = ({ children }: PropsWithChildren) => {
           navigation.navigate("Customer", { orderId: data.id });
           return;
         })
-        .catch((error) => Alert.alert(error));
+        .catch((error) => Alert.alert(getErrorMessage(error)));
     }
     if (orderId) {
       navigation.navigate("Customer", { orderId });
@@ -79,9 +80,9 @@ const CartStore = ({ children }: PropsWithChildren) => {
       {
         text: "OK",
         onPress: () =>
-          removeProduct({ id: cartItemId }).then(() =>
-            dispatch(removeItemFromCart(cartItemId))
-          ),
+          removeProduct({ id: cartItemId })
+            .then(() => dispatch(removeItemFromCart(cartItemId)))
+            .catch((error) => Alert.alert(getErrorMessage(error))),
         style: "default",
       },
       {

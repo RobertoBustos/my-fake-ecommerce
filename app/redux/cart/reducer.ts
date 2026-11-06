@@ -1,7 +1,8 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Alert } from "react-native";
 import { CartItemType } from "../../constants/types";
-import { getDeviceId } from "../../utils/getDeviceId";
+import { createCartId, getCartId } from "../../utils/cartIdStorage";
+import { auth } from "../../utils/firebase";
 import { CartStateType } from "../types";
 
 const initialState: CartStateType = {
@@ -47,11 +48,28 @@ const cartSlice = createSlice({
         builder.addCase(setCartId.rejected, (state, action) => {
             Alert.alert(action.payload as string)
         })
+        builder.addCase(renewCartId.fulfilled, (state, action) => {
+            state.items = []
+            state.cartId = action.payload
+        })
+        builder.addCase(renewCartId.rejected, (state, action) => {
+            Alert.alert(action.payload as string)
+        })
     }
 });
 
-export const setCartId = createAsyncThunk("cart/setCartId", async (_, { rejectWithValue }) => {
-    const cartId = await getDeviceId()
+export const setCartId = createAsyncThunk("cart/setCartId", async (userId: string, { rejectWithValue }) => {
+    const cartId = await getCartId(userId)
+    if (!cartId) {
+        return rejectWithValue("There was an error setting up cart")
+    }
+    return cartId
+})
+
+// A cart is ordered only once: start a new one after its order is completed or cancelled
+export const renewCartId = createAsyncThunk("cart/renewCartId", async (_, { rejectWithValue }) => {
+    const userId = auth.currentUser?.uid
+    const cartId = userId ? await createCartId(userId) : undefined
     if (!cartId) {
         return rejectWithValue("There was an error setting up cart")
     }

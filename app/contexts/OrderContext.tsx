@@ -5,7 +5,7 @@ import LoadingScreen from "../components/common/LoadingScreen";
 import { OrderType } from "../constants/types";
 import useAppNavigation from "../hooks/useAppNavigation";
 import useOrder from "../hooks/useOrder";
-import { resetCart, setCartFromOrder } from "../redux/cart/reducer";
+import { renewCartId, resetCart, setCartFromOrder } from "../redux/cart/reducer";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {
   setAddressData,
@@ -143,7 +143,8 @@ const OrderStore = ({
     if (!orderData) return;
     cancelExistingOrder({ id: orderData.id })
       .then(() => {
-        dispatch(resetCart());
+        // The cart of a cancelled order can not be ordered again
+        dispatch(renewCartId());
         dispatch(setSelectedOrderId(undefined));
         navigation.reset({
           index: 0,
@@ -266,6 +267,8 @@ const OrderStore = ({
                   status: "COMPLETE",
                 })
                   .then((order) => {
+                    // The cart of this order can not be ordered again
+                    dispatch(renewCartId());
                     navigation.reset({
                       index: 0,
                       routes: [

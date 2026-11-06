@@ -6,6 +6,7 @@ import useCart from "../hooks/useCart";
 import useOrder from "../hooks/useOrder";
 import {
   removeItemFromCart,
+  renewCartId,
   setSelectedProductId,
 } from "../redux/cart/reducer";
 import {
@@ -16,7 +17,7 @@ import {
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setSelectedOrderId } from "../redux/order/reducer";
 import { selectSelectedOrderId } from "../redux/order/selectors";
-import { getErrorMessage } from "../utils/apiErrors";
+import { getErrorMessage, isNotFound } from "../utils/apiErrors";
 
 export type CartContextType = {
   cartItems: CartItemType[];
@@ -68,7 +69,14 @@ const CartStore = ({ children }: PropsWithChildren) => {
           navigation.navigate("Customer", { orderId: data.id });
           return;
         })
-        .catch((error) => Alert.alert(getErrorMessage(error)));
+        .catch((error) => {
+          // The saved cart no longer exists: the user continues with a new empty one
+          if (isNotFound(error, "cartId")) {
+            dispatch(renewCartId());
+            return;
+          }
+          Alert.alert(getErrorMessage(error));
+        });
     }
     if (orderId) {
       navigation.navigate("Customer", { orderId });
@@ -82,7 +90,14 @@ const CartStore = ({ children }: PropsWithChildren) => {
         onPress: () =>
           removeProduct({ id: cartItemId })
             .then(() => dispatch(removeItemFromCart(cartItemId)))
-            .catch((error) => Alert.alert(getErrorMessage(error))),
+            .catch((error) => {
+              // Already gone from the API, so it only has to leave the screen
+              if (isNotFound(error, "id")) {
+                dispatch(removeItemFromCart(cartItemId));
+                return;
+              }
+              Alert.alert(getErrorMessage(error));
+            }),
         style: "default",
       },
       {

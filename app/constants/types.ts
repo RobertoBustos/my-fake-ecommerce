@@ -35,6 +35,7 @@ export type CartItemType = {
     quantity: number
     unitPrice: number
     subtotal: number
+    currency: string
     product: ProductType
 }
 

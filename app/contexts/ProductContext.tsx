@@ -6,11 +6,11 @@ import { ProductType } from "../constants/types";
 import useAppNavigation from "../hooks/useAppNavigation";
 import useCart from "../hooks/useCart";
 import useProduct from "../hooks/useProduct";
-import { addItemToCart } from "../redux/cart/reducer";
+import { addItemToCart, renewCartId } from "../redux/cart/reducer";
 import { selectCartId } from "../redux/cart/selectors";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { selectSelectedOrderId } from "../redux/order/selectors";
-import { getErrorMessage } from "../utils/apiErrors";
+import { getErrorMessage, isNotFound } from "../utils/apiErrors";
 
 export type ProdctContextType = {
   data: ProductType | undefined;
@@ -83,13 +83,24 @@ const ProductStore = ({ children, productId }: ProductStorePropsType) => {
       navigation.goBack();
       return;
     }
-    addProduct({
-      cartId: cartId,
-      productId: product.id,
-      quantity: quantity,
-      orderId: orderId || null,
-    })
+    const addTo = (id: string) =>
+      addProduct({
+        cartId: id,
+        productId: product.id,
+        quantity: quantity,
+        orderId: orderId || null,
+      });
+    addTo(cartId)
+      .catch(async (error) => {
+        // The saved cart can't be used: the product goes to a new one
+        if (orderId || !isNotFound(error, "cartId")) throw error;
+        const renewed = await dispatch(renewCartId());
+        // The reducer already showed why it failed
+        if (!renewCartId.fulfilled.match(renewed)) return;
+        return addTo(renewed.payload);
+      })
       .then((data) => {
+        if (!data) return;
         dispatch(addItemToCart(data));
         navigation.goBack();
       })

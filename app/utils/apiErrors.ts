@@ -48,6 +48,12 @@ export const getErrorCode = (error: unknown): string | undefined => {
     return getErrorExtensions(error).code
 }
 
+// NOT_FOUND also answers for products, orders and cart items: invalidArgument tells them apart
+export const isNotFound = (error: unknown, argument: string): boolean => {
+    const { code, invalidArgument } = getErrorExtensions(error)
+    return code === ApiErrorCode.NOT_FOUND && invalidArgument === argument
+}
+
 export const getErrorMessage = (error: unknown): string => {
     const graphQLError = getFirstError(error)
     if (graphQLError) {

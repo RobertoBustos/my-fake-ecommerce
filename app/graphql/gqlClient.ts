@@ -3,7 +3,6 @@ import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 import { User, signOut } from "firebase/auth";
-import { Alert } from "react-native";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import { API_URL, REQUEST_TIMEOUT_MS } from "../constants/config";
@@ -86,7 +85,11 @@ const errorLink: ApolloLink = onError(({ graphQLErrors, networkError, operation,
     })
   }
   if (networkError) {
-    Alert.alert("Network Error", networkError.message)
+    console.error(`[${context.requestId}] ${networkError.message}`)
+    // A non-2xx answer does not go through requestIdLink as a result
+    graphQLErrors?.forEach((error) => {
+      Object.assign(error, { extensions: { ...error.extensions, requestId: context.requestId } })
+    })
   }
 })
 

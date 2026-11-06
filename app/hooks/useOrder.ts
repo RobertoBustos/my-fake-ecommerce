@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import { AddressType, IncompleteOrderType, OrderType, UserType } from "../constants/types";
 import { CANCEL_ORDER, CREATE_ORDER, CREATE_ORDER_PAYMENT, UPDATE_ORDER } from "../graphql/mutations";
 import { GET_INCOMPLETE_ORDERS, GET_ORDERS } from "../graphql/queries";
+import { UnsuccessfulMutationError } from "../utils/apiErrors";
 
 export type CreateOrderInput = {
     cartId: string
@@ -66,6 +67,10 @@ const useOrder = () => {
                     input: input,
                 },
             })
+            // updateOrder can answer success: false without a GraphQL error
+            if (!response.data.updateOrder.success) {
+                throw new UnsuccessfulMutationError(response.data.updateOrder.message)
+            }
             return response.data.updateOrder.data
         } catch (error) {
             throw error as Error
@@ -92,6 +97,10 @@ const useOrder = () => {
                     input: input,
                 },
             })
+            // cancelOrder can answer success: false without a GraphQL error
+            if (!response.data.cancelOrder.success) {
+                throw new UnsuccessfulMutationError(response.data.cancelOrder.message)
+            }
             return response.data.cancelOrder.data
         } catch (error) {
             throw error as Error

@@ -1,5 +1,6 @@
 import { ApolloError } from "@apollo/client";
 import { PropsWithChildren, createContext, useContext, useState } from "react";
+import { Alert } from "react-native";
 import LoadingScreen from "../components/common/LoadingScreen";
 import { ProductType } from "../constants/types";
 import useAppNavigation from "../hooks/useAppNavigation";
@@ -9,6 +10,7 @@ import { addItemToCart } from "../redux/cart/reducer";
 import { selectCartId } from "../redux/cart/selectors";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { selectSelectedOrderId } from "../redux/order/selectors";
+import { getErrorMessage } from "../utils/apiErrors";
 
 export type ProdctContextType = {
   data: ProductType | undefined;
@@ -73,10 +75,13 @@ const ProductStore = ({ children, productId }: ProductStorePropsType) => {
       productId: product.id,
       quantity: quantity,
       orderId: orderId || null,
-    }).then((data) => {
-      dispatch(addItemToCart(data));
-      navigation.goBack();
-    });
+    })
+      .then((data) => {
+        dispatch(addItemToCart(data));
+        navigation.goBack();
+      })
+      // The real stock and the purchase limits are checked here, the catalog stock is a reference only
+      .catch((error) => Alert.alert(getErrorMessage(error)));
   };
 
   const reloadProduct = () => {

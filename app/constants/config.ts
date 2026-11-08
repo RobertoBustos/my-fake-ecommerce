@@ -12,5 +12,8 @@ export const FIREBASE_CONFIG = {
 
 // Cloud Run scales to zero: the first request after a while can take a few seconds more
 export const REQUEST_TIMEOUT_MS = 15000
+// The Stripe webhook completes the order (about 3 s in production)
+export const PAYMENT_POLL_INTERVAL_MS = 1500
+export const PAYMENT_POLL_TIMEOUT_MS = 30000
 
 export default {}

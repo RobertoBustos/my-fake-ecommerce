@@ -1,8 +1,9 @@
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useApolloClient, useLazyQuery, useMutation } from "@apollo/client";
 import { useCallback } from "react";
-import { AddressType, ConnectionType, IncompleteOrderType, OrderType, UserType, nodesOf } from "../constants/types";
+import { PAYMENT_POLL_INTERVAL_MS, PAYMENT_POLL_TIMEOUT_MS } from "../constants/config";
+import { AddressType, ConnectionType, IncompleteOrderType, OrderType, Status, UserType, nodesOf } from "../constants/types";
 import { CANCEL_ORDER, CREATE_ORDER, CREATE_ORDER_PAYMENT, UPDATE_ORDER } from "../graphql/mutations";
-import { GET_INCOMPLETE_ORDERS, GET_ORDERS } from "../graphql/queries";
+import { GET_INCOMPLETE_ORDERS, GET_ORDERS, GET_ORDER_PAYMENT_CUSTOMER, GET_ORDER_STATUS } from "../graphql/queries";
 import { UnsuccessfulMutationError } from "../utils/apiErrors";
 
 export type CreateOrderInput = {
@@ -30,7 +31,10 @@ export type PaymentCreated = {
     ephimeralKey: string
 }
 
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
 const useOrder = () => {
+    const client = useApolloClient();
     const [createOrder, { loading: isCreating, }] = useMutation(CREATE_ORDER);
     const [updateOrder, { loading: isUpdating, }] = useMutation(UPDATE_ORDER);
     const [cancelOrder, { loading: isCancelling, }] = useMutation(CANCEL_ORDER);
@@ -106,10 +110,33 @@ const useOrder = () => {
         }
     }, [cancelOrder])
 
+    const fetchPaymentCustomer = useCallback(async (id: string): Promise<string | undefined> => {
+        const response = await client.query<{ orders: ConnectionType<Pick<OrderType, "id" | "payment">> }>({ query: GET_ORDER_PAYMENT_CUSTOMER, variables: { id }, fetchPolicy: "no-cache" })
+        return nodesOf(response.data.orders)[0]?.payment?.customer
+    }, [client])
+
+    // The Stripe webhook completes the order, there are no subscriptions so the status is polled.
+    // Returns the last known status, still PAYMENT_PENDING when the time is up
+    const waitForOrderCompletion = useCallback(async (id: string): Promise<Status | undefined> => {
+        const deadline = Date.now() + PAYMENT_POLL_TIMEOUT_MS
+        let status: Status | undefined
+        while (Date.now() < deadline) {
+            try {
+                const response = await client.query<{ orders: ConnectionType<Pick<OrderType, "id" | "status">> }>({ query: GET_ORDER_STATUS, variables: { id }, fetchPolicy: "no-cache" })
+                status = nodesOf(response.data.orders)[0]?.status
+                if (status === Status.COMPLETE || status === Status.CANCELLED) return status
+            } catch {
+                // A failed check does not stop the wait, the next one may succeed
+            }
+            await delay(PAYMENT_POLL_INTERVAL_MS)
+        }
+        return status
+    }, [client])
+
     const incompleteOrders: IncompleteOrderType[] = nodesOf(incompleteOrdersResponse?.incompleteOrders)
     const orders: OrderType[] = nodesOf(ordersResponse?.orders)
 
-    return { fetchIncompleteOrders, incompleteOrders, refetchIncompleteOrders, fetchOrder, orders, isLoading, error, refetchOrder, createNewOrder, isCreating, updateExistingOrder, isUpdating, createPayment, isCreatingPayment, cancelExistingOrder, isCancelling }
+    return { fetchIncompleteOrders, incompleteOrders, refetchIncompleteOrders, fetchOrder, orders, isLoading, error, refetchOrder, createNewOrder, isCreating, updateExistingOrder, isUpdating, createPayment, isCreatingPayment, cancelExistingOrder, isCancelling, fetchPaymentCustomer, waitForOrderCompletion }
 }
 
 export default useOrder

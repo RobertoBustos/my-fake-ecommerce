@@ -1,4 +1,10 @@
-import { PropsWithChildren, createContext, useContext, useEffect } from "react";
+import {
+  PropsWithChildren,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { Alert } from "react-native";
 import OrderNotAllowedScreen from "../components/OrderNotAllowedScreen";
 import LoadingScreen from "../components/common/LoadingScreen";
@@ -81,7 +87,10 @@ const OrderStore = ({
     isLoading,
     isUpdating,
     isCreatingPayment,
+    fetchPaymentCustomer,
+    waitForOrderCompletion,
   } = useOrder();
+  const [isPaying, setIsPaying] = useState<boolean>(false);
   const { confirmPayment, initPayment } = useStripeContext();
   const dispatch = useAppDispatch();
   const customerData = useAppSelector(selectCustomerData());
@@ -90,7 +99,8 @@ const OrderStore = ({
   const isAddressValid = useAppSelector(selectIsAddressDataValid());
   const orderData: OrderType | undefined =
     orders && orders.length && orders.length === 1 ? orders[0] : undefined;
-  const isProcessing = isUpdating || isLoading || isCreatingPayment;
+  const isProcessing =
+    isUpdating || isLoading || isCreatingPayment || isPaying;
   // The server moves the order to PAYMENT_PENDING once it has customer and address, only then it can be paid
   const isDisabled = orderData?.status !== Status.PAYMENT_PENDING;
 
@@ -249,38 +259,45 @@ const OrderStore = ({
       });
   };
 
-  const completeOrder = () => {
-    if (!orderData) return;
-    createPayment({ orderId: orderData.id })
-      .then((payment) => {
-        initPayment(orderData, payment.ephimeralKey, payment.clientSecret)
-          .then(() => {
-            confirmPayment()
-              .then(() => {
-                // The Stripe webhook marks the order as COMPLETE, the client never does.
-                // The cart of this order can not be ordered again
-                dispatch(renewCartId());
-                navigation.reset({
-                  index: 0,
-                  routes: [
-                    {
-                      name: "Confirmation",
-                      params: { orderId: orderData.id },
-                    },
-                  ],
-                });
-              })
-              .catch((error) => {
-                Alert.alert(getErrorMessage(error));
-              });
-          })
-          .catch((error) => {
-            Alert.alert(getErrorMessage(error));
-          });
-      })
-      .catch((error) => {
-        Alert.alert(getErrorMessage(error));
+  const completeOrder = async () => {
+    if (!orderData || orderData.customer === null) return;
+    setIsPaying(true);
+    try {
+      // A declined card leaves the order PAYMENT_PENDING, paying again reuses the same PaymentIntent
+      const payment = await createPayment({ orderId: orderData.id });
+      const stripeCustomerId = await fetchPaymentCustomer(orderData.id);
+      await initPayment(
+        orderData.customer,
+        stripeCustomerId,
+        payment.ephimeralKey,
+        payment.clientSecret
+      );
+      await confirmPayment();
+      // The Stripe webhook marks the order as COMPLETE, the client never does
+      const status = await waitForOrderCompletion(orderData.id);
+      if (status !== Status.COMPLETE) {
+        Alert.alert(
+          "Payment in process",
+          "We are still confirming your payment, your order will be completed in a moment"
+        );
+      }
+      // The cart of this order can not be ordered again
+      dispatch(renewCartId());
+      dispatch(setSelectedOrderId(undefined));
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: "Confirmation",
+            params: { orderId: orderData.id },
+          },
+        ],
       });
+    } catch (error) {
+      Alert.alert(getErrorMessage(error));
+    } finally {
+      setIsPaying(false);
+    }
   };
 
   const processCheckout = () => {

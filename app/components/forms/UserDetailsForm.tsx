@@ -5,6 +5,7 @@ import { Text, TextInput } from "react-native";
 import { useStyles } from "react-native-unistyles";
 import { ZodType, z } from "zod";
 import { UserType } from "../../constants/types";
+import { PHONE_PATTERN } from "../../constants/validation";
 import { useOrderContext } from "../../contexts/OrderContext";
 import { useAppDispatch } from "../../redux/hooks";
 import { setCustomerData } from "../../redux/order/reducer";
@@ -17,10 +18,9 @@ const validationSchema: ZodType<UserType> = z.object({
     .string()
     .min(4, { message: "Your name must contain from 4 up to 60 characters" })
     .max(60, { message: "Your name must contain from 4 up to 60 characters" }),
-  phone: z
-    .string()
-    .min(10, { message: "Your phone number must contain 10 digits" })
-    .max(10, { message: "Your phone number must contain 10 digits" }),
+  phone: z.string().regex(PHONE_PATTERN, {
+    message: "Your phone number must contain 10 to 15 digits, with an optional + at the start",
+  }),
 });
 
 const UserDetailsForm = () => {
@@ -119,8 +119,8 @@ const UserDetailsForm = () => {
         name="phone"
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
-            inputMode="numeric"
-            keyboardType="numeric"
+            inputMode="tel"
+            keyboardType="phone-pad"
             placeholder="PHONE NUMBER"
             onBlur={onBlur}
             onChangeText={(e) => {

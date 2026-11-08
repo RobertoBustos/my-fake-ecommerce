@@ -49,8 +49,9 @@ const IncompleteOrderCard = ({
       <Text
         style={styles.text}
         testID={`IncompleteOrderList.CardText`}
-      >{`Complete order number ${data.id} for $${formatCurrency(
-        data.totals.total
+      >{`Complete order number ${data.id} for ${formatCurrency(
+        data.totals.total,
+        data.totals.currency
       )}`}</Text>
     </CustomCard>
   );

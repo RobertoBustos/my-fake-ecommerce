@@ -65,7 +65,7 @@ export type OrderType = {
     payment: PaymentType | null
     cart: string
     totals: TotalsType
-    status: "INCOMPLETE" | "PAYMENT_PENDING" | "COMPLETE" | "CANCELLED"
+    status: Status
     details: CartItemType[]
 }
 
@@ -73,6 +73,7 @@ export type IncompleteOrderType = {
     id: string;
     status: Status
     totals: {
+        currency: string;
         total: number;
     };
     details: CartItemType[]
@@ -105,8 +106,8 @@ export type PaymentType = {
     amount: number
     status: string
     customer: string
-    payment_method: string
-    paymentDetails: PaymentMethodType
+    payment_method: string | null
+    paymentDetails: PaymentMethodType | null
 }
 
 export type TotalsType = {

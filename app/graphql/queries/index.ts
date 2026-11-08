@@ -26,66 +26,72 @@ query GetProducts ($id: ID, $first: Int, $after: String){
   }
 }`;
 
+// Order.payment and paymentDetails call Stripe on every request: only ask for them on a single order
 export const GET_ORDERS = gql`
-query GetOrders($filter: Filter){
-  orders (filter: $filter){
-    id
-    cart
-    status
-    customer {
-      id
-      email
-      name
-      phone
-    }
-    address {
-      address
-      zipCode
-      coords {
-        latitude
-        longitude
-        latitudeDelta
-        longitudeDelta
-      }
-    }
-    totals {
-      currency
-      subTotal
-      taxes
-      discount
-      total
-      units
-      items
-    }
-    details {
-      id
-        productId
-        quantity
-        unitPrice
-        subtotal
-        product {
-          image
-          title
-          id
-        }
-    }
-    payment {
-      id
-      amount
-      status
-      customer
-      payment_method
-      paymentDetails {
+query GetOrders($id: ID){
+  orders (id: $id){
+    edges {
+      node {
         id
-        card {
-          brand
-          display_brand
-          exp_month
-          exp_year
-          fingerprint
-          last4
-          checks {
-            cvc_check
+        cart
+        status
+        customer {
+          id
+          email
+          name
+          phone
+        }
+        address {
+          address
+          zipCode
+          coords {
+            latitude
+            longitude
+            latitudeDelta
+            longitudeDelta
+          }
+        }
+        totals {
+          currency
+          subTotal
+          taxes
+          discount
+          total
+          units
+          items
+        }
+        details {
+          id
+          productId
+          quantity
+          unitPrice
+          subtotal
+          currency
+          product {
+            image
+            title
+            id
+          }
+        }
+        payment {
+          id
+          amount
+          status
+          customer
+          payment_method
+          paymentDetails {
+            id
+            card {
+              brand
+              display_brand
+              exp_month
+              exp_year
+              fingerprint
+              last4
+              checks {
+                cvc_check
+              }
+            }
           }
         }
       }
@@ -94,24 +100,30 @@ query GetOrders($filter: Filter){
 }`;
 
 export const GET_INCOMPLETE_ORDERS = gql`
-query GetIncompleteOrders ($filter: Filter) {
-   incompleteOrders (filter: $filter) {
-    id
-    status
-    totals {
-      total
-    }
-    details {
-      id
-        productId
-        quantity
-        unitPrice
-        subtotal
-        product {
-          image
-          title
-          id
+query GetIncompleteOrders ($cart: String) {
+  incompleteOrders (cart: $cart) {
+    edges {
+      node {
+        id
+        status
+        totals {
+          currency
+          total
         }
+        details {
+          id
+          productId
+          quantity
+          unitPrice
+          subtotal
+          currency
+          product {
+            image
+            title
+            id
+          }
+        }
+      }
     }
   }
 }`;

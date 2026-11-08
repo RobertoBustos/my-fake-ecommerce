@@ -21,22 +21,22 @@ const OrderSummary = ({ data, isLoading }: OrderSummaryPropsType) => {
     >
       <SummaryCardRow
         concept={`${data.items} items`}
-        value={formatCurrency(data.subTotal)}
+        value={formatCurrency(data.subTotal, data.currency)}
         testID="OrderSummary.SubTotal"
       />
       <SummaryCardRow
         concept={`Taxes`}
-        value={formatCurrency(data.taxes)}
+        value={formatCurrency(data.taxes, data.currency)}
         testID="OrderSummary.Taxes"
       />
       <SummaryCardRow
         concept={`Discount`}
-        value={formatCurrency(data.discount)}
+        value={formatCurrency(data.discount, data.currency)}
         testID="OrderSummary.Discount"
       />
       <SummaryCardRow
         concept={`Total`}
-        value={formatCurrency(data.total)}
+        value={formatCurrency(data.total, data.currency)}
         testID="OrderSummary.Total"
       />
     </CustomCard>

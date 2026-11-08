@@ -2,7 +2,7 @@ import { PropsWithChildren, createContext, useContext, useEffect } from "react";
 import { Alert } from "react-native";
 import OrderNotAllowedScreen from "../components/OrderNotAllowedScreen";
 import LoadingScreen from "../components/common/LoadingScreen";
-import { OrderType } from "../constants/types";
+import { OrderType, Status } from "../constants/types";
 import useAppNavigation from "../hooks/useAppNavigation";
 import useOrder from "../hooks/useOrder";
 import { renewCartId, resetCart, setCartFromOrder } from "../redux/cart/reducer";
@@ -38,6 +38,7 @@ export type OrderContextType = {
   isCustomerValid: boolean;
   editCustomerRedirect: () => void;
   editAddressRedirect: () => void;
+  isDisabled: boolean;
 };
 
 const OrderContext = createContext<OrderContextType>({
@@ -56,6 +57,7 @@ const OrderContext = createContext<OrderContextType>({
   isCustomerValid: false,
   editCustomerRedirect: () => {},
   editAddressRedirect: () => {},
+  isDisabled: true,
 });
 
 export type OrderStoreContextType = PropsWithChildren & {
@@ -89,6 +91,8 @@ const OrderStore = ({
   const orderData: OrderType | undefined =
     orders && orders.length && orders.length === 1 ? orders[0] : undefined;
   const isProcessing = isUpdating || isLoading || isCreatingPayment;
+  // The server moves the order to PAYMENT_PENDING once it has customer and address, only then it can be paid
+  const isDisabled = orderData?.status !== Status.PAYMENT_PENDING;
 
   useEffect(() => {
     fetchOrder(orderId);
@@ -129,7 +133,8 @@ const OrderStore = ({
     if (orderData?.status === "COMPLETE") return "Return to Home";
     if (orderData?.status === "PAYMENT_PENDING")
       return `Complete Your Payment for ${formatCurrency(
-        orderData.totals.total
+        orderData.totals.total,
+        orderData.totals.currency
       )}`;
     return "Continue";
   };
@@ -170,22 +175,13 @@ const OrderStore = ({
     ]);
   };
 
+  // The order keeps its status, products are added to it with addToCart (orderId)
   const setOrderForEdition = () => {
     if (!orderData) return;
-    updateExistingOrder({
-      id: orderData.id,
-      customer: null,
-      address: null,
-      status: "INCOMPLETE",
-    })
-      .then((order) => {
-        if (order.details.length > 0) {
-          dispatch(setCartFromOrder(order.details));
-        }
-        navigation.navigate("Products");
-        return;
-      })
-      .catch((error) => Alert.alert(getErrorMessage(error)));
+    if (orderData.details.length > 0) {
+      dispatch(setCartFromOrder(orderData.details));
+    }
+    navigation.navigate("Products");
   };
 
   const returnOrderToCart = () => {
@@ -207,13 +203,16 @@ const OrderStore = ({
     if (!orderData || !addressData.coords) return;
     updateExistingOrder({
       id: orderData.id,
-      customer: null,
       address: {
         address: addressData.address,
         zipCode: addressData.zipCode,
-        coords: addressData.coords,
+        coords: {
+          latitude: addressData.coords.latitude,
+          longitude: addressData.coords.longitude,
+          latitudeDelta: addressData.coords.latitudeDelta,
+          longitudeDelta: addressData.coords.longitudeDelta,
+        },
       },
-      status: null,
     })
       .then((order) => {
         if (forceGoBack && forceGoBack === true) {
@@ -235,8 +234,6 @@ const OrderStore = ({
         name: customerData.name,
         phone: customerData.phone,
       },
-      address: null,
-      status: null,
     })
       .then((order) => {
         if (forceGoBack && forceGoBack === true) {
@@ -260,28 +257,18 @@ const OrderStore = ({
           .then(() => {
             confirmPayment()
               .then(() => {
-                updateExistingOrder({
-                  id: orderData.id,
-                  customer: null,
-                  address: null,
-                  status: "COMPLETE",
-                })
-                  .then((order) => {
-                    // The cart of this order can not be ordered again
-                    dispatch(renewCartId());
-                    navigation.reset({
-                      index: 0,
-                      routes: [
-                        {
-                          name: "Confirmation",
-                          params: { orderId: order.id },
-                        },
-                      ],
-                    });
-                  })
-                  .catch((error) => {
-                    Alert.alert(getErrorMessage(error));
-                  });
+                // The Stripe webhook marks the order as COMPLETE, the client never does.
+                // The cart of this order can not be ordered again
+                dispatch(renewCartId());
+                navigation.reset({
+                  index: 0,
+                  routes: [
+                    {
+                      name: "Confirmation",
+                      params: { orderId: orderData.id },
+                    },
+                  ],
+                });
               })
               .catch((error) => {
                 Alert.alert(getErrorMessage(error));
@@ -349,6 +336,7 @@ const OrderStore = ({
         returnFromConfirmation,
         footerText: getFooterText(),
         isProcessing,
+        isDisabled,
         updateOrderAddress,
         isAddressValid,
         updateOrderCustomer,

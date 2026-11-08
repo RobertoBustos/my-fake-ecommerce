@@ -2,7 +2,7 @@ import { PaymentMethodType } from "../constants/types";
 import CardPaymentSummary from "./CardPaymentSummary";
 
 export type PaymentSummaryPropsType = {
-  data: PaymentMethodType;
+  data: PaymentMethodType | null;
 };
 
 const PaymentSummary = ({ data }: PaymentSummaryPropsType) => {

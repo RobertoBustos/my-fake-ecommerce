@@ -99,6 +99,35 @@ query GetOrders($id: ID){
   }
 }`;
 
+// Light query to follow the order status while the Stripe webhook completes it
+export const GET_ORDER_STATUS = gql`
+query GetOrderStatus($id: ID){
+  orders (id: $id){
+    edges {
+      node {
+        id
+        status
+      }
+    }
+  }
+}`;
+
+// Stripe customer of the order, needed by the Payment Sheet to show the saved cards
+export const GET_ORDER_PAYMENT_CUSTOMER = gql`
+query GetOrderPaymentCustomer($id: ID){
+  orders (id: $id){
+    edges {
+      node {
+        id
+        payment {
+          id
+          customer
+        }
+      }
+    }
+  }
+}`;
+
 export const GET_INCOMPLETE_ORDERS = gql`
 query GetIncompleteOrders ($cart: String) {
   incompleteOrders (cart: $cart) {

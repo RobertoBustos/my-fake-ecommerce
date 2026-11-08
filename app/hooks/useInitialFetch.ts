@@ -10,22 +10,22 @@ SplashScreen.setOptions({
     fade: true,
 });
 
-// The API needs a user, so the cart is loaded once the session exists
+// The cart belongs to the signed in user, so it is loaded once the user is known
 const useInitialFetch = (userId: string | undefined) => {
     const dispatch = useAppDispatch();
     const { fetchCart } = useCart();
 
     useEffect(() => {
         if (!userId) return
-        dispatch(setCartId())
+        dispatch(setCartId(userId))
             .unwrap()
-            .then((cartId) => {
-                fetchCart(cartId).then((data) => {
-                    SplashScreen.hide();
-                    if (data.data.carts.length === 0) return;
-                    dispatch(setCartFromOrder(data.data.carts));
-                });
-            });
+            .then((cartId) => fetchCart(cartId))
+            .then((items) => {
+                if (items.length === 0) return;
+                dispatch(setCartFromOrder(items));
+            })
+            .catch((error) => console.error(error))
+            .finally(() => SplashScreen.hide());
 
         return () => { };
     }, [dispatch, fetchCart, userId]);

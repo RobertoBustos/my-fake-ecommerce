@@ -1,5 +1,6 @@
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { useCallback } from "react";
+import { CartItemType, ConnectionType, nodesOf } from "../constants/types";
 import { ADD_PRODUCT, REMOVE_PRODUCT } from "../graphql/mutations";
 import { GET_CART } from "../graphql/queries";
 
@@ -16,12 +17,14 @@ export type RemoveFromCartInput = {
 }
 
 const useCart = () => {
-    const [getCart, { loading: isLoading, refetch: reloadCart }] = useLazyQuery(GET_CART, { fetchPolicy: "no-cache" })
+    const [getCart, { loading: isLoading, refetch: reloadCart }] = useLazyQuery<{ carts: ConnectionType<CartItemType> }>(GET_CART, { fetchPolicy: "no-cache" })
     const [addToCart, { loading: isAdding }] = useMutation(ADD_PRODUCT);
     const [removeFromCart, { loading: isRemoving }] = useMutation(REMOVE_PRODUCT);
 
-    const fetchCart = useCallback(async (id: string, pollInterval: number = 0) => {
-        return getCart({ variables: { filter: { field: "cartId", value: id } }, pollInterval })
+    // Items of the cart that are not in an order yet
+    const fetchCart = useCallback(async (id: string, pollInterval: number = 0): Promise<CartItemType[]> => {
+        const response = await getCart({ variables: { cartId: id, first: 100 }, pollInterval })
+        return nodesOf(response.data?.carts)
     }, [getCart])
 
     const addProduct = useCallback(async (input: AddToCartInputType) => {
@@ -31,7 +34,7 @@ const useCart = () => {
                     input: input,
                 }
             })
-            return response.data.addToCart.data
+            return response.data.addToCart.data as CartItemType
         } catch (error) {
             throw error as Error
         }

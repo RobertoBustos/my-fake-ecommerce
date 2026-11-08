@@ -117,17 +117,22 @@ query GetIncompleteOrders ($filter: Filter) {
 }`;
 
 export const GET_CART = gql`
-query GetCart($filter: Filter) {
-  carts (filter: $filter){
-    id
-    productId
-    quantity
-    unitPrice
-    subtotal
-    product {
-      image
-      title
-      id
+query GetCart($cartId: String, $first: Int) {
+  carts (cartId: $cartId, first: $first){
+    edges {
+      node {
+        id
+        productId
+        quantity
+        unitPrice
+        subtotal
+        currency
+        product {
+          image
+          title
+          id
+        }
+      }
     }
   }
 }`

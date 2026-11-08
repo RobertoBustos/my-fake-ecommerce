@@ -39,6 +39,7 @@ export const CREATE_ORDER = gql`
     message
     data {
       id
+      status
     }
   }
 }`;
@@ -80,35 +81,15 @@ mutation UpdateOrder($input: UpdateOrder!){
       }
       details {
         id
-          productId
-          quantity
-          unitPrice
-          subtotal
-          product {
-            image
-            title
-            id
-          }
-      }
-      payment {
-        id
-        amount
-        status
-        customer
-        payment_method
-        paymentDetails {
+        productId
+        quantity
+        unitPrice
+        subtotal
+        currency
+        product {
+          image
+          title
           id
-          card {
-            brand
-            display_brand
-            exp_month
-            exp_year
-            fingerprint
-            last4
-            checks {
-              cvc_check
-            }
-          }
         }
       }
     }

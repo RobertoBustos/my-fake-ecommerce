@@ -1,4 +1,4 @@
-import Geolocation, { GeolocationError } from "@react-native-community/geolocation";
+import Geolocation, { GeolocationResponse } from "@react-native-community/geolocation";
 import { useCallback } from "react";
 import { Alert } from "react-native";
 import { GooglePlaceDetail } from "react-native-google-places-autocomplete";
@@ -31,7 +31,7 @@ const useLocation = () => {
         });
     }, [])
 
-    const getCurrentLocation = useCallback(async (): Promise<GeolocationPosition | GeolocationError> => {
+    const getCurrentLocation = useCallback(async (): Promise<GeolocationResponse> => {
         return new Promise((resolve, reject) => {
             Geolocation.getCurrentPosition(async (info) => {
                 resolve(info)
@@ -41,10 +41,8 @@ const useLocation = () => {
 
     const getFormatedAddress = useCallback(async () => {
         try {
+            // A location error rejects, so it ends in the catch below
             const location = await getCurrentLocation()
-            if ("message" in location) {
-                return
-            }
             const address = await getAddressFromLocation(location.coords)
             if ("message" in address) {
                 return

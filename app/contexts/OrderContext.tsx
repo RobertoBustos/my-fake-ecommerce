@@ -10,8 +10,13 @@ import OrderNotAllowedScreen from "../components/OrderNotAllowedScreen";
 import LoadingScreen from "../components/common/LoadingScreen";
 import { OrderType, Status } from "../constants/types";
 import useAppNavigation from "../hooks/useAppNavigation";
-import useOrder from "../hooks/useOrder";
-import { renewCartId, resetCart, setCartFromOrder } from "../redux/cart/reducer";
+import useCart from "../hooks/useCart";
+import useOrder, { PaymentCreated } from "../hooks/useOrder";
+import {
+  renewCartId,
+  resetCart,
+  setCartFromOrder,
+} from "../redux/cart/reducer";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {
   setAddressData,
@@ -24,9 +29,14 @@ import {
   selectIsAddressDataValid,
   selectIsCustomerDataValid,
 } from "../redux/order/selectors";
+import {
+  ApiErrorCode,
+  getErrorCode,
+  getErrorExtensions,
+  getErrorMessage,
+} from "../utils/apiErrors";
 import { formatCurrency } from "../utils/formatCurrency";
 import { useStripeContext } from "./StripeContext";
-import { getErrorMessage } from "../utils/apiErrors";
 
 export type OrderContextType = {
   orderData: OrderType | undefined;
@@ -66,6 +76,9 @@ const OrderContext = createContext<OrderContextType>({
   isDisabled: true,
 });
 
+// Attempts of createOrderPayment while recovering from expired reservations
+const MAX_PAYMENT_ATTEMPTS = 3;
+
 export type OrderStoreContextType = PropsWithChildren & {
   orderId: string;
   forceGoBack?: boolean;
@@ -87,9 +100,11 @@ const OrderStore = ({
     isLoading,
     isUpdating,
     isCreatingPayment,
+    fetchOrderDetails,
     fetchPaymentCustomer,
     waitForOrderCompletion,
   } = useOrder();
+  const { addProduct, removeProduct } = useCart();
   const [isPaying, setIsPaying] = useState<boolean>(false);
   const { confirmPayment, initPayment } = useStripeContext();
   const dispatch = useAppDispatch();
@@ -259,12 +274,98 @@ const OrderStore = ({
       });
   };
 
+  // Reserves again the items whose 60 minutes reservation expired
+  const reserveExpiredItems = async (order: OrderType, itemIds: string[]) => {
+    const details = await fetchOrderDetails(order.id);
+    for (const item of details.filter((detail) => itemIds.includes(detail.id))) {
+      await removeProduct({ id: item.id });
+      await addProduct({
+        cartId: order.cart,
+        orderId: order.id,
+        productId: item.productId,
+        quantity: item.quantity,
+      });
+    }
+  };
+
+  const removeUnavailableProducts = async (
+    order: OrderType,
+    productIds: string[]
+  ) => {
+    const details = await fetchOrderDetails(order.id);
+    for (const item of details.filter((detail) =>
+      productIds.includes(detail.productId)
+    )) {
+      await removeProduct({ id: item.id });
+    }
+  };
+
+  const reloadOrderForReview = async () => {
+    const response = await refetchOrder();
+    const order = response.data?.orders.edges[0]?.node;
+    if (order) {
+      dispatch(setCartFromOrder(order.details));
+    }
+    return order;
+  };
+
+  // createOrderPayment can refuse to charge (BAD_USER_INPUT) without charging anything.
+  // Returns undefined when the user has to review the order before paying again
+  const requestPayment = async (
+    order: OrderType,
+    attempt: number = 1
+  ): Promise<PaymentCreated | undefined> => {
+    try {
+      return await createPayment({ orderId: order.id });
+    } catch (error) {
+      if (getErrorCode(error) !== ApiErrorCode.BAD_USER_INPUT) throw error;
+      const { priceChanges, expiredItemIds, unavailableProductIds } =
+        getErrorExtensions(error);
+      if (expiredItemIds?.length && attempt < MAX_PAYMENT_ATTEMPTS) {
+        await reserveExpiredItems(order, expiredItemIds);
+        return requestPayment(order, attempt + 1);
+      }
+      if (expiredItemIds?.length) {
+        await reloadOrderForReview();
+        Alert.alert(
+          "We could not reserve your products",
+          "Please try to pay again in a moment"
+        );
+        return undefined;
+      }
+      if (unavailableProductIds?.length) {
+        await removeUnavailableProducts(order, unavailableProductIds);
+        await reloadOrderForReview();
+        Alert.alert(
+          "Some products are no longer available",
+          "They were removed from your order, please review it and pay again"
+        );
+        return undefined;
+      }
+      if (priceChanges?.length) {
+        // The order already has the new prices
+        const updatedOrder = await reloadOrderForReview();
+        Alert.alert(
+          "Prices changed",
+          updatedOrder
+            ? `Your new total is ${formatCurrency(
+                updatedOrder.totals.total,
+                updatedOrder.totals.currency
+              )}, review it and pay again`
+            : "Review the new total and pay again"
+        );
+        return undefined;
+      }
+      throw error;
+    }
+  };
+
   const completeOrder = async () => {
     if (!orderData || orderData.customer === null) return;
     setIsPaying(true);
     try {
-      // A declined card leaves the order PAYMENT_PENDING, paying again reuses the same PaymentIntent
-      const payment = await createPayment({ orderId: orderData.id });
+      const payment = await requestPayment(orderData);
+      if (!payment) return;
       const stripeCustomerId = await fetchPaymentCustomer(orderData.id);
       await initPayment(
         orderData.customer,

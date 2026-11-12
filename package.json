@@ -13,7 +13,9 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "e2e": "set -a && . ./.maestro/.env.e2e && set +a && maestro test .maestro --debug-output .maestro/results",
+    "e2e:smoke": "set -a && . ./.maestro/.env.e2e && set +a && maestro test .maestro --debug-output .maestro/results --include-tags smoke"
   },
   "jest": {
     "preset": "jest-expo"

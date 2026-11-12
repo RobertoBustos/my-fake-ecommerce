@@ -1,0 +1,4 @@
+# Maestro workspace: `maestro test .maestro` runs every flow in flows/.
+# Subflows are only run from flows, through runFlow.
+flows:
+  - "flows/*"

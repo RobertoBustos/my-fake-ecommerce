@@ -17,7 +17,7 @@ const ShoppingCartHeaderIcon = ({
   const { length } = useAppSelector(selectCartItems);
 
   return (
-    <Pressable onPress={onPress}>
+    <Pressable onPress={onPress} testID="ShoppingCartHeaderIcon.Button">
       <View style={styles.container}>
         <FontAwesome
           name="shopping-cart"
@@ -26,7 +26,12 @@ const ShoppingCartHeaderIcon = ({
         />
         {length > 0 ? (
           <View style={styles.notificationContainer}>
-            <Text style={styles.notificationText}>{length}</Text>
+            <Text
+              style={styles.notificationText}
+              testID="ShoppingCartHeaderIcon.Count"
+            >
+              {length}
+            </Text>
           </View>
         ) : null}
       </View>

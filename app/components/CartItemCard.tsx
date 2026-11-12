@@ -42,9 +42,24 @@ const CartItemCard = ({ data, disabled }: CartItemCardPropsType) => {
         style={styles.description}
         testID={`CartItemCard.CardDescription-${data.productId}`}
       >
-        <Text style={styles.title}>{data.product.title}</Text>
-        <Text style={styles.price}>{getPriceText}</Text>
-        <Text style={styles.subtotal}>{formatCurrency(data.subtotal, data.currency)}</Text>
+        <Text
+          style={styles.title}
+          testID={`CartItemCard.Title-${data.productId}`}
+        >
+          {data.product.title}
+        </Text>
+        <Text
+          style={styles.price}
+          testID={`CartItemCard.Price-${data.productId}`}
+        >
+          {getPriceText}
+        </Text>
+        <Text
+          style={styles.subtotal}
+          testID={`CartItemCard.Subtotal-${data.productId}`}
+        >
+          {formatCurrency(data.subtotal, data.currency)}
+        </Text>
       </View>
       <CustomImage
         imageUrl={data.product.image}

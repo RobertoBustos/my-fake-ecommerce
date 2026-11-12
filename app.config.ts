@@ -57,6 +57,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     "expo-router",
     "./plugins/withIosMinimumDeploymentTarget",
+    "./plugins/withFmtCxx17",
     [
       "expo-splash-screen",
       {

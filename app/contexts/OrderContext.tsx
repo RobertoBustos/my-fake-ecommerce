@@ -1,11 +1,22 @@
-import { PropsWithChildren, createContext, useContext, useEffect } from "react";
+import {
+  PropsWithChildren,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { Alert } from "react-native";
 import OrderNotAllowedScreen from "../components/OrderNotAllowedScreen";
 import LoadingScreen from "../components/common/LoadingScreen";
-import { OrderType } from "../constants/types";
+import { OrderType, Status } from "../constants/types";
 import useAppNavigation from "../hooks/useAppNavigation";
-import useOrder from "../hooks/useOrder";
-import { resetCart, setCartFromOrder } from "../redux/cart/reducer";
+import useCart from "../hooks/useCart";
+import useOrder, { PaymentCreated } from "../hooks/useOrder";
+import {
+  renewCartId,
+  resetCart,
+  setCartFromOrder,
+} from "../redux/cart/reducer";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {
   setAddressData,
@@ -18,6 +29,12 @@ import {
   selectIsAddressDataValid,
   selectIsCustomerDataValid,
 } from "../redux/order/selectors";
+import {
+  ApiErrorCode,
+  getErrorCode,
+  getErrorExtensions,
+  getErrorMessage,
+} from "../utils/apiErrors";
 import { formatCurrency } from "../utils/formatCurrency";
 import { useStripeContext } from "./StripeContext";
 
@@ -37,6 +54,7 @@ export type OrderContextType = {
   isCustomerValid: boolean;
   editCustomerRedirect: () => void;
   editAddressRedirect: () => void;
+  isDisabled: boolean;
 };
 
 const OrderContext = createContext<OrderContextType>({
@@ -55,7 +73,11 @@ const OrderContext = createContext<OrderContextType>({
   isCustomerValid: false,
   editCustomerRedirect: () => {},
   editAddressRedirect: () => {},
+  isDisabled: true,
 });
+
+// Attempts of createOrderPayment while recovering from expired reservations
+const MAX_PAYMENT_ATTEMPTS = 3;
 
 export type OrderStoreContextType = PropsWithChildren & {
   orderId: string;
@@ -78,7 +100,12 @@ const OrderStore = ({
     isLoading,
     isUpdating,
     isCreatingPayment,
+    fetchOrderDetails,
+    fetchPaymentCustomer,
+    waitForOrderCompletion,
   } = useOrder();
+  const { addProduct, removeProduct } = useCart();
+  const [isPaying, setIsPaying] = useState<boolean>(false);
   const { confirmPayment, initPayment } = useStripeContext();
   const dispatch = useAppDispatch();
   const customerData = useAppSelector(selectCustomerData());
@@ -87,7 +114,10 @@ const OrderStore = ({
   const isAddressValid = useAppSelector(selectIsAddressDataValid());
   const orderData: OrderType | undefined =
     orders && orders.length && orders.length === 1 ? orders[0] : undefined;
-  const isProcessing = isUpdating || isLoading || isCreatingPayment;
+  const isProcessing =
+    isUpdating || isLoading || isCreatingPayment || isPaying;
+  // The server moves the order to PAYMENT_PENDING once it has customer and address, only then it can be paid
+  const isDisabled = orderData?.status !== Status.PAYMENT_PENDING;
 
   useEffect(() => {
     fetchOrder(orderId);
@@ -128,7 +158,8 @@ const OrderStore = ({
     if (orderData?.status === "COMPLETE") return "Return to Home";
     if (orderData?.status === "PAYMENT_PENDING")
       return `Complete Your Payment for ${formatCurrency(
-        orderData.totals.total
+        orderData.totals.total,
+        orderData.totals.currency
       )}`;
     return "Continue";
   };
@@ -142,7 +173,8 @@ const OrderStore = ({
     if (!orderData) return;
     cancelExistingOrder({ id: orderData.id })
       .then(() => {
-        dispatch(resetCart());
+        // The cart of a cancelled order can not be ordered again
+        dispatch(renewCartId());
         dispatch(setSelectedOrderId(undefined));
         navigation.reset({
           index: 0,
@@ -150,7 +182,7 @@ const OrderStore = ({
         });
         return;
       })
-      .catch((error) => Alert.alert(error));
+      .catch((error) => Alert.alert(getErrorMessage(error)));
   };
 
   const cancelOrder = () => {
@@ -168,22 +200,13 @@ const OrderStore = ({
     ]);
   };
 
+  // The order keeps its status, products are added to it with addToCart (orderId)
   const setOrderForEdition = () => {
     if (!orderData) return;
-    updateExistingOrder({
-      id: orderData.id,
-      customer: null,
-      address: null,
-      status: "INCOMPLETE",
-    })
-      .then(() => {
-        if (orderData.details.length > 0) {
-          dispatch(setCartFromOrder(orderData.details));
-        }
-        navigation.navigate("Products");
-        return;
-      })
-      .catch((error) => Alert.alert(error));
+    if (orderData.details.length > 0) {
+      dispatch(setCartFromOrder(orderData.details));
+    }
+    navigation.navigate("Products");
   };
 
   const returnOrderToCart = () => {
@@ -205,24 +228,25 @@ const OrderStore = ({
     if (!orderData || !addressData.coords) return;
     updateExistingOrder({
       id: orderData.id,
-      customer: null,
       address: {
         address: addressData.address,
         zipCode: addressData.zipCode,
-        coords: addressData.coords,
+        coords: {
+          latitude: addressData.coords.latitude,
+          longitude: addressData.coords.longitude,
+          latitudeDelta: addressData.coords.latitudeDelta,
+          longitudeDelta: addressData.coords.longitudeDelta,
+        },
       },
-      status: null,
     })
-      .then((data) => {
-        refetchOrder();
+      .then((order) => {
         if (forceGoBack && forceGoBack === true) {
           return navigation.goBack();
         }
-        navigation.navigate("Checkout", { orderId: orderData.id });
-        return;
+        return navigation.navigate("Checkout", { orderId: order.id });
       })
       .catch((error) => {
-        Alert.alert(error.message);
+        Alert.alert(getErrorMessage(error));
       });
   };
 
@@ -235,55 +259,146 @@ const OrderStore = ({
         name: customerData.name,
         phone: customerData.phone,
       },
-      address: null,
-      status: null,
     })
-      .then((data) => {
-        refetchOrder();
+      .then((order) => {
         if (forceGoBack && forceGoBack === true) {
           return navigation.goBack();
         }
-        navigation.navigate("Address", { orderId: orderData.id });
-        return;
+        if (order.status === "PAYMENT_PENDING") {
+          return navigation.navigate("Checkout", { orderId: order.id });
+        }
+        return navigation.navigate("Address", { orderId: order.id });
       })
       .catch((error) => {
-        Alert.alert(error.message);
+        Alert.alert(getErrorMessage(error));
       });
   };
 
-  const completeOrder = () => {
-    if (!orderData) return;
-    createPayment({ orderId: orderData.id })
-      .then((response) => {
-        initPayment(orderData, response.ephimeralKey, response.clientSecret)
-          .then(() => {
-            confirmPayment()
-              .then((response) => {
-                updateExistingOrder({
-                  id: orderData.id,
-                  customer: null,
-                  address: null,
-                  status: "COMPLETE",
-                })
-                  .then((response) => {
-                    refetchOrder();
-                    navigation.reset({
-                      index: 0,
-                      routes: [
-                        {
-                          name: "Confirmation",
-                          params: { orderId: orderData.id },
-                        },
-                      ],
-                    });
-                  })
-                  .catch((error) => Alert.alert(error));
-              })
-              .catch((error) => Alert.alert(error));
-          })
-          .catch((error) => Alert.alert(error));
-      })
-      .catch((error) => Alert.alert(error));
+  // Reserves again the items whose 60 minutes reservation expired
+  const reserveExpiredItems = async (order: OrderType, itemIds: string[]) => {
+    const details = await fetchOrderDetails(order.id);
+    for (const item of details.filter((detail) => itemIds.includes(detail.id))) {
+      await removeProduct({ id: item.id });
+      await addProduct({
+        cartId: order.cart,
+        orderId: order.id,
+        productId: item.productId,
+        quantity: item.quantity,
+      });
+    }
+  };
+
+  const removeUnavailableProducts = async (
+    order: OrderType,
+    productIds: string[]
+  ) => {
+    const details = await fetchOrderDetails(order.id);
+    for (const item of details.filter((detail) =>
+      productIds.includes(detail.productId)
+    )) {
+      await removeProduct({ id: item.id });
+    }
+  };
+
+  const reloadOrderForReview = async () => {
+    const response = await refetchOrder();
+    const order = response.data?.orders.edges[0]?.node;
+    if (order) {
+      dispatch(setCartFromOrder(order.details));
+    }
+    return order;
+  };
+
+  // createOrderPayment can refuse to charge (BAD_USER_INPUT) without charging anything.
+  // Returns undefined when the user has to review the order before paying again
+  const requestPayment = async (
+    order: OrderType,
+    attempt: number = 1
+  ): Promise<PaymentCreated | undefined> => {
+    try {
+      return await createPayment({ orderId: order.id });
+    } catch (error) {
+      if (getErrorCode(error) !== ApiErrorCode.BAD_USER_INPUT) throw error;
+      const { priceChanges, expiredItemIds, unavailableProductIds } =
+        getErrorExtensions(error);
+      if (expiredItemIds?.length && attempt < MAX_PAYMENT_ATTEMPTS) {
+        await reserveExpiredItems(order, expiredItemIds);
+        return requestPayment(order, attempt + 1);
+      }
+      if (expiredItemIds?.length) {
+        await reloadOrderForReview();
+        Alert.alert(
+          "We could not reserve your products",
+          "Please try to pay again in a moment"
+        );
+        return undefined;
+      }
+      if (unavailableProductIds?.length) {
+        await removeUnavailableProducts(order, unavailableProductIds);
+        await reloadOrderForReview();
+        Alert.alert(
+          "Some products are no longer available",
+          "They were removed from your order, please review it and pay again"
+        );
+        return undefined;
+      }
+      if (priceChanges?.length) {
+        // The order already has the new prices
+        const updatedOrder = await reloadOrderForReview();
+        Alert.alert(
+          "Prices changed",
+          updatedOrder
+            ? `Your new total is ${formatCurrency(
+                updatedOrder.totals.total,
+                updatedOrder.totals.currency
+              )}, review it and pay again`
+            : "Review the new total and pay again"
+        );
+        return undefined;
+      }
+      throw error;
+    }
+  };
+
+  const completeOrder = async () => {
+    if (!orderData || orderData.customer === null) return;
+    setIsPaying(true);
+    try {
+      const payment = await requestPayment(orderData);
+      if (!payment) return;
+      const stripeCustomerId = await fetchPaymentCustomer(orderData.id);
+      await initPayment(
+        orderData.customer,
+        stripeCustomerId,
+        payment.ephimeralKey,
+        payment.clientSecret
+      );
+      await confirmPayment();
+      // The Stripe webhook marks the order as COMPLETE, the client never does
+      const status = await waitForOrderCompletion(orderData.id);
+      if (status !== Status.COMPLETE) {
+        Alert.alert(
+          "Payment in process",
+          "We are still confirming your payment, your order will be completed in a moment"
+        );
+      }
+      // The cart of this order can not be ordered again
+      dispatch(renewCartId());
+      dispatch(setSelectedOrderId(undefined));
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: "Confirmation",
+            params: { orderId: orderData.id },
+          },
+        ],
+      });
+    } catch (error) {
+      Alert.alert(getErrorMessage(error));
+    } finally {
+      setIsPaying(false);
+    }
   };
 
   const processCheckout = () => {
@@ -339,6 +454,7 @@ const OrderStore = ({
         returnFromConfirmation,
         footerText: getFooterText(),
         isProcessing,
+        isDisabled,
         updateOrderAddress,
         isAddressValid,
         updateOrderCustomer,

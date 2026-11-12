@@ -71,13 +71,13 @@ export const OrderConfirmationItem = ({
         style={styles.text}
         testID={`OrderConfirmationItem._UnitPrice-${data.id}`}
       >
-        {formatCurrency(data.unitPrice)}
+        {formatCurrency(data.unitPrice, data.currency)}
       </Text>
       <Text
         style={styles.subtotal}
         testID={`OrderConfirmationItem.SubTotal-${data.id}`}
       >
-        {formatCurrency(data.subtotal)}
+        {formatCurrency(data.subtotal, data.currency)}
       </Text>
     </View>
   );

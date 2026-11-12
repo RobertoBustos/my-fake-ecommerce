@@ -14,7 +14,7 @@ const EmptyImage = ({ width, height }: EmptyImagePropsType) => {
     <View style={{ width, height }}>
       <LoadingSpinner
         size={"small"}
-        color={theme.colors.typography}
+        color={theme.colors.primary}
         testID="LoadingScreen.Loader"
       />
     </View>

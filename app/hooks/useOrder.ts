@@ -1,18 +1,20 @@
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useApolloClient, useLazyQuery, useMutation } from "@apollo/client";
 import { useCallback } from "react";
-import { AddressType, IncompleteOrderType, OrderType, UserType } from "../constants/types";
+import { PAYMENT_POLL_INTERVAL_MS, PAYMENT_POLL_TIMEOUT_MS } from "../constants/config";
+import { AddressType, CartItemType, ConnectionType, IncompleteOrderType, OrderType, Status, UserType, nodesOf } from "../constants/types";
 import { CANCEL_ORDER, CREATE_ORDER, CREATE_ORDER_PAYMENT, UPDATE_ORDER } from "../graphql/mutations";
-import { GET_INCOMPLETE_ORDERS, GET_ORDERS } from "../graphql/queries";
+import { GET_INCOMPLETE_ORDERS, GET_ORDERS, GET_ORDER_PAYMENT_CUSTOMER, GET_ORDER_STATUS } from "../graphql/queries";
+import { UnsuccessfulMutationError } from "../utils/apiErrors";
 
 export type CreateOrderInput = {
     cartId: string
 }
 
+// The status is decided by the server: the order moves to PAYMENT_PENDING once it has customer and address
 export type UpdateOrderInput = {
     id: string
-    customer: UserType | null
-    address: AddressType | null
-    status: string | null
+    customer?: UserType
+    address?: AddressType
 }
 
 export type CreateOrderPaymentInput = {
@@ -29,21 +31,23 @@ export type PaymentCreated = {
     ephimeralKey: string
 }
 
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const useOrder = () => {
+    const client = useApolloClient();
     const [createOrder, { loading: isCreating, }] = useMutation(CREATE_ORDER);
     const [updateOrder, { loading: isUpdating, }] = useMutation(UPDATE_ORDER);
     const [cancelOrder, { loading: isCancelling, }] = useMutation(CANCEL_ORDER);
     const [createOrderPayment, { loading: isCreatingPayment, }] = useMutation(CREATE_ORDER_PAYMENT);
-    const [getOrders, { loading: isLoading, data: ordersResponse, error, refetch: refetchOrder }] = useLazyQuery(GET_ORDERS);
-    const [getIncompleteOrders, { data: incompleteOrdersResponse, refetch: refetchIncompleteOrders }] = useLazyQuery(GET_INCOMPLETE_ORDERS, { fetchPolicy: "no-cache" });
+    const [getOrders, { loading: isLoading, data: ordersResponse, error, refetch: refetchOrder }] = useLazyQuery<{ orders: ConnectionType<OrderType> }>(GET_ORDERS, { fetchPolicy: "no-cache" });
+    const [getIncompleteOrders, { data: incompleteOrdersResponse, refetch: refetchIncompleteOrders }] = useLazyQuery<{ incompleteOrders: ConnectionType<IncompleteOrderType> }>(GET_INCOMPLETE_ORDERS, { fetchPolicy: "no-cache" });
 
     const fetchIncompleteOrders = useCallback(async (cartId: string) => {
-        return getIncompleteOrders({ variables: { filter: { field: "cart", value: cartId } } })
+        return getIncompleteOrders({ variables: { cart: cartId } })
     }, [getIncompleteOrders])
 
     const fetchOrder = useCallback(async (id: string, pollInterval: number = 0) => {
-        return getOrders({ variables: { filter: { field: "id", value: id } }, pollInterval })
+        return getOrders({ variables: { id }, pollInterval })
     }, [getOrders])
 
     const createNewOrder = useCallback(async (input: CreateOrderInput) => {
@@ -53,7 +57,7 @@ const useOrder = () => {
                     input: input,
                 },
             })
-            return response.data.createOrder.data
+            return response.data.createOrder.data as OrderType
         } catch (error) {
             throw error as Error
         }
@@ -66,7 +70,11 @@ const useOrder = () => {
                     input: input,
                 },
             })
-            return response.data.updateOrder
+            // updateOrder can answer success: false without a GraphQL error
+            if (!response.data.updateOrder.success) {
+                throw new UnsuccessfulMutationError(response.data.updateOrder.message)
+            }
+            return response.data.updateOrder.data as OrderType
         } catch (error) {
             throw error as Error
         }
@@ -79,7 +87,7 @@ const useOrder = () => {
                     input: input,
                 },
             })
-            return response.data.createOrderPayment.data
+            return response.data.createOrderPayment.data as PaymentCreated
         } catch (error) {
             throw error as Error
         }
@@ -92,16 +100,48 @@ const useOrder = () => {
                     input: input,
                 },
             })
-            return response.data.cancelOrder.data
+            // cancelOrder can answer success: false without a GraphQL error
+            if (!response.data.cancelOrder.success) {
+                throw new UnsuccessfulMutationError(response.data.cancelOrder.message)
+            }
+            return response.data.cancelOrder
         } catch (error) {
             throw error as Error
         }
     }, [cancelOrder])
 
-    const incompleteOrders: IncompleteOrderType[] = incompleteOrdersResponse ? incompleteOrdersResponse.incompleteOrders : []
-    const orders: OrderType[] = ordersResponse ? ordersResponse.orders : []
+    const fetchOrderDetails = useCallback(async (id: string): Promise<CartItemType[]> => {
+        const response = await client.query<{ orders: ConnectionType<OrderType> }>({ query: GET_ORDERS, variables: { id }, fetchPolicy: "no-cache" })
+        return nodesOf(response.data.orders)[0]?.details ?? []
+    }, [client])
 
-    return { fetchIncompleteOrders, incompleteOrders, refetchIncompleteOrders, fetchOrder, orders, isLoading, error, refetchOrder, createNewOrder, isCreating, updateExistingOrder, isUpdating, createPayment, isCreatingPayment, cancelExistingOrder, isCancelling }
+    const fetchPaymentCustomer = useCallback(async (id: string): Promise<string | undefined> => {
+        const response = await client.query<{ orders: ConnectionType<Pick<OrderType, "id" | "payment">> }>({ query: GET_ORDER_PAYMENT_CUSTOMER, variables: { id }, fetchPolicy: "no-cache" })
+        return nodesOf(response.data.orders)[0]?.payment?.customer
+    }, [client])
+
+    // The Stripe webhook completes the order, there are no subscriptions so the status is polled.
+    // Returns the last known status, still PAYMENT_PENDING when the time is up
+    const waitForOrderCompletion = useCallback(async (id: string): Promise<Status | undefined> => {
+        const deadline = Date.now() + PAYMENT_POLL_TIMEOUT_MS
+        let status: Status | undefined
+        while (Date.now() < deadline) {
+            try {
+                const response = await client.query<{ orders: ConnectionType<Pick<OrderType, "id" | "status">> }>({ query: GET_ORDER_STATUS, variables: { id }, fetchPolicy: "no-cache" })
+                status = nodesOf(response.data.orders)[0]?.status
+                if (status === Status.COMPLETE || status === Status.CANCELLED) return status
+            } catch {
+                // A failed check does not stop the wait, the next one may succeed
+            }
+            await delay(PAYMENT_POLL_INTERVAL_MS)
+        }
+        return status
+    }, [client])
+
+    const incompleteOrders: IncompleteOrderType[] = nodesOf(incompleteOrdersResponse?.incompleteOrders)
+    const orders: OrderType[] = nodesOf(ordersResponse?.orders)
+
+    return { fetchIncompleteOrders, incompleteOrders, refetchIncompleteOrders, fetchOrder, orders, isLoading, error, refetchOrder, createNewOrder, isCreating, updateExistingOrder, isUpdating, createPayment, isCreatingPayment, cancelExistingOrder, isCancelling, fetchOrderDetails, fetchPaymentCustomer, waitForOrderCompletion }
 }
 
 export default useOrder

@@ -1,6 +1,7 @@
 import { Region } from "react-native-maps";
 
 export type RootStackParamList = {
+    Login: undefined
     Products: undefined
     Product: { productId: string };
     Cart: undefined
@@ -17,15 +18,9 @@ export type ProductType = {
     image: string;
     unitPrice: number;
     currency: string
-    rating: RatingType
     title: string
     stock: number
     purchaseLimits: PurchaseLimitType
-}
-
-export type RatingType = {
-    count: number;
-    rate: number;
 }
 
 export type PurchaseLimitType = {
@@ -40,6 +35,7 @@ export type CartItemType = {
     quantity: number
     unitPrice: number
     subtotal: number
+    currency: string
     product: ProductType
 }
 
@@ -69,7 +65,7 @@ export type OrderType = {
     payment: PaymentType | null
     cart: string
     totals: TotalsType
-    status: "INCOMPLETE" | "PAYMENT_PENDING" | "COMPLETE" | "CANCELLED"
+    status: Status
     details: CartItemType[]
 }
 
@@ -77,10 +73,26 @@ export type IncompleteOrderType = {
     id: string;
     status: Status
     totals: {
+        currency: string;
         total: number;
     };
     details: CartItemType[]
 };
+
+export type PageInfoType = {
+    hasNextPage: boolean
+    endCursor: string | null
+}
+
+// Lists come as Relay connections: edges { node cursor } and pageInfo
+export type ConnectionType<T> = {
+    edges: { node: T }[]
+    pageInfo?: PageInfoType
+}
+
+export const nodesOf = <T>(connection?: ConnectionType<T> | null): T[] => {
+    return connection ? connection.edges.map((edge) => edge.node) : []
+}
 
 export type CustomerType = {
     id: string
@@ -94,8 +106,8 @@ export type PaymentType = {
     amount: number
     status: string
     customer: string
-    payment_method: string
-    paymentDetails: PaymentMethodType
+    payment_method: string | null
+    paymentDetails: PaymentMethodType | null
 }
 
 export type TotalsType = {

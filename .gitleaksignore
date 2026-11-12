@@ -1,0 +1,3 @@
+# Google Maps key committed in c26cb26. It was deleted from Google Cloud on 2026-11-05, so it no longer works.
+c26cb2657bbc876310a3116dd09841781e8601c0:android/app/src/main/AndroidManifest.xml:gcp-api-key:15
+c26cb2657bbc876310a3116dd09841781e8601c0:ios/myfakeecommerce/AppDelegate.mm:gcp-api-key:17

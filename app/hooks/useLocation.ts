@@ -1,12 +1,13 @@
-import Geolocation from "@react-native-community/geolocation";
+import Geolocation, { GeolocationResponse } from "@react-native-community/geolocation";
 import { useCallback } from "react";
+import { Alert } from "react-native";
 import { GooglePlaceDetail } from "react-native-google-places-autocomplete";
 import { LatLng } from "react-native-maps";
 import { GOOGLE_MAPS_API_KEY } from "../constants/config";
 import { formatAddress } from "../utils/formatAddress";
 
 const useLocation = () => {
-    const getAddressFromLocation = useCallback(async (coords: LatLng): Promise<GooglePlaceDetail[]> => {
+    const getAddressFromLocation = useCallback(async (coords: LatLng): Promise<GooglePlaceDetail[] | Error> => {
         return new Promise((resolve, reject) => {
             fetch(
                 'https://maps.googleapis.com/maps/api/geocode/json?address=' +
@@ -21,7 +22,7 @@ const useLocation = () => {
                     if (responseJson.status === 'OK') {
                         resolve(responseJson?.results);
                     } else {
-                        reject('not found');
+                        reject('Address not found');
                     }
                 })
                 .catch(error => {
@@ -30,19 +31,27 @@ const useLocation = () => {
         });
     }, [])
 
-    const getCurrentLocation = useCallback(async () => {
+    const getCurrentLocation = useCallback(async (): Promise<GeolocationResponse> => {
         return new Promise((resolve, reject) => {
             Geolocation.getCurrentPosition(async (info) => {
-                resolve(info.coords)
-            })
+                resolve(info)
+            }, error => reject(error))
         })
     }, [])
 
     const getFormatedAddress = useCallback(async () => {
-        const coords = await getCurrentLocation()
-        const address = await getAddressFromLocation(coords as LatLng)
-        const formatedAddress = formatAddress(address[0])
-        return formatedAddress
+        try {
+            // A location error rejects, so it ends in the catch below
+            const location = await getCurrentLocation()
+            const address = await getAddressFromLocation(location.coords)
+            if ("message" in address) {
+                return
+            }
+            const formatedAddress = formatAddress(address[0])
+            return formatedAddress
+        } catch (error) {
+            Alert.alert((error as Error).message)
+        }
     }, [getAddressFromLocation, getCurrentLocation])
 
     return { getCurrentLocation, getAddressFromLocation, getFormatedAddress }

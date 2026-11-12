@@ -28,8 +28,8 @@ const CartItemCard = ({ data, disabled }: CartItemCardPropsType) => {
   };
 
   const getPriceText = useMemo(() => {
-    return data.quantity + " X " + formatCurrency(data.unitPrice);
-  }, [data.quantity, data.unitPrice]);
+    return data.quantity + " X " + formatCurrency(data.unitPrice, data.currency);
+  }, [data.quantity, data.unitPrice, data.currency]);
 
   return (
     <CustomCard
@@ -44,7 +44,7 @@ const CartItemCard = ({ data, disabled }: CartItemCardPropsType) => {
       >
         <Text style={styles.title}>{data.product.title}</Text>
         <Text style={styles.price}>{getPriceText}</Text>
-        <Text style={styles.subtotal}>{formatCurrency(data.subtotal)}</Text>
+        <Text style={styles.subtotal}>{formatCurrency(data.subtotal, data.currency)}</Text>
       </View>
       <CustomImage
         imageUrl={data.product.image}

@@ -3,6 +3,7 @@ import { gql } from "@apollo/client";
 export const ADD_PRODUCT = gql`
 mutation AddToCart($input: AddToCart!) {
   addToCart(input: $input) {
+      code
       success
       message
       data {
@@ -11,6 +12,7 @@ mutation AddToCart($input: AddToCart!) {
         quantity
         unitPrice
         subtotal
+        currency
         product {
           image
           title
@@ -37,6 +39,7 @@ export const CREATE_ORDER = gql`
     message
     data {
       id
+      status
     }
   }
 }`;
@@ -47,6 +50,49 @@ mutation UpdateOrder($input: UpdateOrder!){
     code
     success
     message
+    data {
+      id
+      cart
+      status
+      customer {
+        id
+        email
+        name
+        phone
+      }
+      address {
+        address
+        zipCode
+        coords {
+          latitude
+          longitude
+          latitudeDelta
+          longitudeDelta
+        }
+      }
+      totals {
+        currency
+        subTotal
+        taxes
+        discount
+        total
+        units
+        items
+      }
+      details {
+        id
+        productId
+        quantity
+        unitPrice
+        subtotal
+        currency
+        product {
+          image
+          title
+          id
+        }
+      }
+    }
   }
 }`
 

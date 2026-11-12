@@ -3,44 +3,37 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { useStyles } from "react-native-unistyles";
 import { RootStackParamList } from "../constants/types";
-import useCart from "../hooks/useCart";
-import { setCartFromOrder, setCartId } from "../redux/cart/reducer";
-import { useAppDispatch } from "../redux/hooks";
+import { useAuthContext } from "../contexts/AuthContext";
+import useAppState from "../hooks/useAppState";
+import useInitialFetch from "../hooks/useInitialFetch";
 import AddressScreen from "../screens/AddressScreen";
 import CartScreen from "../screens/CartScreen";
 import CatalogScreen from "../screens/CatalogScreen";
 import CheckoutScreen from "../screens/CheckoutScreen";
 import ConfirmationScreen from "../screens/ConfirmationScreen";
 import CustomerScreen from "../screens/CustomerScreen";
+import LoginScreen from "../screens/LoginScreen";
 import ProductScreen from "../screens/ProductScreen";
 import NavigationHeader from "./NavigationHeader";
-
-SplashScreen.preventAutoHideAsync();
-SplashScreen.setOptions({
-  duration: 2000,
-  fade: true,
-});
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const RootStack = () => {
   const { theme } = useStyles();
-  const dispatch = useAppDispatch();
-  const { fetchCart } = useCart();
+  const { user, isInitializing } = useAuthContext();
+  useInitialFetch(user?.uid);
+  useAppState();
 
+  // With a user, the splash screen is hidden once the cart is loaded.
+  // Without one the anonymous sign in failed, and it asks to try again
   useEffect(() => {
-    dispatch(setCartId())
-      .unwrap()
-      .then((cartId) => {
-        fetchCart(cartId).then((data) => {
-          SplashScreen.hide();
-          if (data.data.carts.length === 0) return;
-          dispatch(setCartFromOrder(data.data.carts));
-        });
-      });
-
+    if (!isInitializing && !user) SplashScreen.hide();
     return () => {};
-  }, [dispatch, fetchCart]);
+  }, [isInitializing, user]);
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <Stack.Navigator
@@ -98,6 +91,11 @@ const RootStack = () => {
         options={({ route }) => ({
           title: `Order Complete`,
         })}
+      />
+      <Stack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{ title: "My Account" }}
       />
     </Stack.Navigator>
   );

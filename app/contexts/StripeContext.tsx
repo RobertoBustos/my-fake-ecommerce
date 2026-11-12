@@ -6,20 +6,22 @@ import {
 } from "@stripe/stripe-react-native";
 import { createContext, useCallback, useContext } from "react";
 import { MERCHANT_ID, PUBLISHABLE_KEY } from "../constants/config";
-import { OrderType } from "../constants/types";
+import { CustomerType } from "../constants/types";
 
 export type StripeContextType = {
   initPayment: (
-    orderData: OrderType,
+    customer: CustomerType,
+    stripeCustomerId: string | undefined,
     ephemeralKey: string,
     clientSecret: string
-  ) => Promise<boolean | Error>;
+  ) => Promise<void>;
   confirmPayment: () => Promise<PresentPaymentSheetResult | Error>;
 };
 
 const StripeContext = createContext<StripeContextType>({
   initPayment: (
-    orderData: OrderType,
+    customer: CustomerType,
+    stripeCustomerId: string | undefined,
     ephemeralKey: string,
     clientSecret: string
   ) => new Promise(() => {}),
@@ -37,32 +39,27 @@ const StipeStore = ({ children }: StripeStorePropsType) => {
 
   const initPayment = useCallback(
     async (
-      orderData: OrderType,
+      customer: CustomerType,
+      stripeCustomerId: string | undefined,
       ephemeralKey: string,
       clientSecret: string
     ) => {
-      try {
-        if (!orderData || orderData.customer === null) {
-          throw new Error("Order not found");
-        }
-        const paymentSheetResponse = await initPaymentSheet({
-          customerId: orderData.customer.id,
-          customerEphemeralKeySecret: ephemeralKey,
-          paymentIntentClientSecret: clientSecret,
-          merchantDisplayName: "My Fake Ecommerce",
-          allowsDelayedPaymentMethods: true,
-          returnURL: "stripe-example://stripe-redirect",
-          defaultBillingDetails: {
-            name: orderData.customer.name,
-            email: orderData.customer.email,
-          },
-        });
-        if (paymentSheetResponse.error) {
-          return false;
-        }
-        return true;
-      } catch (error) {
-        return error as Error;
+      // The ephemeral key only works with the Stripe customer of the payment (orders { payment { customer } })
+      const savedCards = stripeCustomerId
+        ? { customerId: stripeCustomerId, customerEphemeralKeySecret: ephemeralKey }
+        : {};
+      const paymentSheetResponse = await initPaymentSheet({
+        ...savedCards,
+        paymentIntentClientSecret: clientSecret,
+        merchantDisplayName: "My Fake Ecommerce",
+        returnURL: "myapp://stripe-redirect",
+        defaultBillingDetails: {
+          name: customer.name,
+          email: customer.email,
+        },
+      });
+      if (paymentSheetResponse.error) {
+        throw new Error(paymentSheetResponse.error.message);
       }
     },
     []

@@ -1,7 +1,7 @@
 import { useApolloClient, useLazyQuery, useMutation } from "@apollo/client";
 import { useCallback } from "react";
 import { PAYMENT_POLL_INTERVAL_MS, PAYMENT_POLL_TIMEOUT_MS } from "../constants/config";
-import { AddressType, ConnectionType, IncompleteOrderType, OrderType, Status, UserType, nodesOf } from "../constants/types";
+import { AddressType, CartItemType, ConnectionType, IncompleteOrderType, OrderType, Status, UserType, nodesOf } from "../constants/types";
 import { CANCEL_ORDER, CREATE_ORDER, CREATE_ORDER_PAYMENT, UPDATE_ORDER } from "../graphql/mutations";
 import { GET_INCOMPLETE_ORDERS, GET_ORDERS, GET_ORDER_PAYMENT_CUSTOMER, GET_ORDER_STATUS } from "../graphql/queries";
 import { UnsuccessfulMutationError } from "../utils/apiErrors";
@@ -110,6 +110,11 @@ const useOrder = () => {
         }
     }, [cancelOrder])
 
+    const fetchOrderDetails = useCallback(async (id: string): Promise<CartItemType[]> => {
+        const response = await client.query<{ orders: ConnectionType<OrderType> }>({ query: GET_ORDERS, variables: { id }, fetchPolicy: "no-cache" })
+        return nodesOf(response.data.orders)[0]?.details ?? []
+    }, [client])
+
     const fetchPaymentCustomer = useCallback(async (id: string): Promise<string | undefined> => {
         const response = await client.query<{ orders: ConnectionType<Pick<OrderType, "id" | "payment">> }>({ query: GET_ORDER_PAYMENT_CUSTOMER, variables: { id }, fetchPolicy: "no-cache" })
         return nodesOf(response.data.orders)[0]?.payment?.customer
@@ -136,7 +141,7 @@ const useOrder = () => {
     const incompleteOrders: IncompleteOrderType[] = nodesOf(incompleteOrdersResponse?.incompleteOrders)
     const orders: OrderType[] = nodesOf(ordersResponse?.orders)
 
-    return { fetchIncompleteOrders, incompleteOrders, refetchIncompleteOrders, fetchOrder, orders, isLoading, error, refetchOrder, createNewOrder, isCreating, updateExistingOrder, isUpdating, createPayment, isCreatingPayment, cancelExistingOrder, isCancelling, fetchPaymentCustomer, waitForOrderCompletion }
+    return { fetchIncompleteOrders, incompleteOrders, refetchIncompleteOrders, fetchOrder, orders, isLoading, error, refetchOrder, createNewOrder, isCreating, updateExistingOrder, isUpdating, createPayment, isCreatingPayment, cancelExistingOrder, isCancelling, fetchOrderDetails, fetchPaymentCustomer, waitForOrderCompletion }
 }
 
 export default useOrder

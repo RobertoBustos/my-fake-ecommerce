@@ -46,6 +46,7 @@ const NavigationHeader = (props: NativeStackHeaderProps) => {
             size={30}
             color={theme.colors.onPrimary}
             onPress={handleGoBack}
+            testID="NavigationHeader.Back"
           />
         ) : isAnonymous ? (
           <FontAwesome

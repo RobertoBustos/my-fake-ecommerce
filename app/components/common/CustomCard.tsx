@@ -43,22 +43,32 @@ const CustomCard = ({
     mixedContentStyles.flexDirection = "column";
   }
 
-  return isLoading ? null : (
+  if (isLoading) return null;
+
+  const card = (
+    <View style={mixedStyles} testID={onPress ? undefined : testID}>
+      {headerText ? (
+        <CustomCardHeader
+          text={headerText}
+          style={styles}
+          showEditLabel={showEditLabel}
+        />
+      ) : null}
+      <View style={mixedContentStyles}>{children}</View>
+    </View>
+  );
+
+  // A touchable is a single accessibility element on iOS and hides the testID of
+  // everything inside it, so a card without onPress (the forms) is a plain View
+  if (!onPress) return card;
+
+  return (
     <TouchableWithoutFeedback
       onPress={onPress}
       disabled={disabled}
       testID={testID}
     >
-      <View style={mixedStyles}>
-        {headerText ? (
-          <CustomCardHeader
-            text={headerText}
-            style={styles}
-            showEditLabel={showEditLabel}
-          />
-        ) : null}
-        <View style={mixedContentStyles}>{children}</View>
-      </View>
+      {card}
     </TouchableWithoutFeedback>
   );
 };

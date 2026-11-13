@@ -26,6 +26,9 @@ follows [Semantic Versioning](https://semver.org/).
   instead of showing an alert.
 - The address screen enables "Continue" only after the map has finished moving
   to the address, so the user sees it before confirming.
+- On iOS, "Continue" on the address screen no longer stays disabled when the
+  map misses its camera event: the map checks its camera until it rests on the
+  address, and animates again if it never gets there.
 
 ### Removed
 

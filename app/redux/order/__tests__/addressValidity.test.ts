@@ -22,6 +22,14 @@ describe("address validity", () => {
     expect(isValid(order)).toBe(true);
   });
 
+  it("stays valid when the address moves within the map tolerance", () => {
+    let order = orderReducer(undefined, setAddressData(address));
+    order = orderReducer(order, setMapCenter({ latitude: coords.latitude, longitude: coords.longitude }));
+    order = orderReducer(order, setAddressData({ ...address, coords: { ...coords, latitude: coords.latitude + 0.00001 } }));
+
+    expect(isValid(order)).toBe(true);
+  });
+
   it("is invalid again when the address changes", () => {
     let order = orderReducer(undefined, setAddressData(address));
     order = orderReducer(order, setMapCenter({ latitude: coords.latitude, longitude: coords.longitude }));

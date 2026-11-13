@@ -1,5 +1,6 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { PHONE_PATTERN, ZIP_CODE_PATTERN } from "../../constants/validation";
+import { isSameLocation } from "../../utils/isSameLocation";
 import { RootStateType } from "../types";
 
 export const selectOrderState = (state: RootStateType) => state.order
@@ -42,8 +43,7 @@ export const selectIsAddressDataValid = () => {
     return createSelector([selectAddressData(), selectMapCenter], (addressData, mapCenter) => {
         // The user has to see the address on the map before continuing
         const isOnMap = addressData.coords !== undefined && mapCenter !== null &&
-            mapCenter.latitude === addressData.coords.latitude &&
-            mapCenter.longitude === addressData.coords.longitude
+            isSameLocation(mapCenter, addressData.coords)
         return addressData.address !== "" && ZIP_CODE_PATTERN.test(addressData.zipCode.trim()) && isOnMap
     }
     );

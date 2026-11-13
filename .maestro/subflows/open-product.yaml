@@ -1,0 +1,21 @@
+appId: ${MAESTRO_APP_ID}
+---
+# From the catalog: scroll (loading more pages) until the test product shows, and open it
+- extendedWaitUntil:
+    visible:
+      id: "Catalog.Container"
+    timeout: 30000
+- scrollUntilVisible:
+    element:
+      id: "CatalogItemCard.CardContainer-${MAESTRO_PRODUCT_ID}"
+    direction: DOWN
+    timeout: 120000
+    # The test product can be the last card, which never shows whole
+    visibilityPercentage: 50
+# The last card shows only partly, so the tap goes to its title, not to its center
+- tapOn:
+    id: "CatalogItemCard.Title-${MAESTRO_PRODUCT_ID}"
+- extendedWaitUntil:
+    visible:
+      id: "Product.Title"
+    timeout: 15000

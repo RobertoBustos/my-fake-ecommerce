@@ -1,0 +1,35 @@
+appId: ${MAESTRO_APP_ID}
+tags:
+  - main
+---
+# Adding the test product: header badge, cart line and subtotal; then removing it
+- runScript: ../scripts/expected.js
+- runFlow: ../subflows/launch-clean.yaml
+- runFlow: ../subflows/add-to-cart.yaml
+- assertVisible:
+    id: "ShoppingCartHeaderIcon.Count"
+    text: "1"
+- tapOn:
+    id: "ShoppingCartHeaderIcon.Button"
+- extendedWaitUntil:
+    visible:
+      id: "CartItemCard.Title-${MAESTRO_PRODUCT_ID}"
+      text: ${output.expected.title}
+    timeout: 15000
+- assertVisible:
+    id: "CartItemCard.Price-${MAESTRO_PRODUCT_ID}"
+    text: ${output.expected.cartPrice}
+- assertVisible:
+    id: "CartItemCard.Subtotal-${MAESTRO_PRODUCT_ID}"
+    text: ${output.expected.subtotal}
+# Remove it: the cart ends empty
+- tapOn:
+    id: "CartItemCard.CardButton-${MAESTRO_PRODUCT_ID}"
+- assertVisible: "Remove this item from cart?"
+- tapOn: "OK"
+- extendedWaitUntil:
+    visible:
+      id: "EmptyCart.Container"
+    timeout: 15000
+- assertNotVisible:
+    id: "ShoppingCartHeaderIcon.Count"

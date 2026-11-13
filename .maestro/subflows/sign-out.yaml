@@ -1,0 +1,11 @@
+appId: ${MAESTRO_APP_ID}
+---
+# Signs out from the catalog; the app goes back to an anonymous session
+- tapOn:
+    id: "NavigationHeader.SignOut"
+- assertVisible: "Sign out?"
+- tapOn: "OK"
+- extendedWaitUntil:
+    visible:
+      id: "NavigationHeader.Login"
+    timeout: 20000

@@ -29,11 +29,17 @@ follows [Semantic Versioning](https://semver.org/).
 - On iOS, "Continue" on the address screen no longer stays disabled when the
   map misses its camera event: the map checks its camera until it rests on the
   address, and animates again if it never gets there.
+- The address screen no longer opens an alert, technical or empty, when the
+  current location or its address can't be found: the field stays empty to
+  type the address. The location request gives up after 10 seconds.
 
 ### Removed
 
 - `ios/` and `android/` are no longer tracked. `npx expo prebuild` generates
   them.
+- The app no longer asks for background ("always") location, camera on
+  Android, storage or screen overlay permissions. It only uses the location
+  while it is open, to prefill the delivery address.
 
 ### Security
 

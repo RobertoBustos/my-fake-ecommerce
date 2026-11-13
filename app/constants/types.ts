@@ -94,6 +94,20 @@ export const nodesOf = <T>(connection?: ConnectionType<T> | null): T[] => {
     return connection ? connection.edges.map((edge) => edge.node) : []
 }
 
+// Every mutation of the API answers with this shape
+export type MutationResponseType<T = never> = {
+    code: string
+    success: boolean
+    message: string
+    data?: T | null
+}
+
+// A GraphQL error rejects the request, so a resolved one has data; Apollo 4 types it as optional
+export const dataOf = <T>(data: T | undefined): T => {
+    if (data === undefined) throw new Error("The API answered without data")
+    return data
+}
+
 export type CustomerType = {
     id: string
     email: string

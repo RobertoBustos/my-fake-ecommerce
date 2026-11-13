@@ -1,4 +1,4 @@
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { FirebaseError } from "firebase/app";
 import {
   EmailAuthProvider,
@@ -91,7 +91,9 @@ const AuthStore = ({ children }: PropsWithChildren) => {
         if (previousUserId.current) {
           dispatch(clearCart());
           dispatch(resetOrder());
-          client.clearStore();
+          // clearStore leaves the active queries without data until they fetch again, so they
+          // are refetched for the new user. A failed refetch shows up in its own query's error
+          client.resetStore().catch(() => undefined);
         }
         previousUserId.current = userId;
       }

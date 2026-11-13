@@ -25,8 +25,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     bundleIdentifier: process.env.UNIQUE_IDENTIFIER,
     infoPlist: {
       "ITSAppUsesNonExemptEncryption": false,
-      "NSLocationWhenInUseUsageDescription": "We use your location to display your current position on the map",
-      "NSLocationAlwaysAndWhenInUseUsageDescription": "We use your location to display your current position on the map",
+      // The location is only read while the app is open, to prefill the delivery address
+      "NSLocationWhenInUseUsageDescription": "We use your location to prefill your delivery address and show it on the map",
+      // Stripe's Payment Sheet offers card scanning only when this is set
       "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera."
     },
     icon: {
@@ -47,7 +48,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       backgroundColor: "#ffffff"
     },
     package: process.env.UNIQUE_IDENTIFIER,
-    permissions: ["CAMERA", "ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION", "ACCESS_BACKGROUND_LOCATION"]
+    permissions: ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
+    // The template and libraries can add these back; nothing in the app needs them
+    blockedPermissions: [
+      "android.permission.ACCESS_BACKGROUND_LOCATION",
+      "android.permission.READ_EXTERNAL_STORAGE",
+      "android.permission.WRITE_EXTERNAL_STORAGE",
+      "android.permission.SYSTEM_ALERT_WINDOW"
+    ]
   },
   web: {
     bundler: "metro",

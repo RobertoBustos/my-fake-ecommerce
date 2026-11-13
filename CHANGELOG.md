@@ -37,6 +37,9 @@ follows [Semantic Versioning](https://semver.org/).
 
 - `ios/` and `android/` are no longer tracked. `npx expo prebuild` generates
   them.
+- The app no longer asks for background ("always") location, camera on
+  Android, storage or screen overlay permissions. It only uses the location
+  while it is open, to prefill the delivery address.
 
 ### Security
 

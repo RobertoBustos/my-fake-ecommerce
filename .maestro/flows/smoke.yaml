@@ -11,5 +11,3 @@ tags:
 - assertVisible: "Products"
 - assertVisible:
     id: "CatalogItemCard\\.CardContainer-.*"
-# Temporary: forces a failure to check the artifacts of the e2e job
-- assertVisible: "This text is never shown"

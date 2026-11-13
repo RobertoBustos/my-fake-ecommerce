@@ -1,4 +1,5 @@
-import { NetworkStatus, useQuery } from "@apollo/client";
+import { NetworkStatus } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { useCallback, useRef, useState } from "react";
 import { Alert } from "react-native";
 import { ConnectionType, ProductType, nodesOf } from "../constants/types";

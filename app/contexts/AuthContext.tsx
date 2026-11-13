@@ -1,4 +1,4 @@
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { FirebaseError } from "firebase/app";
 import {
   EmailAuthProvider,

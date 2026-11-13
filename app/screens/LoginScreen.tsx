@@ -16,10 +16,10 @@ import { useAppSelector } from "../redux/hooks";
 import userDetailsFormStyleSheet from "../styles/components/UserDetailsForm";
 
 const validationSchema = z.object({
-  email: z.string().email({ message: "Invalid email" }).toLowerCase(),
+  email: z.email({ error: "Invalid email" }).toLowerCase(),
   password: z
     .string()
-    .min(6, { message: "The password must contain at least 6 characters" }),
+    .min(6, { error: "The password must contain at least 6 characters" }),
 });
 
 type CredentialsType = z.infer<typeof validationSchema>;

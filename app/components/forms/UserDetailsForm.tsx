@@ -12,16 +12,16 @@ import { setCustomerData } from "../../redux/order/reducer";
 import userDetailsFormStyleSheet from "../../styles/components/UserDetailsForm";
 import CustomCard from "../common/CustomCard";
 
-const validationSchema: ZodType<UserType> = z.object({
-  email: z.string().email({ message: "Invalid email" }).toLowerCase(),
+const validationSchema = z.object({
+  email: z.email({ error: "Invalid email" }).toLowerCase(),
   name: z
     .string()
-    .min(4, { message: "Your name must contain from 4 up to 60 characters" })
-    .max(60, { message: "Your name must contain from 4 up to 60 characters" }),
+    .min(4, { error: "Your name must contain from 4 up to 60 characters" })
+    .max(60, { error: "Your name must contain from 4 up to 60 characters" }),
   phone: z.string().regex(PHONE_PATTERN, {
-    message: "Your phone number must contain 10 to 15 digits, with an optional + at the start",
+    error: "Your phone number must contain 10 to 15 digits, with an optional + at the start",
   }),
-});
+}) satisfies ZodType<UserType>;
 
 const UserDetailsForm = () => {
   const dispatch = useAppDispatch();

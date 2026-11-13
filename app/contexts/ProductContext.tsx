@@ -1,4 +1,4 @@
-import { ApolloError } from "@apollo/client";
+import { ErrorLike } from "@apollo/client";
 import { PropsWithChildren, createContext, useContext, useState } from "react";
 import { Alert } from "react-native";
 import LoadingScreen from "../components/common/LoadingScreen";
@@ -22,7 +22,7 @@ export type ProdctContextType = {
   isAvailable: boolean;
   addProductToCart: () => void;
   reloadProduct: () => void;
-  error: ApolloError | undefined;
+  error: ErrorLike | undefined;
   quantity: number;
   minQuantity: number;
   maxQuantity: number;

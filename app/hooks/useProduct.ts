@@ -35,10 +35,11 @@ const useProduct = ({ id }: UseProductPropsType) => {
         try {
             await fetchMore({
                 variables: { after: pageInfo.endCursor },
-                updateQuery: (previous, { fetchMoreResult }) => ({
+                // A store reset while the page loads leaves the query without data
+                updateQuery: (previous: { products: ConnectionType<ProductType> } | undefined, { fetchMoreResult }) => ({
                     products: {
                         ...fetchMoreResult.products,
-                        edges: [...previous.products.edges, ...fetchMoreResult.products.edges],
+                        edges: [...(previous?.products.edges ?? []), ...fetchMoreResult.products.edges],
                     },
                 }),
             })

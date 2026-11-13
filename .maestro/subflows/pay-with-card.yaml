@@ -1,0 +1,31 @@
+appId: ${MAESTRO_APP_ID}
+---
+# Stripe's Payment Sheet is native and has no test ids, so its fields are found by their
+# labels. On Android the sheet follows the device language, so English and Spanish are
+# both accepted; on iOS it is always in English, because the app is not localized.
+# After each field the sheet moves the focus to the next one by itself.
+- extendedWaitUntil:
+    visible: "Card number|Número de tarjeta"
+    timeout: 30000
+- tapOn: "Card number|Número de tarjeta"
+- inputText: ${MAESTRO_CARD_NUMBER}
+- inputText: ${MAESTRO_CARD_EXPIRY}
+- inputText: ${MAESTRO_CARD_CVC}
+# The billing country comes from the device region: for the United States the sheet asks
+# for a ZIP code, for Mexico it doesn't
+- runFlow:
+    when:
+      visible: "ZIP Code|ZIP|Código postal"
+    commands:
+      - tapOn: "ZIP Code|ZIP|Código postal"
+      - inputText: "42424"
+# On iOS the number pad covers the pay button and has a Done key. On Android the button
+# stays above the keyboard, and hideKeyboard would close the sheet as Back does.
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn: "Done"
+# The button shows the amount: "Pay $23.20" on iOS, "Pay MX$23.20" or "Pagar $23.20"
+# on Android. It doesn't match "Pay with Link".
+- tapOn: "(Pay|Pagar) (MX)?\\$.*"

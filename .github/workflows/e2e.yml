@@ -110,6 +110,7 @@ jobs:
             adb install -r android/app/build/outputs/apk/release/app-release.apk
             maestro test .maestro $MAESTRO_TAGS --format junit --output maestro-report.xml --debug-output maestro-results
 
+      # Maestro writes the screenshots and logs under maestro-results/.maestro/, a hidden folder
       - name: Upload the report and the results
         if: failure()
         uses: actions/upload-artifact@v7
@@ -118,4 +119,5 @@ jobs:
           path: |
             maestro-report.xml
             maestro-results/
+          include-hidden-files: true
           retention-days: 14

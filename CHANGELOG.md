@@ -29,6 +29,9 @@ follows [Semantic Versioning](https://semver.org/).
 - On iOS, "Continue" on the address screen no longer stays disabled when the
   map misses its camera event: the map checks its camera until it rests on the
   address, and animates again if it never gets there.
+- The address screen no longer opens an alert, technical or empty, when the
+  current location or its address can't be found: the field stays empty to
+  type the address. The location request gives up after 10 seconds.
 
 ### Removed
 

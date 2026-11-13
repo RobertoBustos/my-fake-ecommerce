@@ -1,56 +1,50 @@
 import Geolocation, { GeolocationResponse } from "@react-native-community/geolocation";
 import { useCallback } from "react";
-import { Alert } from "react-native";
 import { GooglePlaceDetail } from "react-native-google-places-autocomplete";
 import { LatLng } from "react-native-maps";
 import { GOOGLE_MAPS_API_KEY } from "../constants/config";
+import { AddressType } from "../constants/types";
 import { formatAddress } from "../utils/formatAddress";
 
+// Without a timeout, a device that never answers leaves the request pending forever
+export const LOCATION_TIMEOUT_MS = 10000
+
 const useLocation = () => {
-    const getAddressFromLocation = useCallback(async (coords: LatLng): Promise<GooglePlaceDetail[] | Error> => {
-        return new Promise((resolve, reject) => {
-            fetch(
-                'https://maps.googleapis.com/maps/api/geocode/json?address=' +
-                coords.latitude +
-                ',' +
-                coords.longitude +
-                '&key=' +
-                GOOGLE_MAPS_API_KEY,
-            )
-                .then(response => response.json())
-                .then(responseJson => {
-                    if (responseJson.status === 'OK') {
-                        resolve(responseJson?.results);
-                    } else {
-                        reject('Address not found');
-                    }
-                })
-                .catch(error => {
-                    reject(error);
-                });
-        });
+    const getAddressFromLocation = useCallback(async (coords: LatLng): Promise<GooglePlaceDetail[]> => {
+        const response = await fetch(
+            'https://maps.googleapis.com/maps/api/geocode/json?latlng=' +
+            coords.latitude +
+            ',' +
+            coords.longitude +
+            '&key=' +
+            GOOGLE_MAPS_API_KEY,
+        )
+        const responseJson = await response.json()
+        if (responseJson.status !== 'OK' || !responseJson.results?.length) {
+            throw new Error(`Address not found (${responseJson.status})`)
+        }
+        return responseJson.results
     }, [])
 
     const getCurrentLocation = useCallback(async (): Promise<GeolocationResponse> => {
         return new Promise((resolve, reject) => {
-            Geolocation.getCurrentPosition(async (info) => {
-                resolve(info)
-            }, error => reject(error))
+            Geolocation.getCurrentPosition(
+                resolve,
+                // The library rejects with a plain object, not an Error
+                error => reject(new Error(error.message)),
+                { timeout: LOCATION_TIMEOUT_MS },
+            )
         })
     }, [])
 
-    const getFormatedAddress = useCallback(async () => {
+    // The address is only a prefill: on any failure the field stays empty for the user to type
+    const getFormatedAddress = useCallback(async (): Promise<AddressType | undefined> => {
         try {
-            // A location error rejects, so it ends in the catch below
             const location = await getCurrentLocation()
             const address = await getAddressFromLocation(location.coords)
-            if ("message" in address) {
-                return
-            }
-            const formatedAddress = formatAddress(address[0])
-            return formatedAddress
+            return formatAddress(address[0])
         } catch (error) {
-            Alert.alert((error as Error).message)
+            console.warn(`Could not prefill the address from the location: ${(error as Error).message}`)
         }
     }, [getAddressFromLocation, getCurrentLocation])
 

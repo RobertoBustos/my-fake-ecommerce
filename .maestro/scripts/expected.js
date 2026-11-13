@@ -33,4 +33,6 @@ output.expected = {
   subtotal: escape(MAESTRO_EXPECTED_SUBTOTAL),
   taxes: escape(MAESTRO_EXPECTED_TAXES),
   total: escape(MAESTRO_EXPECTED_TOTAL),
+  // CardPaymentSummary shows "<BRAND> terminated in <last 4 digits>"
+  card: contains("terminated in " + String(MAESTRO_CARD_NUMBER).slice(-4)),
 };

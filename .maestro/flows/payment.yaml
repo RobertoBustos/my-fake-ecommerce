@@ -1,0 +1,52 @@
+appId: ${MAESTRO_APP_ID}
+tags:
+  - main
+---
+# A signed-in test user buys the test product with Stripe's test card, up to the confirmation.
+# Every run leaves a complete order and takes MAESTRO_ORDER_QUANTITY units of stock.
+- runScript: ../scripts/expected.js
+# A fixed position, so the address is prefilled from the location the same way on every run
+- setLocation:
+    latitude: 19.4326
+    longitude: -99.1332
+- runFlow: ../subflows/launch-clean.yaml
+- extendedWaitUntil:
+    visible:
+      id: "Catalog.Container"
+    timeout: 30000
+- runFlow:
+    file: ../subflows/sign-in.yaml
+    env:
+      EMAIL: ${MAESTRO_EMAIL}
+      PASSWORD: ${MAESTRO_PASSWORD}
+- runFlow: ../subflows/add-to-cart.yaml
+- runFlow: ../subflows/order-details.yaml
+- tapOn:
+    id: "CheckoutScreen.Footer"
+- runFlow: ../subflows/pay-with-card.yaml
+
+# Confirmation: the order as the API returns it once paid
+- extendedWaitUntil:
+    visible:
+      id: "ConfirmationHeader.OrderIdText"
+    timeout: 60000
+- assertVisible:
+    text: ${output.expected.card}
+- scrollUntilVisible:
+    element:
+      id: "OrderSummary.Total"
+    direction: DOWN
+- assertVisible: ${output.expected.subtotal}
+- assertVisible: ${output.expected.taxes}
+- assertVisible: ${output.expected.total}
+
+# Back to the catalog with an empty cart, and leave the test user signed out
+- tapOn:
+    id: "ConfirmationScreen.Footer"
+- extendedWaitUntil:
+    visible:
+      id: "Catalog.Container"
+    timeout: 20000
+- assertNotVisible:
+    id: "ShoppingCartHeaderIcon.Count"
+- runFlow: ../subflows/sign-out.yaml

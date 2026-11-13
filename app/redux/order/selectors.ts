@@ -6,6 +6,8 @@ export const selectOrderState = (state: RootStateType) => state.order
 
 export const selectAdressCoords = (state: RootStateType) => state.order.addressData?.coords
 
+export const selectMapCenter = (state: RootStateType) => state.order.mapCenter
+
 export const selectCustomerData = () => {
     return createSelector([selectOrderState], (orderState) => {
         return {
@@ -37,8 +39,12 @@ export const selectAddressData = () => {
 }
 
 export const selectIsAddressDataValid = () => {
-    return createSelector([selectAddressData()], (addressData) => {
-        return addressData.address !== "" && ZIP_CODE_PATTERN.test(addressData.zipCode.trim()) && addressData.coords !== undefined
+    return createSelector([selectAddressData(), selectMapCenter], (addressData, mapCenter) => {
+        // The user has to see the address on the map before continuing
+        const isOnMap = addressData.coords !== undefined && mapCenter !== null &&
+            mapCenter.latitude === addressData.coords.latitude &&
+            mapCenter.longitude === addressData.coords.longitude
+        return addressData.address !== "" && ZIP_CODE_PATTERN.test(addressData.zipCode.trim()) && isOnMap
     }
     );
 }

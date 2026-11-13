@@ -1,0 +1,6 @@
+appId: ${MAESTRO_APP_ID}
+---
+# A fresh install: no Firebase session, cart id or Redux state from a previous run
+- launchApp:
+    clearState: true
+    clearKeychain: true

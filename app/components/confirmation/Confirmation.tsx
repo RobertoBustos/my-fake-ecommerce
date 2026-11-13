@@ -69,7 +69,7 @@ export const OrderConfirmationItem = ({
       </Text>
       <Text
         style={styles.text}
-        testID={`OrderConfirmationItem._UnitPrice-${data.id}`}
+        testID={`OrderConfirmationItem.UnitPrice-${data.id}`}
       >
         {formatCurrency(data.unitPrice, data.currency)}
       </Text>

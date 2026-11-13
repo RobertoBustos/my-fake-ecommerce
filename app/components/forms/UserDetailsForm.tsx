@@ -135,7 +135,7 @@ const UserDetailsForm = () => {
         )}
       />
       {errors.phone && (
-        <Text style={styles.errorText} testID="UserDetailsForm.PhoneInput">
+        <Text style={styles.errorText} testID="UserDetailsForm.PhoneErrorText">
           {errors.phone.message}
         </Text>
       )}

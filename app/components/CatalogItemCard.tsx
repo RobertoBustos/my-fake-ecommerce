@@ -33,8 +33,10 @@ const CatalogItemCard = ({ data, disabled }: CatalogItemCardPropsType) => {
         style={styles.description}
         testID={`CatalogItemCard.CardDescription-${data.id}`}
       >
-        <Text style={styles.title}>{data.title}</Text>
-        <Text style={styles.price}>
+        <Text style={styles.title} testID={`CatalogItemCard.Title-${data.id}`}>
+          {data.title}
+        </Text>
+        <Text style={styles.price} testID={`CatalogItemCard.Price-${data.id}`}>
           {formatCurrency(data.unitPrice, data.currency)}
         </Text>
       </View>

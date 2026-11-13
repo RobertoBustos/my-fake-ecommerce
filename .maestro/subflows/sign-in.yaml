@@ -1,0 +1,20 @@
+appId: ${MAESTRO_APP_ID}
+---
+# Signs in with EMAIL and PASSWORD (passed with runFlow env) from the catalog.
+# Run it with an empty cart: with items, the app first warns that they are lost.
+- tapOn:
+    id: "NavigationHeader.Login"
+- tapOn:
+    id: "LoginScreen.EmailInput"
+- inputText: ${EMAIL}
+- pressKey: Enter
+- tapOn:
+    id: "LoginScreen.PasswordInput"
+- inputText: ${PASSWORD}
+# Enter would already submit the form; the footer button rises above the keyboard
+- tapOn:
+    id: "LoginScreen.Footer"
+- extendedWaitUntil:
+    visible:
+      id: "NavigationHeader.SignOut"
+    timeout: 20000

@@ -1,0 +1,52 @@
+appId: ${MAESTRO_APP_ID}
+tags:
+  - main
+---
+# The test product shows the expected title and price in the catalog and in its detail
+- runScript: ../scripts/expected.js
+- runFlow: ../subflows/launch-clean.yaml
+- extendedWaitUntil:
+    visible:
+      id: "Catalog.Container"
+    timeout: 30000
+- scrollUntilVisible:
+    element:
+      id: "CatalogItemCard.CardContainer-${MAESTRO_PRODUCT_ID}"
+    direction: DOWN
+    timeout: 120000
+    # The test product can be the last card, which never shows whole
+    visibilityPercentage: 50
+- assertVisible:
+    id: "CatalogItemCard.Title-${MAESTRO_PRODUCT_ID}"
+    text: ${output.expected.title}
+- assertVisible:
+    id: "CatalogItemCard.Price-${MAESTRO_PRODUCT_ID}"
+    text: ${output.expected.price}
+# The last card shows only partly, so the tap goes to its title, not to its center
+- tapOn:
+    id: "CatalogItemCard.Title-${MAESTRO_PRODUCT_ID}"
+- extendedWaitUntil:
+    visible:
+      id: "Product.Title"
+      text: ${output.expected.title}
+    timeout: 15000
+- assertVisible:
+    id: "Product.Price"
+    text: ${output.expected.price}
+# The stock changes with every purchase, so only that it is shown
+- assertVisible:
+    id: "Product.Stock"
+# Quantity: up and back down to the minimum
+- assertVisible:
+    id: "QuantityButtons.Quantity"
+    text: "1"
+- tapOn:
+    id: "QuantityButtons.Increment"
+- assertVisible:
+    id: "QuantityButtons.Quantity"
+    text: "2"
+- tapOn:
+    id: "QuantityButtons.Decrement"
+- assertVisible:
+    id: "QuantityButtons.Quantity"
+    text: "1"

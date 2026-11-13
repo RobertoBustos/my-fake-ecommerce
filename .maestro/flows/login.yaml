@@ -1,0 +1,56 @@
+appId: ${MAESTRO_APP_ID}
+tags:
+  - main
+---
+# A signed-in user's cart survives signing out and in again, and another user doesn't see it
+- runFlow: ../subflows/launch-clean.yaml
+- extendedWaitUntil:
+    visible:
+      id: "Catalog.Container"
+    timeout: 30000
+- runFlow:
+    file: ../subflows/sign-in.yaml
+    env:
+      EMAIL: ${MAESTRO_EMAIL}
+      PASSWORD: ${MAESTRO_PASSWORD}
+- runFlow: ../subflows/add-to-cart.yaml
+- assertVisible:
+    id: "ShoppingCartHeaderIcon.Count"
+    text: "1"
+# Signed out: an anonymous session with an empty cart
+- runFlow: ../subflows/sign-out.yaml
+- assertNotVisible:
+    id: "ShoppingCartHeaderIcon.Count"
+# The other test user doesn't see it
+- runFlow:
+    file: ../subflows/sign-in.yaml
+    env:
+      EMAIL: ${MAESTRO_OTHER_EMAIL}
+      PASSWORD: ${MAESTRO_OTHER_PASSWORD}
+- assertNotVisible:
+    id: "ShoppingCartHeaderIcon.Count"
+- runFlow: ../subflows/sign-out.yaml
+# Back as the first user: the cart is still there
+- runFlow:
+    file: ../subflows/sign-in.yaml
+    env:
+      EMAIL: ${MAESTRO_EMAIL}
+      PASSWORD: ${MAESTRO_PASSWORD}
+- extendedWaitUntil:
+    visible:
+      id: "ShoppingCartHeaderIcon.Count"
+      text: "1"
+    timeout: 20000
+# Leave the test user's cart empty for the next run
+- tapOn:
+    id: "ShoppingCartHeaderIcon.Button"
+- tapOn:
+    id: "CartItemCard.CardButton-${MAESTRO_PRODUCT_ID}"
+- tapOn: "OK"
+- extendedWaitUntil:
+    visible:
+      id: "EmptyCart.Container"
+    timeout: 15000
+- tapOn:
+    id: "NavigationHeader.Back"
+- runFlow: ../subflows/sign-out.yaml

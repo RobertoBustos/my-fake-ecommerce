@@ -1,6 +1,9 @@
 appId: ${MAESTRO_APP_ID}
 ---
-# A fresh install: no Firebase session, cart id or Redux state from a previous run
+# A fresh install: no Firebase session, cart id or Redux state from a previous run.
+# Permissions are granted up front so the location prompt doesn't block the address screen.
 - launchApp:
     clearState: true
     clearKeychain: true
+    permissions:
+      all: allow

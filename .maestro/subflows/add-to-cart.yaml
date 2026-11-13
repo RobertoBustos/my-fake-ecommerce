@@ -1,0 +1,20 @@
+appId: ${MAESTRO_APP_ID}
+---
+# Adds MAESTRO_ORDER_QUANTITY units of the test product and goes back to the catalog
+- runScript: ../scripts/expected.js
+- runFlow: open-product.yaml
+# The quantity starts at 1 for the test product
+- repeat:
+    times: ${MAESTRO_ORDER_QUANTITY - 1}
+    commands:
+      - tapOn:
+          id: "QuantityButtons.Increment"
+- assertVisible:
+    id: "QuantityButtons.Quantity"
+    text: ${output.expected.quantity}
+- tapOn:
+    id: "ProductScreen.Footer"
+- extendedWaitUntil:
+    visible:
+      id: "ShoppingCartHeaderIcon.Count"
+    timeout: 15000

@@ -24,6 +24,8 @@ follows [Semantic Versioning](https://semver.org/).
 - A product without an image no longer opens a "Cannot load an empty url"
   alert at the end of the catalog. Images that fail to load keep a placeholder
   instead of showing an alert.
+- The address screen enables "Continue" only after the map has finished moving
+  to the address, so the user sees it before confirming.
 
 ### Removed
 

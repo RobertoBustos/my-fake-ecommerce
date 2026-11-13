@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Alert, Image } from "react-native";
+import { Image } from "react-native";
 import { useStyles } from "react-native-unistyles";
 import { fileToBase64 } from "../../utils/fileToBase64";
 import EmptyImage from "../EmptyImage";
@@ -18,17 +18,28 @@ const CustomImage = ({
   testID,
 }: CustomImagePropsType) => {
   const [image, setImage] = useState<string | null>(null);
+  const [hasFailed, setHasFailed] = useState(false);
   const { theme } = useStyles();
 
   const loadImage = useCallback(async () => {
+    setImage(null);
+    setHasFailed(false);
+    // fetch throws on an empty URL, and some products have no image
+    if (!imageUrl) {
+      setHasFailed(true);
+      return;
+    }
     try {
       const response = await fetch(imageUrl);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const blobPart = await response.blob();
       const file = new File([blobPart], "image.jpg", {});
       const fileBase64 = await fileToBase64(file);
       setImage(fileBase64);
     } catch (error) {
-      Alert.alert((error as Error).message);
+      // A missing image is not worth interrupting the user: keep the placeholder
+      console.warn(`Could not load the image ${imageUrl}: ${(error as Error).message}`);
+      setHasFailed(true);
     }
   }, [imageUrl]);
 
@@ -38,7 +49,7 @@ const CustomImage = ({
   }, [loadImage]);
 
   if (image === null) {
-    return <EmptyImage width={width} height={height} />;
+    return <EmptyImage width={width} height={height} isLoading={!hasFailed} />;
   }
 
   return (

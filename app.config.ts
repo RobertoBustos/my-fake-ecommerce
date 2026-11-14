@@ -16,11 +16,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   icon: "./assets/images/icon.png",
   scheme: "myapp",
   userInterfaceStyle: "automatic",
-  newArchEnabled: true,
   ios: {
-    config: {
-      googleMapsApiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY
-    },
     supportsTablet: true,
     bundleIdentifier: process.env.UNIQUE_IDENTIFIER,
     infoPlist: {
@@ -37,11 +33,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     }
   },
   android: {
-    config: {
-      googleMaps: {
-        apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY
-      }
-    },
     adaptiveIcon: {
       foregroundImage: "./assets/icons/adaptive-icon.png",
       monochromeImage: "./assets/icons/adaptive-icon.png",
@@ -64,8 +55,18 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     "expo-router",
+    // expo-router 55 uses iOS 16 APIs without an availability check
+    ["expo-build-properties", { ios: { deploymentTarget: "16.4" } }],
     "./plugins/withIosMinimumDeploymentTarget",
     "./plugins/withFmtCxx17",
+    // react-native-maps 1.21+ replaced the pod that ios.config.googleMapsApiKey adds
+    [
+      "react-native-maps",
+      {
+        iosGoogleMapsApiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY,
+        androidGoogleMapsApiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY
+      }
+    ],
     [
       "expo-splash-screen",
       {

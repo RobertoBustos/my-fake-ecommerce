@@ -23,6 +23,14 @@ follows [Semantic Versioning](https://semver.org/).
 - Expo SDK 54: React Native 0.81, React 19.1, Reanimated 4 and Stripe 0.50.
   Android draws edge-to-edge, so the status bar takes the window's color
   instead of the header's.
+- Expo SDK 55: React Native 0.83, React 19.2 and Stripe 0.63. The New
+  Architecture is the only one, so `newArchEnabled` is gone from the config.
+  Stripe 0.63 fixes the iOS header that `patch-package` used to patch, so the
+  patch and `patch-package` are removed. The app now needs iOS 16.4, because
+  expo-router 55 uses iOS 16 APIs. The Google Maps key goes through the
+  `react-native-maps` config plugin, which replaced the old Google Maps pod.
+  On Android the header pads itself below the status bar, which is navy again,
+  and screens keep their content above the navigation bar.
 
 ### Fixed
 

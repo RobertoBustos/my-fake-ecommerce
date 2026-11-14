@@ -1,7 +1,8 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { useStyles } from "react-native-unistyles";
+import { Platform } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { RootStackParamList } from "../constants/types";
 import { useAuthContext } from "../contexts/AuthContext";
 import useAppState from "../hooks/useAppState";
@@ -19,8 +20,11 @@ import NavigationHeader from "./NavigationHeader";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const RootStack = () => {
-  const { theme } = useStyles();
   const { user, isInitializing } = useAuthContext();
+  // Android draws edge-to-edge, so screens would extend under the navigation bar.
+  // iOS already keeps them above it
+  const insets = useSafeAreaInsets();
+  const navigationBarHeight = Platform.OS === "android" ? insets.bottom : 0;
   useInitialFetch(user?.uid);
   useAppState();
 
@@ -39,7 +43,7 @@ const RootStack = () => {
     <Stack.Navigator
       screenOptions={{
         animation: "slide_from_right",
-        statusBarBackgroundColor: theme.colors.primary,
+        contentStyle: { paddingBottom: navigationBarHeight },
         header: (props) => {
           return <NavigationHeader {...props} />;
         },

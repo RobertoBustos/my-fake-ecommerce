@@ -1,0 +1,19 @@
+diff --git a/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm b/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
+index cc84455..439a357 100644
+--- a/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
++++ b/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
+@@ -124,7 +124,13 @@ using namespace facebook::react;
+ - (void)performOperations
+ {
+   RCTAssertMainQueue();
+-  _performOperations(); // calls ReanimatedModuleProxy::performOperations
++  // The block is registered after the module proxy starts, and the UI runtime can
++  // flush before that at startup (react-native-reanimated#10135, fixed in 4.5.4)
++  REAPerformOperations performOperations = _performOperations;
++  if (performOperations == nil) {
++    return;
++  }
++  performOperations(); // calls ReanimatedModuleProxy::performOperations
+ }
+ 
+ - (void)dispatchEvent:(id<RCTEvent>)event

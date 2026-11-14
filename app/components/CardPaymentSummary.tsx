@@ -1,7 +1,6 @@
 import { Text, View } from "react-native";
 import Svg, { NumberProp, Path, Rect } from "react-native-svg";
-import { useStyles } from "react-native-unistyles";
-import cardPaymentStyleSheet from "../styles/components/CardPaymentSummary";
+import styles from "../styles/components/CardPaymentSummary";
 import CustomCard from "./common/CustomCard";
 
 export type CardPaymentSummaryPropsType = {
@@ -21,8 +20,6 @@ const CardPaymentSummary = ({
   expYear,
   autorization,
 }: CardPaymentSummaryPropsType) => {
-  const { styles } = useStyles(cardPaymentStyleSheet);
-
   const renderCard = (brand: string) => {
     if (brand === "visa") {
       return (

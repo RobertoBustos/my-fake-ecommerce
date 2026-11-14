@@ -1,6 +1,6 @@
-import { createStyleSheet } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
-const catalogItemCardStyleSheet = createStyleSheet((theme) => ({
+const catalogItemCardStyleSheet = StyleSheet.create((theme) => ({
     description: {
         flex: 1,
         alignItems: "center",

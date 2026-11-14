@@ -1,14 +1,14 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Text, View } from "react-native";
-import { useStyles } from "react-native-unistyles";
-import confirmationHeaderStyleSheet from "../../styles/components/ConfirmationHeader";
+import { useUnistyles } from "react-native-unistyles";
+import styles from "../../styles/components/ConfirmationHeader";
 
 export type ConfirmationHeaderPropsType = {
   orderId: string;
 };
 
 const ConfirmationHeader = ({ orderId }: ConfirmationHeaderPropsType) => {
-  const { styles, theme } = useStyles(confirmationHeaderStyleSheet);
+  const { theme } = useUnistyles();
 
   return (
     <View style={styles.container} testID="ConfirmationHeader.Container">

@@ -1,7 +1,6 @@
 import { PropsWithChildren, ReactNode } from "react";
 import { View } from "react-native";
-import { useStyles } from "react-native-unistyles";
-import layoutStyleSheet from "../styles/components/Layout";
+import styles from "../styles/components/Layout";
 import ToastMessage from "./common/ToastMessage";
 
 export type LayoutPropsType = PropsWithChildren & {
@@ -16,8 +15,6 @@ const Layout = ({
   footerComponent,
   testID,
 }: LayoutPropsType) => {
-  const { styles } = useStyles(layoutStyleSheet);
-
   return (
     <View style={styles.container} testID={testID}>
       <ToastMessage />

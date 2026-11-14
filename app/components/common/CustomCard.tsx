@@ -6,8 +6,8 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { useStyles } from "react-native-unistyles";
-import customCardStyleSheet from "../../styles/components/CustomCard";
+import { useUnistyles } from "react-native-unistyles";
+import styles from "../../styles/components/CustomCard";
 
 export type CustomCardPropsType = PropsWithChildren & {
   onPress?: () => void;
@@ -31,17 +31,16 @@ const CustomCard = ({
   testID,
   showEditLabel,
 }: CustomCardPropsType) => {
-  const { styles, theme } = useStyles(customCardStyleSheet);
-  const mixedStyles: StyleProp<ViewStyle> = { ...styles.container };
-  const mixedContentStyles: StyleProp<ViewStyle> = { ...styles.content };
-
-  if (variant === "warning") {
-    mixedStyles.backgroundColor = theme.colors.warning;
-  }
-
-  if (orientation === "vertical") {
-    mixedContentStyles.flexDirection = "column";
-  }
+  const { theme } = useUnistyles();
+  // Unistyles 3 styles can't be spread, so the overrides go in arrays
+  const mixedStyles: StyleProp<ViewStyle> = [
+    styles.container,
+    variant === "warning" && { backgroundColor: theme.colors.warning },
+  ];
+  const mixedContentStyles: StyleProp<ViewStyle> = [
+    styles.content,
+    orientation === "vertical" && { flexDirection: "column" },
+  ];
 
   if (isLoading) return null;
 

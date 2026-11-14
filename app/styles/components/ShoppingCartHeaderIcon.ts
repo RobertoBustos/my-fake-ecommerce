@@ -1,6 +1,6 @@
-import { createStyleSheet } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
-const shoppingCartHeaderIconStylesheet = createStyleSheet(theme => ({
+const shoppingCartHeaderIconStylesheet = StyleSheet.create(theme => ({
     container: {
         minWidth: 30,
         position: "relative"

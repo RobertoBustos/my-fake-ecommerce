@@ -1,6 +1,6 @@
-import { createStyleSheet } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
-const userDetailsFormStyleSheet = createStyleSheet((theme) => ({
+const userDetailsFormStyleSheet = StyleSheet.create((theme) => ({
     container: {
         flex: 1,
     },

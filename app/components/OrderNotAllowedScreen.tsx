@@ -1,10 +1,10 @@
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useEffect } from "react";
 import { Text, View } from "react-native";
-import { useStyles } from "react-native-unistyles";
+import { useUnistyles } from "react-native-unistyles";
 import { useAppDispatch } from "../redux/hooks";
 import { setSelectedOrderId } from "../redux/order/reducer";
-import orderNotAllowedScreenStyleSheet from "../styles/components/OrderNotAllowedScreen";
+import styles from "../styles/components/OrderNotAllowedScreen";
 
 export type OrderNotAllowedScreenPropsType = {
   textToDisplay: string;
@@ -14,7 +14,7 @@ const OrderNotAllowedScreen = ({
   textToDisplay,
 }: OrderNotAllowedScreenPropsType) => {
   const dispatch = useAppDispatch();
-  const { styles, theme } = useStyles(orderNotAllowedScreenStyleSheet);
+  const { theme } = useUnistyles();
 
   useEffect(() => {
     return () => {

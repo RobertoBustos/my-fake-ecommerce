@@ -1,4 +1,4 @@
-import { NavigationProp } from "@react-navigation/native";
+import { NavigationProp } from "expo-router/react-navigation";
 import { useNavigation } from "expo-router";
 import { RootStackParamList } from "../constants/types";
 

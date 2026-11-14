@@ -2,17 +2,6 @@ import { render, screen, waitFor } from "@testing-library/react-native";
 import { Alert } from "react-native";
 import CustomImage from "../CustomImage";
 
-jest.mock("react-native-unistyles", () => ({
-  useStyles: () => ({
-    theme: {
-      colors: { primary: "#000", background: "#fff" },
-      borders: { color: "#ccc", radius: 4 },
-    },
-    styles: { loader: {} },
-  }),
-  createStyleSheet: (styleSheet: unknown) => styleSheet,
-}));
-
 describe("CustomImage", () => {
   const fetchMock = jest.fn();
 

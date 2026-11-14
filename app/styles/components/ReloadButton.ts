@@ -1,6 +1,6 @@
-import { createStyleSheet } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
-const reloadButtonStyleSheet = createStyleSheet(theme => ({
+const reloadButtonStyleSheet = StyleSheet.create(theme => ({
     button: {
         alignItems: "center",
         justifyContent: "center",

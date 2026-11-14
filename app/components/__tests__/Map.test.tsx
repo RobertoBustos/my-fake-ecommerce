@@ -33,11 +33,6 @@ jest.mock("react-native-maps", () => {
   return { __esModule: true, default: MockMapView, Marker: View, PROVIDER_GOOGLE: "google" };
 });
 
-jest.mock("react-native-unistyles", () => ({
-  useStyles: () => ({ styles: { container: {}, map: {} } }),
-  createStyleSheet: (styleSheet: unknown) => styleSheet,
-}));
-
 const coords = { latitude: 19.4326076, longitude: -99.133208, latitudeDelta: 0.01, longitudeDelta: 0.01 };
 
 const renderMap = () => {

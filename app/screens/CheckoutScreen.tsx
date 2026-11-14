@@ -1,4 +1,4 @@
-import { StaticScreenProps } from "@react-navigation/native";
+import { StaticScreenProps } from "expo-router/react-navigation";
 import Layout from "../components/Layout";
 import Checkout from "../components/checkout/Checkout";
 import CheckoutFooter from "../components/checkout/CheckoutFooter";

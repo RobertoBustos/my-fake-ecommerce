@@ -1,6 +1,6 @@
-import { createStyleSheet } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
-const deleteButtonStyleSheet = createStyleSheet(theme => ({
+const deleteButtonStyleSheet = StyleSheet.create(theme => ({
     button: {
         flex: 1,
         alignItems: "center",

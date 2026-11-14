@@ -1,6 +1,6 @@
-import { createStyleSheet } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
-const customFooterStyleSheet = createStyleSheet(theme => ({
+const customFooterStyleSheet = StyleSheet.create(theme => ({
     container: {
         width: "100%",
         height: 70,

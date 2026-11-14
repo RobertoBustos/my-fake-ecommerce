@@ -1,6 +1,5 @@
 import { Text, View } from "react-native";
-import { useStyles } from "react-native-unistyles";
-import quantityButtonsStyleSheet from "../styles/components/QuantityButtons";
+import styles from "../styles/components/QuantityButtons";
 import CustomButton from "./common/CustomButton";
 import { MinusButton, PlusButton } from "./common/IconButtons";
 
@@ -19,8 +18,6 @@ const QuantityButtons = ({
   onChange,
   showValue = true,
 }: AddToCartPropsType) => {
-  const { styles } = useStyles(quantityButtonsStyleSheet);
-
   const incrementQuantity = () => {
     onChange(value + 1);
   };

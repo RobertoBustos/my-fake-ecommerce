@@ -1,6 +1,6 @@
 import { View } from "react-native";
-import { useStyles } from "react-native-unistyles";
-import checkoutButtonsStyleSheet from "../styles/components/CheckoutButtons";
+import { useUnistyles } from "react-native-unistyles";
+import styles from "../styles/components/CheckoutButtons";
 import CustomButton from "./common/CustomButton";
 import DefaultButton from "./common/IconButtons";
 
@@ -17,7 +17,7 @@ const CheckoutButtons = ({
   onEditOrder,
   onCancelOrder,
 }: CheckoutButtonsPropsType) => {
-  const { styles, theme } = useStyles(checkoutButtonsStyleSheet);
+  const { theme } = useUnistyles();
 
   return (
     <View style={styles.container} testID="CheckoutButtons.Container">

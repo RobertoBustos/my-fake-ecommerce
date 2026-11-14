@@ -1,11 +1,11 @@
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { Text, View } from "react-native";
-import { useStyles } from "react-native-unistyles";
+import { useUnistyles } from "react-native-unistyles";
 import { useCartContext } from "../../contexts/CartContext";
-import cartHeaderStyleSheet from "../../styles/components/CartHeader";
+import styles from "../../styles/components/CartHeader";
 
 const CartHeader = () => {
-  const { styles, theme } = useStyles(cartHeaderStyleSheet);
+  const { theme } = useUnistyles();
   const { isCartEmpty } = useCartContext();
 
   if (isCartEmpty) {

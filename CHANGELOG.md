@@ -31,6 +31,12 @@ follows [Semantic Versioning](https://semver.org/).
   `react-native-maps` config plugin, which replaced the old Google Maps pod.
   On Android the header pads itself below the status bar, which is navy again,
   and screens keep their content above the navigation bar.
+- Expo SDK 56: React Native 0.85, TypeScript 6 and Unistyles 3. Style sheets
+  use `StyleSheet.create` and components read the theme with `useUnistyles`.
+  React Navigation comes from expo-router, which bundles its own copy, so the
+  `@react-navigation/*` packages are no longer dependencies. A patch to
+  Reanimated 4.3.1 guards against a startup race that crashed the app on iOS
+  (react-native-reanimated#10135, fixed upstream in 4.5.4).
 
 ### Fixed
 

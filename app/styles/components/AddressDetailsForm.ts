@@ -1,6 +1,6 @@
-import { createStyleSheet } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
-const addressDetailsFormStyleSheet = createStyleSheet((theme) => ({
+const addressDetailsFormStyleSheet = StyleSheet.create((theme) => ({
     input: {
         alignItems: "center",
         width: "100%",

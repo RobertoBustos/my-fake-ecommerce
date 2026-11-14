@@ -1,6 +1,6 @@
-import { createStyleSheet } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
-const customCardStyleSheet = createStyleSheet(theme => ({
+const customCardStyleSheet = StyleSheet.create(theme => ({
     container: {
         width: "100%",
         backgroundColor: theme.colors.surface,

@@ -1,6 +1,6 @@
-import { createStyleSheet } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
-const incompleteOrderStyleSheet = createStyleSheet(theme => ({
+const incompleteOrderStyleSheet = StyleSheet.create(theme => ({
     text: {
         fontSize: 16,
         textAlign: "center",

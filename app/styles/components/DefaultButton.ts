@@ -1,6 +1,6 @@
-import { createStyleSheet } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
-const defaultButtonStyleSheet = createStyleSheet(theme => ({
+const defaultButtonStyleSheet = StyleSheet.create(theme => ({
     button: {
         width: "100%",
         height: "100%",

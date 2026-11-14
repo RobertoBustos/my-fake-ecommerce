@@ -1,6 +1,6 @@
-import { createStyleSheet } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
-const cardPaymentStyleSheet = createStyleSheet(theme => ({
+const cardPaymentStyleSheet = StyleSheet.create(theme => ({
     container: {
         flex: 1,
         alignItems: "center",

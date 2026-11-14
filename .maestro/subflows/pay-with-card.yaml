@@ -26,6 +26,16 @@ appId: ${MAESTRO_APP_ID}
       platform: iOS
     commands:
       - tapOn: "Done"
-# The button shows the amount: "Pay $23.20" on iOS, "Pay MX$23.20" or "Pagar $23.20"
-# on Android. It doesn't match "Pay with Link".
-- tapOn: "(Pay|Pagar) (MX)?\\$.*"
+# On iOS the button shows the amount ("Pay $23.20"), which doesn't match "Pay with Link".
+# On Android Stripe doesn't expose the button text, so it is found by its id.
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn: "Pay \\$.*"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn:
+          id: "primary_button"

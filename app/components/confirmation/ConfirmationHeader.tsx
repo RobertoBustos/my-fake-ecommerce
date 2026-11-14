@@ -22,7 +22,7 @@ const ConfirmationHeader = ({ orderId }: ConfirmationHeaderPropsType) => {
         color={theme.colors.primary}
       />
       <Text style={styles.text} testID="ConfirmationHeader.Text">
-        Thanks for your purchase, here's your order confirmation details
+        {"Thanks for your purchase, here's your order confirmation details"}
       </Text>
     </View>
   );

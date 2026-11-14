@@ -18,6 +18,8 @@ follows [Semantic Versioning](https://semver.org/).
 - The API URL, the Firebase settings and the app name always come from the
   environment file; there are no fallback values in the code.
 - The Xcode 27 deployment target fix lives in a config plugin.
+- Expo SDK 53: React Native 0.79, React 19 and Stripe 0.45. ESLint uses the
+  flat configuration in `eslint.config.js`.
 
 ### Fixed
 

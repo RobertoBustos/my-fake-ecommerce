@@ -31,7 +31,7 @@ const Map = () => {
   const { styles } = useStyles(mapStyleSheet);
   const dispatch = useAppDispatch();
   const mapRef = useRef<MapView>(null);
-  const cameraCheckRef = useRef<ReturnType<typeof setInterval>>();
+  const cameraCheckRef = useRef<ReturnType<typeof setInterval>>(undefined);
   const coords = useAppSelector(selectAdressCoords);
   const marker = coords ? { ...coords, name: "You" } : undefined;
 

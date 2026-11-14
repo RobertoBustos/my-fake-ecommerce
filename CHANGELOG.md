@@ -20,6 +20,9 @@ follows [Semantic Versioning](https://semver.org/).
 - The Xcode 27 deployment target fix lives in a config plugin.
 - Expo SDK 53: React Native 0.79, React 19 and Stripe 0.45. ESLint uses the
   flat configuration in `eslint.config.js`.
+- Expo SDK 54: React Native 0.81, React 19.1, Reanimated 4 and Stripe 0.50.
+  Android draws edge-to-edge, so the status bar takes the window's color
+  instead of the header's.
 
 ### Fixed
 

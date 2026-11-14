@@ -4,6 +4,7 @@
 - All development reaches `dev` through a PR. `main` only receives releases (`release/sprint-<n>`, or `release/v<x.y.z>` outside a sprint) and hotfixes (`hotfix/ECOMMOB-<n>-<slug>`). The `branch-guard` CI job rejects any other branch into `main`.
 - `dev` and `main` are protected: a PR is required, the branch must be up to date, conversations must be resolved, and the rules also apply to admins.
 - Required checks: `lint`, `typecheck`, `test`, `gitleaks` and `bundle`, plus `branch-guard` on `main`. `audit` is not required, so a new advisory can't block a hotfix.
+- `e2e-android` and `e2e-ios` (`.github/workflows/e2e.yml`) run the Maestro flows on every PR: `smoke` into `dev`, all of them into `main` or from a manual run with `all`. They are not required yet. Each one is added to the protection of `dev` and `main` after about two weeks without false failures.
 - Tasks are squashed into `dev` (`gh pr merge <n> --squash`). **`main` only accepts merge commits**, enforced by a ruleset. The PR from `main` back to `dev` also uses a merge commit, which nothing enforces on `dev`: `gh pr merge <n> --merge`.
 - If `main` is not an ancestor of `dev` (`git merge-base --is-ancestor origin/main origin/dev` fails), a normal merge produces false conflicts. First confirm that the content of `main` is already in `dev`, then merge with `git merge -s ours`: on the release branch, `-s ours origin/main`; for the way back, on a branch from `main`, `-s ours origin/dev`.
 - Before handing over: `yarn lint`, `npx tsc --noEmit` and `npx jest --ci --passWithNoTests`, as CI runs them.

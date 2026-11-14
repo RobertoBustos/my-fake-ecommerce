@@ -15,41 +15,44 @@ concurrency:
   group: e2e-${{ github.ref }}
   cancel-in-progress: true
 
+# The Maestro flows against a Release build, on an Android emulator and an iOS simulator.
+# They use the production API with the dedicated test users and product. Not required checks.
+env:
+  APP_NAME: ${{ vars.APP_NAME }}
+  UNIQUE_IDENTIFIER: ${{ vars.UNIQUE_IDENTIFIER }}
+  EXPO_PUBLIC_API_URL: ${{ vars.EXPO_PUBLIC_API_URL }}
+  EXPO_PUBLIC_FIREBASE_API_KEY: ${{ secrets.EXPO_PUBLIC_FIREBASE_API_KEY }}
+  EXPO_PUBLIC_FIREBASE_APP_ID: ${{ vars.EXPO_PUBLIC_FIREBASE_APP_ID }}
+  EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ vars.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+  EXPO_PUBLIC_FIREBASE_PROJECT_ID: ${{ vars.EXPO_PUBLIC_FIREBASE_PROJECT_ID }}
+  EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+  EXPO_PUBLIC_GOOGLE_MAPS_API_KEY: ${{ secrets.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY }}
+  # Maestro reads every environment variable that starts with MAESTRO_
+  MAESTRO_APP_ID: ${{ vars.UNIQUE_IDENTIFIER }}
+  MAESTRO_EMAIL: ${{ vars.MAESTRO_EMAIL }}
+  MAESTRO_PASSWORD: ${{ secrets.MAESTRO_PASSWORD }}
+  MAESTRO_OTHER_EMAIL: ${{ vars.MAESTRO_OTHER_EMAIL }}
+  MAESTRO_OTHER_PASSWORD: ${{ secrets.MAESTRO_OTHER_PASSWORD }}
+  MAESTRO_PRODUCT_ID: ${{ vars.MAESTRO_PRODUCT_ID }}
+  MAESTRO_PRODUCT_TITLE: ${{ vars.MAESTRO_PRODUCT_TITLE }}
+  MAESTRO_PRODUCT_PRICE: ${{ vars.MAESTRO_PRODUCT_PRICE }}
+  MAESTRO_ORDER_QUANTITY: ${{ vars.MAESTRO_ORDER_QUANTITY }}
+  MAESTRO_EXPECTED_SUBTOTAL: ${{ vars.MAESTRO_EXPECTED_SUBTOTAL }}
+  MAESTRO_EXPECTED_TAXES: ${{ vars.MAESTRO_EXPECTED_TAXES }}
+  MAESTRO_EXPECTED_TOTAL: ${{ vars.MAESTRO_EXPECTED_TOTAL }}
+  MAESTRO_CARD_NUMBER: ${{ vars.MAESTRO_CARD_NUMBER }}
+  MAESTRO_CARD_EXPIRY: ${{ vars.MAESTRO_CARD_EXPIRY }}
+  MAESTRO_CARD_CVC: ${{ vars.MAESTRO_CARD_CVC }}
+  # smoke on every pull request into dev; every flow into main or when asked
+  MAESTRO_TAGS: ${{ (github.base_ref != 'main' && inputs.flows != 'all') && '--include-tags smoke' || '' }}
+
 jobs:
-  # The Maestro flows against a Release build on an Android emulator. They use the
-  # production API with the dedicated test users and product. Not a required check.
   e2e-android:
     name: e2e-android
     # Pull requests from forks get no secrets, so they can't build the app
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    env:
-      APP_NAME: ${{ vars.APP_NAME }}
-      UNIQUE_IDENTIFIER: ${{ vars.UNIQUE_IDENTIFIER }}
-      EXPO_PUBLIC_API_URL: ${{ vars.EXPO_PUBLIC_API_URL }}
-      EXPO_PUBLIC_FIREBASE_API_KEY: ${{ secrets.EXPO_PUBLIC_FIREBASE_API_KEY }}
-      EXPO_PUBLIC_FIREBASE_APP_ID: ${{ vars.EXPO_PUBLIC_FIREBASE_APP_ID }}
-      EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ vars.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN }}
-      EXPO_PUBLIC_FIREBASE_PROJECT_ID: ${{ vars.EXPO_PUBLIC_FIREBASE_PROJECT_ID }}
-      EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
-      EXPO_PUBLIC_GOOGLE_MAPS_API_KEY: ${{ secrets.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY }}
-      # Maestro reads every environment variable that starts with MAESTRO_
-      MAESTRO_APP_ID: ${{ vars.UNIQUE_IDENTIFIER }}
-      MAESTRO_EMAIL: ${{ vars.MAESTRO_EMAIL }}
-      MAESTRO_PASSWORD: ${{ secrets.MAESTRO_PASSWORD }}
-      MAESTRO_OTHER_EMAIL: ${{ vars.MAESTRO_OTHER_EMAIL }}
-      MAESTRO_OTHER_PASSWORD: ${{ secrets.MAESTRO_OTHER_PASSWORD }}
-      MAESTRO_PRODUCT_ID: ${{ vars.MAESTRO_PRODUCT_ID }}
-      MAESTRO_PRODUCT_TITLE: ${{ vars.MAESTRO_PRODUCT_TITLE }}
-      MAESTRO_PRODUCT_PRICE: ${{ vars.MAESTRO_PRODUCT_PRICE }}
-      MAESTRO_ORDER_QUANTITY: ${{ vars.MAESTRO_ORDER_QUANTITY }}
-      MAESTRO_EXPECTED_SUBTOTAL: ${{ vars.MAESTRO_EXPECTED_SUBTOTAL }}
-      MAESTRO_EXPECTED_TAXES: ${{ vars.MAESTRO_EXPECTED_TAXES }}
-      MAESTRO_EXPECTED_TOTAL: ${{ vars.MAESTRO_EXPECTED_TOTAL }}
-      MAESTRO_CARD_NUMBER: ${{ vars.MAESTRO_CARD_NUMBER }}
-      MAESTRO_CARD_EXPIRY: ${{ vars.MAESTRO_CARD_EXPIRY }}
-      MAESTRO_CARD_CVC: ${{ vars.MAESTRO_CARD_CVC }}
     steps:
       - uses: actions/checkout@v7
 
@@ -84,18 +87,6 @@ jobs:
           curl -fsSL "https://get.maestro.mobile.dev" | MAESTRO_VERSION=2.12.1 bash
           echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
 
-      # smoke on every pull request into dev; every flow into main or when asked
-      - name: Choose the flows
-        env:
-          BASE_REF: ${{ github.base_ref }}
-          FLOWS_INPUT: ${{ inputs.flows }}
-        run: |
-          if [ "$BASE_REF" = "main" ] || [ "$FLOWS_INPUT" = "all" ]; then
-            echo "MAESTRO_TAGS=" >> "$GITHUB_ENV"
-          else
-            echo "MAESTRO_TAGS=--include-tags smoke" >> "$GITHUB_ENV"
-          fi
-
       # The runner runs each script line as its own command
       - name: Run the flows on an emulator
         uses: reactivecircus/android-emulator-runner@v2
@@ -119,5 +110,102 @@ jobs:
           path: |
             maestro-report.xml
             maestro-results/
+          include-hidden-files: true
+          retention-days: 14
+
+  e2e-ios:
+    name: e2e-ios
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    # Xcode 26.6 and iOS 26.5 simulators. The xcode-27 image once the app builds with Xcode 27 in CI
+    runs-on: macos-26
+    timeout-minutes: 75
+    env:
+      SIMULATOR_RUNTIME: com.apple.CoreSimulator.SimRuntime.iOS-26-5
+      SIMULATOR_NAME: iPhone 17
+      # The iOS driver takes longer than the default to start on a CI runner
+      MAESTRO_DRIVER_STARTUP_TIMEOUT: 180000
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - name: Generate the iOS project
+        run: npx expo prebuild --platform ios --no-install
+
+      # ios/ isn't tracked, so Podfile.lock only exists after pod install. The generated
+      # Podfile and yarn.lock decide which pods get installed
+      - uses: actions/cache@v6
+        with:
+          path: ios/Pods
+          key: pods-${{ runner.os }}-${{ hashFiles('ios/Podfile', 'ios/Podfile.properties.json', 'yarn.lock') }}
+
+      - name: Install the pods
+        working-directory: ios
+        run: pod install
+
+      - name: Pick the simulator
+        run: |
+          udid=$(xcrun simctl list devices available --json \
+            | jq -r --arg runtime "$SIMULATOR_RUNTIME" --arg name "$SIMULATOR_NAME" \
+              '.devices[$runtime][] | select(.name == $name) | .udid' | head -n 1)
+          if [ -z "$udid" ]; then
+            echo "No $SIMULATOR_NAME simulator with $SIMULATOR_RUNTIME" >&2
+            exit 1
+          fi
+          echo "SIMULATOR_UDID=$udid" >> "$GITHUB_ENV"
+
+      # Only the simulator's architecture, like the single ABI on Android. The full log
+      # goes to the artifact; the job log only shows the errors
+      - name: Build the Release app
+        working-directory: ios
+        run: |
+          workspaces=(./*.xcworkspace)
+          workspace=$(basename "${workspaces[0]}")
+          if ! xcodebuild \
+            -workspace "$workspace" \
+            -scheme "${workspace%.xcworkspace}" \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -destination "id=$SIMULATOR_UDID" \
+            -derivedDataPath build \
+            ONLY_ACTIVE_ARCH=YES \
+            CODE_SIGNING_ALLOWED=NO \
+            build > xcodebuild.log 2>&1; then
+            grep -E 'error:' xcodebuild.log | head -n 50
+            tail -n 50 xcodebuild.log
+            exit 1
+          fi
+
+      - name: Install Maestro
+        run: |
+          curl -fsSL "https://get.maestro.mobile.dev" | MAESTRO_VERSION=2.12.1 bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+
+      - name: Boot the simulator and install the app
+        run: |
+          xcrun simctl boot "$SIMULATOR_UDID"
+          xcrun simctl bootstatus "$SIMULATOR_UDID"
+          xcrun simctl install "$SIMULATOR_UDID" ios/build/Build/Products/Release-iphonesimulator/*.app
+
+      # MAESTRO_TAGS is split on purpose: it's empty or "--include-tags smoke"
+      - name: Run the flows on the simulator
+        run: |
+          # shellcheck disable=SC2086
+          maestro --device "$SIMULATOR_UDID" test .maestro $MAESTRO_TAGS --format junit --output maestro-report.xml --debug-output maestro-results
+
+      - name: Upload the report and the results
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: maestro-ios
+          path: |
+            maestro-report.xml
+            maestro-results/
+            ios/xcodebuild.log
           include-hidden-files: true
           retention-days: 14

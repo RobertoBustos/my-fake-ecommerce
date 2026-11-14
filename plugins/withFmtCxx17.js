@@ -18,8 +18,9 @@ module.exports = (config) =>
       tag: "fmt-cxx17",
       src: podfileConfig.modResults.contents,
       newSrc: POST_INSTALL_BLOCK,
-      anchor: /# This is necessary for Xcode 14, because it signs resource bundles by default/,
-      offset: 0,
+      // Right after the react_native_post_install(...) call, whose last argument is this line
+      anchor: /:ccache_enabled => ccache_enabled\?\(podfile_properties\),/,
+      offset: 2,
       comment: "#",
     }).contents;
     return podfileConfig;

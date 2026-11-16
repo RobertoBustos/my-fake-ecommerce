@@ -1,8 +1,6 @@
-// expo-router 56 has no public entry point for the native stack yet
-import { createNativeStackNavigator } from "expo-router/build/react-navigation/native-stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { RootStackParamList } from "../constants/types";
 import { useAuthContext } from "../contexts/AuthContext";
@@ -22,10 +20,9 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const RootStack = () => {
   const { user, isInitializing } = useAuthContext();
-  // Android draws edge-to-edge, so screens would extend under the navigation bar.
-  // iOS already keeps them above it
+  // Screens draw edge-to-edge, so their content is kept above the home indicator
+  // and the navigation bar
   const insets = useSafeAreaInsets();
-  const navigationBarHeight = Platform.OS === "android" ? insets.bottom : 0;
   useInitialFetch(user?.uid);
   useAppState();
 
@@ -44,7 +41,9 @@ const RootStack = () => {
     <Stack.Navigator
       screenOptions={{
         animation: "slide_from_right",
-        contentStyle: { paddingBottom: navigationBarHeight },
+        contentStyle: { paddingBottom: insets.bottom },
+        // The header extends under the status bar, so its text and icons stay light
+        statusBarStyle: "light",
         header: (props) => {
           return <NavigationHeader {...props} />;
         },

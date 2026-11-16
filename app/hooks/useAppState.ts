@@ -8,7 +8,7 @@ const useAppState = () => {
     useEffect(() => {
         const subscription = AppState.addEventListener('change', nextAppState => {
             if (
-                appState.current.match(/inactive|background/) &&
+                appState.current?.match(/inactive|background/) &&
                 nextAppState === 'active'
             ) {
                 console.info('App has come to the foreground!');

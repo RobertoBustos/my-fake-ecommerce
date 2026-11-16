@@ -50,19 +50,23 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   web: {
     bundler: "metro",
-    output: "static",
+    output: "single",
     favicon: "./assets/images/favicon.png"
   },
   plugins: [
-    "expo-router",
     [
       "expo-build-properties",
       {
         ios: {
-          // expo-router 55 uses iOS 16 APIs without an availability check
+          // The minimum since Expo SDK 56
           deploymentTarget: "16.4",
-          // iOS 27 stops apps that don't use the scene lifecycle at launch. SDK 58 has it built in
-          enableSceneSupport: true,
+          // Stripe 0.78+ gets its iOS SDK through Swift Package Manager, which needs dynamic frameworks
+          useFrameworks: "dynamic",
+        },
+        android: {
+          // R8 strips the Room database that WorkManager (from react-native-maps) creates by
+          // name, and the app crashes at launch
+          extraProguardRules: "-keep class * extends androidx.room.RoomDatabase { <init>(); }",
         },
       },
     ],

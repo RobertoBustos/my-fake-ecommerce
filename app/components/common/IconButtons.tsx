@@ -97,7 +97,7 @@ const DefaultButton = ({
   // The disabled color wins over a custom one
   const mixedStyles: StyleProp<ViewStyle> = [
     styles.button,
-    backgroundColor && { backgroundColor },
+    backgroundColor ? { backgroundColor } : undefined,
     (disabled || isLoading) && { backgroundColor: theme.colors.disabled },
   ];
 

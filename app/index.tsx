@@ -1,7 +1,5 @@
-// Registers the themes before any style sheet is created. Nothing else imports it:
-// in development expo-router happens to load it as a route file, a Release build doesn't
-import "./styles/config/unistyles";
-import { AppRegistry } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import RootContext from "./contexts";
 import RootStack from "./navigation";
 if (__DEV__) {
@@ -10,10 +8,12 @@ if (__DEV__) {
 
 export default function Index() {
   return (
-    <RootContext>
-      <RootStack />
-    </RootContext>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <RootContext>
+          <RootStack />
+        </RootContext>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
-
-AppRegistry.registerComponent("MyFakeEcommerce", () => Index);

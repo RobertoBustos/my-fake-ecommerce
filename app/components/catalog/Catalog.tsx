@@ -29,7 +29,7 @@ const Catalog = () => {
       onRefresh={handleRefresh}
       onEndReached={loadMore}
       onEndReachedThreshold={0.5}
-      ListFooterComponent={isLoadingMore ? <ActivityIndicator /> : null}
+      ListFooterComponent={isLoadingMore ? <ActivityIndicator /> : undefined}
       testID="Catalog.Container"
     />
   );

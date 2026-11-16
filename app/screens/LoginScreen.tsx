@@ -137,7 +137,7 @@ const LoginScreen = () => {
               placeholder="PASSWORD"
               onBlur={onBlur}
               onChangeText={onChange}
-              onSubmitEditing={submit}
+              onSubmitEditing={() => submit()}
               value={value}
               style={getInputStyles(errors.password?.message)}
               placeholderTextColor={theme.colors.typography}

@@ -1,7 +1,6 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-// expo-router 56 has no public entry point for the native stack yet
-import { NativeStackHeaderProps } from "expo-router/build/react-navigation/native-stack";
-import { Alert, Platform, Text, View } from "react-native";
+import { NativeStackHeaderProps } from "@react-navigation/native-stack";
+import { Alert, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useUnistyles } from "react-native-unistyles";
 import ShoppingCartHeaderIcon from "../components/ShoppingCartHeaderIcon";
@@ -11,10 +10,8 @@ import styles from "../styles/components/NavigationHeader";
 const NavigationHeader = (props: NativeStackHeaderProps) => {
   const { theme } = useUnistyles();
   const { isAnonymous, signOut } = useAuthContext();
-  // Android draws edge-to-edge, so the header extends under the status bar.
-  // iOS already places the screen below it
+  // The screens draw edge-to-edge, so the header extends under the status bar
   const insets = useSafeAreaInsets();
-  const statusBarHeight = Platform.OS === "android" ? insets.top : 0;
 
   const handleGoBack = () => {
     props.navigation.goBack();
@@ -44,7 +41,7 @@ const NavigationHeader = (props: NativeStackHeaderProps) => {
   };
 
   return (
-    <View style={[styles.statusBarArea, { paddingTop: statusBarHeight }]}>
+    <View style={[styles.statusBarArea, { paddingTop: insets.top }]}>
       <View style={styles.container}>
         <View style={styles.backContainer}>
           {props.navigation.canGoBack() ? (

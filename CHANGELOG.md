@@ -40,6 +40,22 @@ follows [Semantic Versioning](https://semver.org/).
 - Expo SDK 57: React Native 0.86 and Reanimated 4.5, which fixes the Hermes V1
   memory regression. The app adopts the iOS scene lifecycle, so it launches on
   iOS 27. Reanimated 4.5.1 still needs the startup patch.
+- Expo SDK 58: React Native 0.88, React 19.3, Reanimated 4.7, Stripe 0.81 and
+  Jest 30. The scene lifecycle comes with the template, and Reanimated 4.7
+  includes the startup fix, so the patch and `patch-package` are removed again.
+  Android release builds are shrunk with R8, with a keep rule for the Room
+  database of WorkManager. react-native-root-toast moves to 4.0.
+- The app no longer uses expo-router. It was only the entry point, and
+  expo-router 58 can't host a navigator built by hand inside a route. `index.ts`
+  registers the app, which wraps its React Navigation stack in a
+  `NavigationContainer` and a `SafeAreaProvider`. Without expo-router iOS also
+  draws edge-to-edge: the header pads itself below the status bar, which is
+  navy with light text on both platforms, and screens stay above the home
+  indicator.
+  Stripe is on 0.82.0 instead of the 0.81.0 that Expo recommends, because
+  0.81.0 breaks Android release builds on AGP 9; `expo.install.exclude` lets
+  `expo install --check` accept it. iOS pods build as dynamic frameworks,
+  which Stripe's Swift Package Manager setup requires.
 
 ### Fixed
 

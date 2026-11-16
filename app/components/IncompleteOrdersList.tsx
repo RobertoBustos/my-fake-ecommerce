@@ -1,4 +1,4 @@
-import { useIsFocused } from "expo-router";
+import { useIsFocused } from "@react-navigation/native";
 import { useEffect } from "react";
 import useOrder from "../hooks/useOrder";
 import { setCartFromOrder } from "../redux/cart/reducer";

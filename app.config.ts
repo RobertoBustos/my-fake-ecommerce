@@ -55,8 +55,17 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     "expo-router",
-    // expo-router 55 uses iOS 16 APIs without an availability check
-    ["expo-build-properties", { ios: { deploymentTarget: "16.4" } }],
+    [
+      "expo-build-properties",
+      {
+        ios: {
+          // expo-router 55 uses iOS 16 APIs without an availability check
+          deploymentTarget: "16.4",
+          // iOS 27 stops apps that don't use the scene lifecycle at launch. SDK 58 has it built in
+          enableSceneSupport: true,
+        },
+      },
+    ],
     "./plugins/withIosMinimumDeploymentTarget",
     "./plugins/withFmtCxx17",
     // react-native-maps 1.21+ replaced the pod that ios.config.googleMapsApiKey adds

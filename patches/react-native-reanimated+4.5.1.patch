@@ -1,8 +1,8 @@
 diff --git a/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm b/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
-index cc84455..439a357 100644
+index b89253d..f1e4666 100644
 --- a/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
 +++ b/node_modules/react-native-reanimated/apple/reanimated/apple/REANodesManager.mm
-@@ -124,7 +124,13 @@ using namespace facebook::react;
+@@ -125,7 +125,13 @@ using namespace facebook::react;
  - (void)performOperations
  {
    RCTAssertMainQueue();

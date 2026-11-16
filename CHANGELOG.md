@@ -37,6 +37,9 @@ follows [Semantic Versioning](https://semver.org/).
   `@react-navigation/*` packages are no longer dependencies. A patch to
   Reanimated 4.3.1 guards against a startup race that crashed the app on iOS
   (react-native-reanimated#10135, fixed upstream in 4.5.4).
+- Expo SDK 57: React Native 0.86 and Reanimated 4.5, which fixes the Hermes V1
+  memory regression. The app adopts the iOS scene lifecycle, so it launches on
+  iOS 27. Reanimated 4.5.1 still needs the startup patch.
 
 ### Fixed
 

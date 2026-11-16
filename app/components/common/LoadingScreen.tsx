@@ -1,10 +1,10 @@
 import { View } from "react-native";
-import { useStyles } from "react-native-unistyles";
-import loadingScreenStyleSheet from "../../styles/components/LoadingScreen";
+import { useUnistyles } from "react-native-unistyles";
+import styles from "../../styles/components/LoadingScreen";
 import LoadingSpinner from "../LoadingSpinner";
 
 const LoadingScreen = () => {
-  const { styles, theme } = useStyles(loadingScreenStyleSheet);
+  const { theme } = useUnistyles();
 
   return (
     <View style={styles.container} testID="LoadingScreen.Container">

@@ -7,12 +7,11 @@ import MapView, {
   PROVIDER_GOOGLE,
   Region,
 } from "react-native-maps";
-import { useStyles } from "react-native-unistyles";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setMapCenter } from "../redux/order/reducer";
 import { selectAdressCoords } from "../redux/order/selectors";
 import { isSameLocation } from "../utils/isSameLocation";
-import mapStyleSheet from "../styles/components/Map";
+import styles from "../styles/components/Map";
 
 const INITIAL_REGION: MapViewProps["initialRegion"] = {
   latitude: 19,
@@ -28,7 +27,6 @@ const CAMERA_CHECK_INTERVAL = 500;
 const CHECKS_BEFORE_RECENTER = 6;
 
 const Map = () => {
-  const { styles } = useStyles(mapStyleSheet);
   const dispatch = useAppDispatch();
   const mapRef = useRef<MapView>(null);
   const cameraCheckRef = useRef<ReturnType<typeof setInterval>>(undefined);

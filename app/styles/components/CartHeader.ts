@@ -1,6 +1,6 @@
-import { createStyleSheet } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
-const cartHeaderStyleSheet = createStyleSheet((theme) => ({
+const cartHeaderStyleSheet = StyleSheet.create((theme) => ({
     container: {
         width: "100%",
         alignItems: "center",

@@ -2,7 +2,7 @@ const { withPodfile } = require("expo/config-plugins");
 const { mergeContents } = require("@expo/config-plugins/build/utils/generateCode");
 
 // Xcode 27 rejects deployment targets below iOS 15, some pods still declare older ones
-const POST_INSTALL_BLOCK = `    minimum_deployment_target = podfile_properties['ios.deploymentTarget'] || '15.1'
+const POST_INSTALL_BLOCK = `    minimum_deployment_target = podfile_properties['ios.deploymentTarget'] || '16.4'
     installer.generated_projects.each do |project|
       project.targets.each do |target|
         target.build_configurations.each do |config|

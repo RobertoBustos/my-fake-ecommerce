@@ -1,9 +1,8 @@
 import { useMemo } from "react";
 import { Text, View } from "react-native";
-import { useStyles } from "react-native-unistyles";
 import { CartItemType } from "../constants/types";
 import { useCartContext } from "../contexts/CartContext";
-import cartItemCardStyleSheet from "../styles/components/CartItemCard";
+import styles from "../styles/components/CartItemCard";
 import { formatCurrency } from "../utils/formatCurrency";
 import CustomButton from "./common/CustomButton";
 import CustomCard from "./common/CustomCard";
@@ -17,7 +16,6 @@ export type CartItemCardPropsType = {
 
 const CartItemCard = ({ data, disabled }: CartItemCardPropsType) => {
   const { removeFromCart, redirectToProduct } = useCartContext();
-  const { styles } = useStyles(cartItemCardStyleSheet);
 
   const handleRemoveFromCart = () => {
     removeFromCart(data.id);

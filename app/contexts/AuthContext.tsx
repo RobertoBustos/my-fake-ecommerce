@@ -72,15 +72,18 @@ const AuthStore = ({ children }: PropsWithChildren) => {
   const previousUserId = useRef<string | null>(null);
 
   const startAnonymousSession = useCallback(() => {
-    signInAnonymously(auth).catch((error) => {
-      setIsInitializing(false);
-      Alert.alert(
-        "We could not start your session",
-        getAuthErrorMessage(error),
-        [{ text: "Try again", onPress: () => startAnonymousSession() }],
-        { cancelable: false }
-      );
-    });
+    const signIn = () => {
+      signInAnonymously(auth).catch((error) => {
+        setIsInitializing(false);
+        Alert.alert(
+          "We could not start your session",
+          getAuthErrorMessage(error),
+          [{ text: "Try again", onPress: signIn }],
+          { cancelable: false }
+        );
+      });
+    };
+    signIn();
   }, []);
 
   useEffect(() => {

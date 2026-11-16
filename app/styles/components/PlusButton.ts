@@ -1,6 +1,6 @@
-import { createStyleSheet } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
-const plusButtonStyleSheet = createStyleSheet(theme => ({
+const plusButtonStyleSheet = StyleSheet.create(theme => ({
     button: {
         alignItems: "center",
         justifyContent: "center",

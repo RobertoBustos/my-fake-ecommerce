@@ -1,6 +1,6 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { ColorValue, StyleProp, Text, View, ViewStyle } from "react-native";
-import { useStyles } from "react-native-unistyles";
+import { useUnistyles } from "react-native-unistyles";
 import defaultButtonStyleSheet from "../../styles/components/DefaultButton";
 import deleteButtonStyleSheet from "../../styles/components/DeleteButton";
 import minusButtonStyleSheet from "../../styles/components/MinusButton";
@@ -15,12 +15,13 @@ export type IconButtonPropsType = {
 };
 
 export const DeleteButton = ({ size = 30, disabled }: IconButtonPropsType) => {
-  const { styles, theme } = useStyles(deleteButtonStyleSheet);
-  const mixedStyles: StyleProp<ViewStyle> = { ...styles.button };
-
-  if (disabled) {
-    mixedStyles.backgroundColor = theme.colors.disabled;
-  }
+  const styles = deleteButtonStyleSheet;
+  const { theme } = useUnistyles();
+  // Unistyles 3 styles can't be spread, so the override goes in an array
+  const mixedStyles: StyleProp<ViewStyle> = [
+    styles.button,
+    disabled && { backgroundColor: theme.colors.disabled },
+  ];
 
   return (
     <View style={mixedStyles}>
@@ -30,12 +31,13 @@ export const DeleteButton = ({ size = 30, disabled }: IconButtonPropsType) => {
 };
 
 export const PlusButton = ({ size = 30, disabled }: IconButtonPropsType) => {
-  const { styles, theme } = useStyles(plusButtonStyleSheet);
-  const mixedStyles: StyleProp<ViewStyle> = { ...styles.button };
-
-  if (disabled) {
-    mixedStyles.backgroundColor = theme.colors.disabled;
-  }
+  const styles = plusButtonStyleSheet;
+  const { theme } = useUnistyles();
+  // Unistyles 3 styles can't be spread, so the override goes in an array
+  const mixedStyles: StyleProp<ViewStyle> = [
+    styles.button,
+    disabled && { backgroundColor: theme.colors.disabled },
+  ];
 
   return (
     <View style={mixedStyles}>
@@ -45,12 +47,13 @@ export const PlusButton = ({ size = 30, disabled }: IconButtonPropsType) => {
 };
 
 export const MinusButton = ({ size = 30, disabled }: IconButtonPropsType) => {
-  const { styles, theme } = useStyles(minusButtonStyleSheet);
-  const mixedStyles: StyleProp<ViewStyle> = { ...styles.button };
-
-  if (disabled) {
-    mixedStyles.backgroundColor = theme.colors.disabled;
-  }
+  const styles = minusButtonStyleSheet;
+  const { theme } = useUnistyles();
+  // Unistyles 3 styles can't be spread, so the override goes in an array
+  const mixedStyles: StyleProp<ViewStyle> = [
+    styles.button,
+    disabled && { backgroundColor: theme.colors.disabled },
+  ];
 
   return (
     <View style={mixedStyles}>
@@ -60,12 +63,13 @@ export const MinusButton = ({ size = 30, disabled }: IconButtonPropsType) => {
 };
 
 export const ReloadButton = ({ size = 30, disabled }: IconButtonPropsType) => {
-  const { styles, theme } = useStyles(reloadButtonStyleSheet);
-  const mixedStyles: StyleProp<ViewStyle> = { ...styles.button };
-
-  if (disabled) {
-    mixedStyles.backgroundColor = theme.colors.disabled;
-  }
+  const styles = reloadButtonStyleSheet;
+  const { theme } = useUnistyles();
+  // Unistyles 3 styles can't be spread, so the override goes in an array
+  const mixedStyles: StyleProp<ViewStyle> = [
+    styles.button,
+    disabled && { backgroundColor: theme.colors.disabled },
+  ];
   return (
     <View style={mixedStyles}>
       <FontAwesome name="refresh" size={size} color={theme.colors.typography} />
@@ -87,16 +91,15 @@ const DefaultButton = ({
   isLoading,
   backgroundColor,
 }: DefaultButtonPropsType) => {
-  const { styles, theme } = useStyles(defaultButtonStyleSheet);
-  const mixedStyles: StyleProp<ViewStyle> = { ...styles.button };
-
-  if (backgroundColor) {
-    mixedStyles.backgroundColor = backgroundColor;
-  }
-
-  if (disabled || isLoading) {
-    mixedStyles.backgroundColor = theme.colors.disabled;
-  }
+  const styles = defaultButtonStyleSheet;
+  const { theme } = useUnistyles();
+  // Unistyles 3 styles can't be spread, so the overrides go in an array.
+  // The disabled color wins over a custom one
+  const mixedStyles: StyleProp<ViewStyle> = [
+    styles.button,
+    backgroundColor && { backgroundColor },
+    (disabled || isLoading) && { backgroundColor: theme.colors.disabled },
+  ];
 
   return (
     <View style={mixedStyles}>

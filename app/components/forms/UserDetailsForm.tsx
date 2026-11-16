@@ -2,14 +2,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Text, TextInput } from "react-native";
-import { useStyles } from "react-native-unistyles";
+import { useUnistyles } from "react-native-unistyles";
 import { ZodType, z } from "zod";
 import { UserType } from "../../constants/types";
 import { PHONE_PATTERN } from "../../constants/validation";
 import { useOrderContext } from "../../contexts/OrderContext";
 import { useAppDispatch } from "../../redux/hooks";
 import { setCustomerData } from "../../redux/order/reducer";
-import userDetailsFormStyleSheet from "../../styles/components/UserDetailsForm";
+import styles from "../../styles/components/UserDetailsForm";
 import CustomCard from "../common/CustomCard";
 
 const validationSchema = z.object({
@@ -25,7 +25,7 @@ const validationSchema = z.object({
 
 const UserDetailsForm = () => {
   const dispatch = useAppDispatch();
-  const { styles, theme } = useStyles(userDetailsFormStyleSheet);
+  const { theme } = useUnistyles();
   const { orderData } = useOrderContext();
 
   const {
@@ -51,11 +51,11 @@ const UserDetailsForm = () => {
   const getInputStyles = useCallback(
     (error?: string) => {
       if (error) {
-        return { ...styles.input, borderColor: theme.colors.error };
+        return [styles.input, { borderColor: theme.colors.error }];
       }
       return styles.input;
     },
-    [styles.input, theme.colors.error]
+    [theme.colors.error]
   );
 
   useEffect(() => {

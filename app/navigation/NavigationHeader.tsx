@@ -1,14 +1,15 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { NativeStackHeaderProps } from "@react-navigation/native-stack";
+// expo-router 56 has no public entry point for the native stack yet
+import { NativeStackHeaderProps } from "expo-router/build/react-navigation/native-stack";
 import { Alert, Platform, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useStyles } from "react-native-unistyles";
+import { useUnistyles } from "react-native-unistyles";
 import ShoppingCartHeaderIcon from "../components/ShoppingCartHeaderIcon";
 import { useAuthContext } from "../contexts/AuthContext";
-import navigationHeaderStyleSheet from "../styles/components/NavigationHeader";
+import styles from "../styles/components/NavigationHeader";
 
 const NavigationHeader = (props: NativeStackHeaderProps) => {
-  const { styles, theme } = useStyles(navigationHeaderStyleSheet);
+  const { theme } = useUnistyles();
   const { isAnonymous, signOut } = useAuthContext();
   // Android draws edge-to-edge, so the header extends under the status bar.
   // iOS already places the screen below it

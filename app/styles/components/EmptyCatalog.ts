@@ -1,6 +1,6 @@
-import { createStyleSheet } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
-const emptyCatalogStyleSheet = createStyleSheet((theme) => ({
+const emptyCatalogStyleSheet = StyleSheet.create((theme) => ({
     container: {
         flex: 1,
         width: "100%",

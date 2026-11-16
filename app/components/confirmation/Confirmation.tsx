@@ -1,9 +1,9 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { ScrollView, Text, View } from "react-native";
-import { useStyles } from "react-native-unistyles";
+import { useUnistyles } from "react-native-unistyles";
 import { CartItemType } from "../../constants/types";
 import { useOrderContext } from "../../contexts/OrderContext";
-import confirmationStyleSheet from "../../styles/components/Confirmation";
+import styles from "../../styles/components/Confirmation";
 import orderConfirmationItemStyleSheet from "../../styles/components/OrderConfirmationItem";
 import { formatCurrency } from "../../utils/formatCurrency";
 import AddressSummary from "../AddressSummary";
@@ -15,7 +15,6 @@ import LoadingScreen from "../common/LoadingScreen";
 
 const Confirmation = () => {
   const { orderData, reloadOrder } = useOrderContext();
-  const { styles } = useStyles(confirmationStyleSheet);
 
   if (!orderData || orderData.payment === null) {
     reloadOrder();
@@ -48,7 +47,8 @@ export type OrderConfirmationItemPropsType = {
 export const OrderConfirmationItem = ({
   data,
 }: OrderConfirmationItemPropsType) => {
-  const { styles, theme } = useStyles(orderConfirmationItemStyleSheet);
+  const styles = orderConfirmationItemStyleSheet;
+  const { theme } = useUnistyles();
   return (
     <View
       style={styles.container}

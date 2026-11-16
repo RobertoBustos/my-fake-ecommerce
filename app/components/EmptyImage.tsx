@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { useStyles } from "react-native-unistyles";
+import { useUnistyles } from "react-native-unistyles";
 import LoadingSpinner from "./LoadingSpinner";
 
 export type EmptyImagePropsType = {
@@ -9,7 +9,7 @@ export type EmptyImagePropsType = {
 };
 
 const EmptyImage = ({ width, height, isLoading = true }: EmptyImagePropsType) => {
-  const { theme } = useStyles();
+  const { theme } = useUnistyles();
 
   return (
     <View style={{ width, height }} testID="EmptyImage.Container">

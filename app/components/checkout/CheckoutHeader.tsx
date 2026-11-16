@@ -1,14 +1,14 @@
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { Text, View } from "react-native";
-import { useStyles } from "react-native-unistyles";
-import checkoutHeaderStyleSheet from "../../styles/components/CheckoutHeader";
+import { useUnistyles } from "react-native-unistyles";
+import styles from "../../styles/components/CheckoutHeader";
 
 export type CheckoutHeaderPropsType = {
   orderId: string;
 };
 
 const CheckoutHeader = ({ orderId }: CheckoutHeaderPropsType) => {
-  const { styles, theme } = useStyles(checkoutHeaderStyleSheet);
+  const { theme } = useUnistyles();
   return (
     <View style={styles.container} testID="CheckoutHeader.Container">
       <Text

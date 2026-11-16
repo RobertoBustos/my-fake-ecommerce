@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Alert, Text, TextInput } from "react-native";
-import { useStyles } from "react-native-unistyles";
+import { useUnistyles } from "react-native-unistyles";
 import { z } from "zod";
 import FooterButton from "../components/FooterButton";
 import Layout from "../components/Layout";
@@ -13,7 +13,7 @@ import { getAuthErrorMessage, useAuthContext } from "../contexts/AuthContext";
 import useAppNavigation from "../hooks/useAppNavigation";
 import { selectIsCartEmpty } from "../redux/cart/selectors";
 import { useAppSelector } from "../redux/hooks";
-import userDetailsFormStyleSheet from "../styles/components/UserDetailsForm";
+import styles from "../styles/components/UserDetailsForm";
 
 const validationSchema = z.object({
   email: z.email({ error: "Invalid email" }).toLowerCase(),
@@ -25,7 +25,7 @@ const validationSchema = z.object({
 type CredentialsType = z.infer<typeof validationSchema>;
 
 const LoginScreen = () => {
-  const { styles, theme } = useStyles(userDetailsFormStyleSheet);
+  const { theme } = useUnistyles();
   const { signIn, signUp } = useAuthContext();
   const navigation = useAppNavigation();
   const isCartEmpty = useAppSelector(selectIsCartEmpty);
@@ -48,11 +48,11 @@ const LoginScreen = () => {
   const getInputStyles = useCallback(
     (error?: string) => {
       if (error) {
-        return { ...styles.input, borderColor: theme.colors.error };
+        return [styles.input, { borderColor: theme.colors.error }];
       }
       return styles.input;
     },
-    [styles.input, theme.colors.error]
+    [theme.colors.error]
   );
 
   const authenticate = async ({ email, password }: CredentialsType) => {

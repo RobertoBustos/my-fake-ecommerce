@@ -1,4 +1,4 @@
-import { StaticScreenProps } from "@react-navigation/native";
+import { StaticScreenProps } from "expo-router/react-navigation";
 import Layout from "../components/Layout";
 import Confirmation from "../components/confirmation/Confirmation";
 import ConfirmationFooter from "../components/confirmation/ConfirmationFooter";

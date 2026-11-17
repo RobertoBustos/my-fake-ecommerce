@@ -40,7 +40,7 @@ describe("useLocation", () => {
 
   it("returns the address of the current location", async () => {
     geocodeResponse({ status: "OK", results: [geocodeResult] });
-    const { result } = renderHook(() => useLocation());
+    const { result } = await renderHook(() => useLocation());
 
     const address = await result.current.getFormatedAddress();
 
@@ -57,7 +57,7 @@ describe("useLocation", () => {
     mockGetCurrentPosition.mockImplementation((_success, error) =>
       error({ code: 1, message: "User denied access to location services." })
     );
-    const { result } = renderHook(() => useLocation());
+    const { result } = await renderHook(() => useLocation());
 
     await expect(result.current.getFormatedAddress()).resolves.toBeUndefined();
     expect(fetchMock).not.toHaveBeenCalled();
@@ -67,7 +67,7 @@ describe("useLocation", () => {
 
   it("returns nothing without alerting when no address is found", async () => {
     geocodeResponse({ status: "ZERO_RESULTS", results: [] });
-    const { result } = renderHook(() => useLocation());
+    const { result } = await renderHook(() => useLocation());
 
     await expect(result.current.getFormatedAddress()).resolves.toBeUndefined();
     expect(Alert.alert).not.toHaveBeenCalled();
@@ -76,7 +76,7 @@ describe("useLocation", () => {
 
   it("returns nothing without alerting when the request fails", async () => {
     fetchMock.mockRejectedValue(new Error("Network request failed"));
-    const { result } = renderHook(() => useLocation());
+    const { result } = await renderHook(() => useLocation());
 
     await expect(result.current.getFormatedAddress()).resolves.toBeUndefined();
     expect(Alert.alert).not.toHaveBeenCalled();

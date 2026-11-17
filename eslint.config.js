@@ -7,4 +7,8 @@ module.exports = defineConfig([
   {
     ignores: ["dist/*"],
   },
+  {
+    // eslint-plugin-react can't detect the React version on ESLint 10
+    settings: { react: { version: "19.3" } },
+  },
 ]);

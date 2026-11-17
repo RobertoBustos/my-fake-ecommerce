@@ -56,6 +56,14 @@ follows [Semantic Versioning](https://semver.org/).
   0.81.0 breaks Android release builds on AGP 9; `expo.install.exclude` lets
   `expo install --check` accept it. iOS pods build as dynamic frameworks,
   which Stripe's Swift Package Manager setup requires.
+- Node 24, locally (`.nvmrc`) and in CI, because firebase 13 requires it.
+- The libraries that Expo doesn't pin move to their latest versions: firebase
+  13, graphql 17, ESLint 10, uuid 14, react-native-get-random-values 2, Redux
+  Toolkit 2.14, Reactotron 5.3 and React Native Testing Library 14, whose
+  `render` and `renderHook` are awaited in the tests. eslint-plugin-react
+  can't detect the React version on ESLint 10, so `eslint.config.js` sets it.
+  Jest loads immer, which Redux Toolkit uses, from its CommonJS build. TypeScript
+  stays on 6.
 
 ### Fixed
 
@@ -78,6 +86,8 @@ follows [Semantic Versioning](https://semver.org/).
 - The app no longer asks for background ("always") location, camera on
   Android, storage or screen overlay permissions. It only uses the location
   while it is open, to prefill the delivery address.
+- `react-test-renderer`, replaced by `test-renderer` in Testing Library 14, and
+  `@react-native-community/cli`, which nothing used.
 
 ### Security
 

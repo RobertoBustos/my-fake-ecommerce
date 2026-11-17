@@ -21,8 +21,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     bundleIdentifier: process.env.UNIQUE_IDENTIFIER,
     infoPlist: {
       "ITSAppUsesNonExemptEncryption": false,
-      // The location is only read while the app is open, to prefill the delivery address
-      "NSLocationWhenInUseUsageDescription": "We use your location to prefill your delivery address and show it on the map",
       // Stripe's Payment Sheet offers card scanning only when this is set
       "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera."
     },
@@ -68,6 +66,18 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
           // name, and the app crashes at launch
           extraProguardRules: "-keep class * extends androidx.room.RoomDatabase { <init>(); }",
         },
+      },
+    ],
+    // The location is only read while the app is open, to prefill the delivery address. Setting
+    // a permission to false keeps the plugin from adding its default text for it
+    [
+      "expo-location",
+      {
+        locationWhenInUsePermission: "We use your location to prefill your delivery address and show it on the map",
+        locationAlwaysAndWhenInUsePermission: false,
+        locationAlwaysPermission: false,
+        locationFullAccuracyPermission: false,
+        motionUsagePermission: false,
       },
     ],
     "./plugins/withIosMinimumDeploymentTarget",

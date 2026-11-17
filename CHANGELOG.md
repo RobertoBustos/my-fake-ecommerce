@@ -64,6 +64,11 @@ follows [Semantic Versioning](https://semver.org/).
   can't detect the React version on ESLint 10, so `eslint.config.js` sets it.
   Jest loads immer, which Redux Toolkit uses, from its CommonJS build. TypeScript
   stays on 6.
+- The current location comes from expo-location instead of
+  `@react-native-community/geolocation`, which is no longer maintained. The
+  app asks for the location only while it is open, and the address field still
+  stays empty, without alerts, when the permission is denied or the location
+  doesn't arrive within 10 seconds.
 
 ### Fixed
 

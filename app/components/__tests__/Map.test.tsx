@@ -35,9 +35,9 @@ jest.mock("react-native-maps", () => {
 
 const coords = { latitude: 19.4326076, longitude: -99.133208, latitudeDelta: 0.01, longitudeDelta: 0.01 };
 
-const renderMap = () => {
+const renderMap = async () => {
   mockStore = createStore();
-  render(<Map />);
+  await render(<Map />);
   return mockStore;
 };
 
@@ -60,7 +60,7 @@ describe("Map", () => {
   });
 
   it("confirms the address once the camera rests on it, without any region event", async () => {
-    const store = renderMap();
+    const store = await renderMap();
     await act(async () => {
       store.dispatch(setAddressData({ address: "Zócalo", zipCode: "06000", coords }));
     });
@@ -79,7 +79,7 @@ describe("Map", () => {
   });
 
   it("does not confirm while the camera is still zooming in over the address", async () => {
-    const store = renderMap();
+    const store = await renderMap();
     await act(async () => {
       store.dispatch(setAddressData({ address: "Zócalo", zipCode: "06000", coords }));
     });
@@ -91,7 +91,7 @@ describe("Map", () => {
   });
 
   it("animates again when the camera never reaches the address", async () => {
-    const store = renderMap();
+    const store = await renderMap();
     await act(async () => {
       store.dispatch(setAddressData({ address: "Zócalo", zipCode: "06000", coords }));
     });
@@ -102,11 +102,11 @@ describe("Map", () => {
   });
 
   it("confirms the address when a gesture interrupts the animation", async () => {
-    const store = renderMap();
+    const store = await renderMap();
     await act(async () => {
       store.dispatch(setAddressData({ address: "Zócalo", zipCode: "06000", coords }));
     });
-    fireEvent(screen.getByTestId("Map.Map"), "regionChangeComplete", coords, { isGesture: true });
+    await fireEvent(screen.getByTestId("Map.Map"), "regionChangeComplete", coords, { isGesture: true });
 
     expect(store.getState().order.mapCenter).toEqual({
       latitude: coords.latitude,

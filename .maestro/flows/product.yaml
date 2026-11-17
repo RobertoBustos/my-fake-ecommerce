@@ -14,15 +14,23 @@ tags:
       id: "CatalogItemCard.CardContainer-${MAESTRO_PRODUCT_ID}"
     direction: DOWN
     timeout: 120000
-    # The test product can be the last card, which never shows whole
-    visibilityPercentage: 50
+    # The test product can be the last card. Scrolling stops as soon as part of it shows,
+    # which can leave its title under the bottom edge, so the whole card is brought into view
+    visibilityPercentage: 100
+# On Android the list can still move after the scroll ends and leave the card under the
+# bottom edge again, so once it settles the same scroll brings it back if needed
+- waitForAnimationToEnd
+- scrollUntilVisible:
+    element:
+      id: "CatalogItemCard.CardContainer-${MAESTRO_PRODUCT_ID}"
+    direction: DOWN
+    visibilityPercentage: 100
 - assertVisible:
     id: "CatalogItemCard.Title-${MAESTRO_PRODUCT_ID}"
     text: ${output.expected.title}
 - assertVisible:
     id: "CatalogItemCard.Price-${MAESTRO_PRODUCT_ID}"
     text: ${output.expected.price}
-# The last card shows only partly, so the tap goes to its title, not to its center
 - tapOn:
     id: "CatalogItemCard.Title-${MAESTRO_PRODUCT_ID}"
 - extendedWaitUntil:

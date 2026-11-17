@@ -1,4 +1,4 @@
-import Geolocation, { GeolocationResponse } from "@react-native-community/geolocation";
+import * as Location from "expo-location";
 import { useCallback } from "react";
 import { GooglePlaceDetail } from "react-native-google-places-autocomplete";
 import { LatLng } from "react-native-maps";
@@ -26,15 +26,24 @@ const useLocation = () => {
         return responseJson.results
     }, [])
 
-    const getCurrentLocation = useCallback(async (): Promise<GeolocationResponse> => {
-        return new Promise((resolve, reject) => {
-            Geolocation.getCurrentPosition(
-                resolve,
-                // The library rejects with a plain object, not an Error
-                error => reject(new Error(error.message)),
-                { timeout: LOCATION_TIMEOUT_MS },
-            )
+    const getCurrentLocation = useCallback(async (): Promise<Location.LocationObject> => {
+        const { granted } = await Location.requestForegroundPermissionsAsync()
+        if (!granted) {
+            throw new Error('Location permission not granted')
+        }
+        // getCurrentPositionAsync has no timeout option of its own
+        let timeout: ReturnType<typeof setTimeout> | undefined
+        const timedOut = new Promise<never>((_resolve, reject) => {
+            timeout = setTimeout(() => reject(new Error('Location request timed out')), LOCATION_TIMEOUT_MS)
         })
+        try {
+            return await Promise.race([
+                Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }),
+                timedOut,
+            ])
+        } finally {
+            clearTimeout(timeout)
+        }
     }, [])
 
     // The address is only a prefill: on any failure the field stays empty for the user to type

@@ -11,6 +11,8 @@ follows [Semantic Versioning](https://semver.org/).
 - Anonymous Firebase sessions: the app opens without an account, and an account
   is optional. Creating one keeps the cart.
 - A CI workflow, `CLAUDE.md` and this changelog.
+- Dependabot opens weekly update PRs into `dev` for npm and GitHub Actions,
+  except for the packages the Expo SDK pins, which move with each SDK upgrade.
 
 ### Changed
 

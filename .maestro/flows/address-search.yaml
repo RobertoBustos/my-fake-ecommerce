@@ -1,0 +1,114 @@
+appId: ${MAESTRO_APP_ID}
+tags:
+  - main
+---
+# Without the location permission the address field stays empty, without any alert, and
+# the user finds the address with the search instead. The order is cancelled at the end.
+- runScript: ../scripts/expected.js
+# A fresh install, as in launch-clean, but with the location denied: Maestro takes
+# "never" on iOS and "deny" on Android
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - launchApp:
+          clearState: true
+          clearKeychain: true
+          permissions:
+            all: allow
+            location: never
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - launchApp:
+          clearState: true
+          clearKeychain: true
+          permissions:
+            all: allow
+            location: deny
+- runFlow: ../subflows/add-to-cart.yaml
+- tapOn:
+    id: "ShoppingCartHeaderIcon.Button"
+- tapOn:
+    id: "CartScreen.Footer"
+
+- extendedWaitUntil:
+    visible:
+      id: "UserDetailsForm.EmailInput"
+    timeout: 20000
+- tapOn:
+    id: "UserDetailsForm.EmailInput"
+- inputText: ${output.customer.email}
+- pressKey: Enter
+- tapOn:
+    id: "UserDetailsForm.NameInput"
+- inputText: ${output.customer.name}
+- pressKey: Enter
+- tapOn:
+    id: "UserDetailsForm.PhoneInput"
+- inputText: ${output.customer.phone}
+- pressKey: Enter
+- tapOn:
+    id: "CustomerScreen.Footer"
+
+# Android asks again for a permission that was denied this way: the user refuses
+- extendedWaitUntil:
+    visible: "Don.t allow"
+    timeout: 8000
+    optional: true
+- runFlow:
+    when:
+      visible: "Don.t allow"
+    commands:
+      - tapOn: "Don.t allow"
+- extendedWaitUntil:
+    visible:
+      id: "AddressDetailsForm.SearchInput"
+    timeout: 20000
+- assertVisible: "Search Your Address"
+- assertVisible:
+    id: "AddressScreen.Footer"
+    enabled: false
+- assertNotVisible: "OK"
+
+# The search: a suggestion's full text differs from what was typed, so the tap can't
+# land on the input
+- tapOn:
+    id: "AddressDetailsForm.SearchInput"
+- inputText: "Palacio de Bellas Artes"
+- extendedWaitUntil:
+    visible: "Palacio de Bellas Artes, Avenida Ju.rez.*"
+    timeout: 15000
+- tapOn: "Palacio de Bellas Artes, Avenida Ju.rez.*"
+# The details of the place fill the address, and Continue is enabled once the map
+# rests on it
+- assertNotVisible: "Palacio de Bellas Artes, Lyon Street.*"
+- extendedWaitUntil:
+    visible:
+      id: "AddressScreen.Footer"
+      enabled: true
+    timeout: 20000
+- tapOn:
+    id: "AddressScreen.Footer"
+
+- extendedWaitUntil:
+    visible:
+      id: "CheckoutScreen.Footer"
+    timeout: 20000
+- assertVisible:
+    id: "AddressSummary.Address"
+
+# Cancel the order, so the run leaves no pending order and the stock is released
+- scrollUntilVisible:
+    element:
+      id: "CheckoutButtons.CancelOrderButton"
+    direction: DOWN
+- tapOn:
+    id: "CheckoutButtons.CancelOrderButton"
+- assertVisible: "Cancel this order?"
+- tapOn: "OK"
+- extendedWaitUntil:
+    visible:
+      id: "Catalog.Container"
+    timeout: 20000

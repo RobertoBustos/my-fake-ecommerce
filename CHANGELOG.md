@@ -83,6 +83,10 @@ follows [Semantic Versioning](https://semver.org/).
 - The address screen no longer opens an alert, technical or empty, when the
   current location or its address can't be found: the field stays empty to
   type the address. The location request gives up after 10 seconds.
+- The address search shows its suggestions again. They had been hidden since
+  the map was added, so without the location the address could not be entered
+  and the order could not continue. A long suggestion wraps to a second line
+  instead of running off the screen.
 
 ### Removed
 

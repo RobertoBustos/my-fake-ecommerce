@@ -1,0 +1,80 @@
+# Weekly update PRs into dev. They go through the same required checks as any
+# other PR and ship with the next release; see CLAUDE.md for how to review them.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    target-branch: dev
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:00"
+      timezone: America/Mexico_City
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: deps
+      prefix-development: deps-dev
+    ignore:
+      # The Expo SDK pins these (node_modules/expo/bundledNativeModules.json). They
+      # move together with `npx expo install --fix` when the SDK goes up, never one
+      # by one. Stripe is pinned by hand in package.json (see expo.install.exclude).
+      - dependency-name: "expo"
+      - dependency-name: "expo-*"
+      - dependency-name: "@expo/*"
+      - dependency-name: "jest-expo"
+      - dependency-name: "eslint-config-expo"
+      - dependency-name: "react"
+      - dependency-name: "react-dom"
+      - dependency-name: "react-native"
+      - dependency-name: "@react-native/*"
+      - dependency-name: "@react-native-async-storage/async-storage"
+      - dependency-name: "@react-native-masked-view/masked-view"
+      - dependency-name: "@stripe/stripe-react-native"
+      - dependency-name: "react-native-gesture-handler"
+      - dependency-name: "react-native-keyboard-controller"
+      - dependency-name: "react-native-maps"
+      - dependency-name: "react-native-reanimated"
+      - dependency-name: "react-native-safe-area-context"
+      - dependency-name: "react-native-screens"
+      - dependency-name: "react-native-svg"
+      - dependency-name: "react-native-web"
+      - dependency-name: "react-native-webview"
+      - dependency-name: "react-native-worklets"
+      # These follow something the SDK or the project fixes, so only the bumps that
+      # would break that wait: @types/react follows React's minor, jest the major
+      # jest-expo supports, @babel/core the major babel-preset-expo supports,
+      # TypeScript stays on 6, and @types/node follows Node 24 (.nvmrc and CI).
+      - dependency-name: "@types/react"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "jest"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@babel/core"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+    groups:
+      # One PR for every minor and patch bump; majors come one per package so
+      # their breaking changes can be reviewed on their own.
+      production-minor-and-patch:
+        dependency-type: production
+        update-types: [minor, patch]
+      development-minor-and-patch:
+        dependency-type: development
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: dev
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:00"
+      timezone: America/Mexico_City
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: ci
+    groups:
+      actions:
+        patterns: ["*"]

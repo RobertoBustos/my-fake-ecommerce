@@ -7,9 +7,13 @@ import { ReloadButton } from "./common/IconButtons";
 
 export type EmptyOrderPropsType = {
   onRetry: () => void;
+  message?: string;
 };
 
-const EmptyOrder = ({ onRetry }: EmptyOrderPropsType) => {
+const EmptyOrder = ({
+  onRetry,
+  message = "There was a problem loading the order information",
+}: EmptyOrderPropsType) => {
   const { theme } = useUnistyles();
 
   return (
@@ -20,7 +24,7 @@ const EmptyOrder = ({ onRetry }: EmptyOrderPropsType) => {
         color={theme.colors.disabled}
       />
       <Text style={styles.message} testID="EmptyOrder.Text">
-        There was a problem loading the order information
+        {message}
       </Text>
       <CustomButton
         buttonComponent={<ReloadButton />}

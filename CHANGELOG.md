@@ -13,6 +13,10 @@ follows [Semantic Versioning](https://semver.org/).
 - A CI workflow, `CLAUDE.md` and this changelog.
 - Dependabot opens weekly update PRs into `dev` for npm and GitHub Actions,
   except for the packages the Expo SDK pins, which move with each SDK upgrade.
+- expo-notifications, configured for push without any logic yet: the iOS push
+  entitlement, the Android notification icon and color, and the Firebase
+  `google-services.json`, which Android builds take from `GOOGLE_SERVICES_JSON`
+  when it is set.
 
 ### Changed
 
@@ -89,6 +93,8 @@ follows [Semantic Versioning](https://semver.org/).
   the map was added, so without the location the address could not be entered
   and the order could not continue. A long suggestion wraps to a second line
   instead of running off the screen.
+- `yarn start` works again. The config still turned on expo-router's typed
+  routes, so the dev server crashed looking for expo-router.
 
 ### Removed
 

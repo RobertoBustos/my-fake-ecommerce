@@ -1,0 +1,11 @@
+{
+  "aps": {
+    "alert": { "title": "Payment failed", "body": "Your card was declined. Try again from the app." },
+    "sound": "default"
+  },
+  "body": {
+    "type": "payment_failed",
+    "orderId": "ORDER_ID",
+    "url": "myapp://orders/ORDER_ID"
+  }
+}

@@ -17,6 +17,11 @@ follows [Semantic Versioning](https://semver.org/).
   entitlement, the Android notification icon and color, and the Firebase
   `google-services.json`, which Android builds take from `GOOGLE_SERVICES_JSON`
   when it is set.
+- Order notifications show as a banner while the app is open, except when that
+  order is already on screen, and Android gets an "Orders" channel. Tapping one
+  opens the order, with the app open, in the background or closed. The app also
+  opens `myapp://orders/<orderId>` links; any other notification opens the
+  catalog. `.maestro/push/` has the test notifications for the iOS simulator.
 
 ### Changed
 

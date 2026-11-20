@@ -1,5 +1,12 @@
 appId: ${MAESTRO_APP_ID}
 ---
+# Paying asks first whether to get notified, unless the permission is already decided.
+# launch-clean grants every permission, so it usually doesn't show
+- runFlow:
+    when:
+      visible: "Get notified when your payment is confirmed"
+    commands:
+      - tapOn: "Not now"
 # Stripe's Payment Sheet is native and has no test ids, so its fields are found by their
 # labels. On Android the sheet follows the device language, so English and Spanish are
 # both accepted; on iOS it is always in English, because the app is not localized.

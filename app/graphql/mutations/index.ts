@@ -119,4 +119,22 @@ mutation CancelOrder($input: CancelOrder!){
   }
 }`
 
+export const REGISTER_PUSH_TOKEN = gql`
+mutation RegisterPushToken($input: RegisterPushToken!){
+  registerPushToken (input: $input){
+    code
+    success
+    message
+  }
+}`
+
+export const UNREGISTER_PUSH_TOKEN = gql`
+mutation UnregisterPushToken($input: UnregisterPushToken!){
+  unregisterPushToken (input: $input){
+    code
+    success
+    message
+  }
+}`
+
 export default {}

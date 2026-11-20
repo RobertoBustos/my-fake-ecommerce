@@ -12,6 +12,7 @@ import { OrderType, Status } from "../constants/types";
 import useAppNavigation from "../hooks/useAppNavigation";
 import useCart from "../hooks/useCart";
 import useOrder, { PaymentCreated } from "../hooks/useOrder";
+import { askForNotificationPermission } from "../notifications";
 import {
   renewCartId,
   resetCart,
@@ -364,6 +365,8 @@ const OrderStore = ({
     if (!orderData || orderData.customer === null) return;
     setIsPaying(true);
     try {
+      // Before paying, while the button is busy, so the prompt can't be opened twice
+      await askForNotificationPermission();
       const payment = await requestPayment(orderData);
       if (!payment) return;
       const stripeCustomerId = await fetchPaymentCustomer(orderData.id);

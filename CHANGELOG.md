@@ -22,6 +22,10 @@ follows [Semantic Versioning](https://semver.org/).
   opens the order, with the app open, in the background or closed. The app also
   opens `myapp://orders/<orderId>` links; any other notification opens the
   catalog. `.maestro/push/` has the test notifications for the iOS simulator.
+- Before the first payment the app asks whether to get notified when the payment
+  is confirmed; the system's permission dialog shows only if the user accepts.
+  With the permission, the app registers its push token with the API at every
+  startup and for every new account, and deletes it before signing out.
 
 ### Changed
 

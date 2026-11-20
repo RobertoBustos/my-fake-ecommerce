@@ -100,6 +100,12 @@ follows [Semantic Versioning](https://semver.org/).
   instead of running off the screen.
 - `yarn start` works again. The config still turned on expo-router's typed
   routes, so the dev server crashed looking for expo-router.
+- The confirmation screen no longer floods the API while the payment is being
+  confirmed. It reloaded the order on every render, and each reload remounted
+  the screen, so a payment that took a while sent thousands of requests a
+  minute. It now checks every 1.5 seconds for up to 30 seconds and then offers
+  to try again. An order screen also stays mounted while its order refetches,
+  and "try again" loads an order that failed to load instead of doing nothing.
 
 ### Removed
 

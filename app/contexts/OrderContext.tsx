@@ -40,7 +40,7 @@ import { useStripeContext } from "./StripeContext";
 
 export type OrderContextType = {
   orderData: OrderType | undefined;
-  reloadOrder: () => void;
+  reloadOrder: () => Promise<void>;
   returnOrderToCart: () => void;
   cancelOrder: () => void;
   isLoading: boolean;
@@ -59,7 +59,7 @@ export type OrderContextType = {
 
 const OrderContext = createContext<OrderContextType>({
   orderData: undefined,
-  reloadOrder: () => {},
+  reloadOrder: () => Promise.resolve(),
   returnOrderToCart: () => {},
   cancelOrder: () => {},
   isLoading: false,
@@ -164,9 +164,10 @@ const OrderStore = ({
     return "Continue";
   };
 
-  const reloadOrder = () => {
-    if (!orderData) return;
-    refetchOrder();
+  // Without the order, for instance after a failed first load, it is fetched again
+  const reloadOrder = async () => {
+    if (orderData) await refetchOrder();
+    else await fetchOrder(orderId);
   };
 
   const cancelIncompleteOrder = () => {
@@ -432,7 +433,9 @@ const OrderStore = ({
     });
   };
 
-  if (isLoading) {
+  // Only the first load replaces the screen. A refetch keeps it mounted: Apollo reports
+  // refetches as loading, and unmounting the screen restarts whatever it is doing
+  if (isLoading && !orderData) {
     return <LoadingScreen />;
   }
 

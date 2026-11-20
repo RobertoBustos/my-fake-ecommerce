@@ -1,0 +1,11 @@
+{
+  "aps": {
+    "alert": { "title": "Order confirmed", "body": "We received your payment." },
+    "sound": "default"
+  },
+  "body": {
+    "type": "order_completed",
+    "orderId": "ORDER_ID",
+    "url": "myapp://orders/ORDER_ID"
+  }
+}

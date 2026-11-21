@@ -15,15 +15,19 @@ tags:
       EMAIL: ${MAESTRO_EMAIL}
       PASSWORD: ${MAESTRO_PASSWORD}
 - openLink: myapp://orders/${MAESTRO_ORDER_ID}
-# iOS can ask first whether to open the link in the app (iOS 26 does, iOS 27 doesn't)
+# iOS 26 asks first whether to open the link in the app, the first time on each simulator
+# (iOS 18 and 27 don't). The dialog follows the device language: English in CI, Spanish on
+# a simulator set to Spanish. With Xcode 26's simctl the link can be lost while the dialog
+# waits, so once it's accepted the link is opened again, this time without asking
 - extendedWaitUntil:
-    visible: "Open in .*|Order Number .*"
+    visible: "(Open in|¿Abrir en) .*|Order Number .*"
     timeout: 20000
 - runFlow:
     when:
-      visible: "Open in .*"
+      visible: "(Open in|¿Abrir en) .*"
     commands:
-      - tapOn: "Open"
+      - tapOn: "Open|Abrir"
+      - openLink: myapp://orders/${MAESTRO_ORDER_ID}
 - extendedWaitUntil:
     visible:
       id: "ConfirmationScreen.Layout"

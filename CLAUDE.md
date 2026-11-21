@@ -3,7 +3,7 @@
 ## Branches and releases
 - All development reaches `dev` through a PR. `main` only receives releases (`release/sprint-<n>`, or `release/v<x.y.z>` outside a sprint) and hotfixes (`hotfix/ECOMMOB-<n>-<slug>`). The `branch-guard` CI job rejects any other branch into `main`.
 - `dev` and `main` are protected: a PR is required, the branch must be up to date, conversations must be resolved, and the rules also apply to admins.
-- Required checks: `lint`, `typecheck`, `test`, `gitleaks` and `bundle`, plus `branch-guard` on `main`. `audit` is not required, so a new advisory can't block a hotfix.
+- Required checks: `lint`, `typecheck`, `test`, `gitleaks`, `bundle` and `audit`, plus `branch-guard` on `main`. `audit` fails on high or critical findings in production dependencies, so a new advisory blocks every merge, hotfixes included, until it is fixed (see "Vulnerable transitive dependencies").
 - `e2e-android` and `e2e-ios` (`.github/workflows/e2e.yml`) run the Maestro flows on every PR: `smoke` into `dev`, all of them into `main` or from a manual run with `all`. They are not required yet. Each one is added to the protection of `dev` and `main` after about two weeks without false failures.
 - Tasks are squashed into `dev` (`gh pr merge <n> --squash`). **`main` only accepts merge commits**, enforced by a ruleset. The PR from `main` back to `dev` also uses a merge commit, which nothing enforces on `dev`: `gh pr merge <n> --merge`.
 - If `main` is not an ancestor of `dev` (`git merge-base --is-ancestor origin/main origin/dev` fails), a normal merge produces false conflicts. First confirm that the content of `main` is already in `dev`, then merge with `git merge -s ours`: on the release branch, `-s ours origin/main`; for the way back, on a branch from `main`, `-s ours origin/dev`.
@@ -27,6 +27,11 @@
 - The packages the Expo SDK pins are ignored, because they move together with `npx expo install --fix` when the SDK goes up. When an SDK upgrade adds or drops a pinned package, update the ignore list.
 - To merge: the same required checks as any PR, the branch up to date, and squash. Read a major's changelog before merging it; if it needs code changes, close the Dependabot PR and create a normal task in ECOMMOB-34 (Deuda técnica).
 - Claude doesn't merge Dependabot PRs: it reviews them and leaves the recommendation to the user.
+
+## Vulnerable transitive dependencies
+- When `audit` reports a transitive package, first delete its entry from `yarn.lock` and run `yarn install`: yarn re-resolves it to the newest version its range allows, which often has the fix.
+- Only when the range itself excludes the fix, add a `resolutions` entry in `package.json`, within the same major. Each one needs a reason here, and is removed once the package that pins it allows the fixed version:
+  - `@grpc/grpc-js` `~1.13.6`: `@firebase/firestore` pins `~1.9.0` (still in firebase 13.4.0). The app doesn't use Firestore, and grpc-js only runs in Firestore's Node build, so it never reaches the app bundle.
 
 ## Commit and PR messages
 - **English.** Anything that ends up in GitHub is in English: commit messages, PR titles and descriptions, branch names, tags, release notes, code comments and test names. The Jira key at the start stays as it is (`ECOMMOB-<n>: ...`).

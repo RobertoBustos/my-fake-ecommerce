@@ -193,6 +193,15 @@ jobs:
           xcrun simctl bootstatus "$SIMULATOR_UDID"
           xcrun simctl install "$SIMULATOR_UDID" ios/build/Build/Products/Release-iphonesimulator/*.app
 
+      # iOS 26 asks whether to open a link in the app the first time, and simctl waits for the
+      # answer, which a flow can't give from inside openLink. A link opened here in the background
+      # gets the answer from a setup flow, and the simulator remembers it for every flow after
+      - name: Accept opening the app's links
+        run: |
+          xcrun simctl openurl "$SIMULATOR_UDID" "myapp://" &
+          maestro --device "$SIMULATOR_UDID" test .maestro/setup/accept-open-link.yaml
+          wait
+
       # MAESTRO_TAGS is split on purpose: it's empty or "--include-tags smoke"
       - name: Run the flows on the simulator
         run: |

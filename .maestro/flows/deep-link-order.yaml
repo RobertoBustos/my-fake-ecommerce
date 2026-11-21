@@ -15,6 +15,15 @@ tags:
       EMAIL: ${MAESTRO_EMAIL}
       PASSWORD: ${MAESTRO_PASSWORD}
 - openLink: myapp://orders/${MAESTRO_ORDER_ID}
+# iOS can ask first whether to open the link in the app (iOS 26 does, iOS 27 doesn't)
+- extendedWaitUntil:
+    visible: "Open in .*|Order Number .*"
+    timeout: 20000
+- runFlow:
+    when:
+      visible: "Open in .*"
+    commands:
+      - tapOn: "Open"
 - extendedWaitUntil:
     visible:
       id: "ConfirmationScreen.Layout"

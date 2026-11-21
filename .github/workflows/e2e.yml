@@ -43,6 +43,7 @@ env:
   MAESTRO_CARD_NUMBER: ${{ vars.MAESTRO_CARD_NUMBER }}
   MAESTRO_CARD_EXPIRY: ${{ vars.MAESTRO_CARD_EXPIRY }}
   MAESTRO_CARD_CVC: ${{ vars.MAESTRO_CARD_CVC }}
+  MAESTRO_ORDER_ID: ${{ vars.MAESTRO_ORDER_ID }}
   # smoke on every pull request into dev; every flow into main or when asked
   MAESTRO_TAGS: ${{ (github.base_ref != 'main' && inputs.flows != 'all') && '--include-tags smoke' || '' }}
 

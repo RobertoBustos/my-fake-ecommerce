@@ -1,0 +1,35 @@
+appId: ${MAESTRO_APP_ID}
+tags:
+  - smoke
+---
+# The link a push notification opens: myapp://orders/<id> shows that order, paid. The API
+# only returns a user's own orders, so MAESTRO_ORDER_ID is a paid order of the test user.
+- runFlow: ../subflows/launch-clean.yaml
+- extendedWaitUntil:
+    visible:
+      id: "Catalog.Container"
+    timeout: 30000
+- runFlow:
+    file: ../subflows/sign-in.yaml
+    env:
+      EMAIL: ${MAESTRO_EMAIL}
+      PASSWORD: ${MAESTRO_PASSWORD}
+- openLink: myapp://orders/${MAESTRO_ORDER_ID}
+- extendedWaitUntil:
+    visible:
+      id: "ConfirmationScreen.Layout"
+    timeout: 20000
+# The order loaded: its number in the header and its products, which only show once paid
+- assertVisible: "Order Number ${MAESTRO_ORDER_ID}"
+- extendedWaitUntil:
+    visible:
+      id: "Confirmation.Container"
+    timeout: 20000
+# Back to the catalog, and leave the test user signed out
+- tapOn:
+    id: "ConfirmationScreen.Footer"
+- extendedWaitUntil:
+    visible:
+      id: "Catalog.Container"
+    timeout: 20000
+- runFlow: ../subflows/sign-out.yaml

@@ -1,7 +1,8 @@
 appId: ${MAESTRO_APP_ID}
 ---
 # Paying asks first whether to get notified, unless the permission is already decided.
-# launch-clean grants every permission, so it usually doesn't show
+# launch-clean's `all: allow` doesn't grant notifications on every iOS version (not on
+# iOS 27), so it can show after a clean launch
 - runFlow:
     when:
       visible: "Get notified when your payment is confirmed"

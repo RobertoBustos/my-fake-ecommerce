@@ -1,5 +1,10 @@
 import Constants from "expo-constants";
-import { getExpoPushTokenAsync, getPermissionsAsync } from "expo-notifications";
+import {
+  DevicePushToken,
+  getDevicePushTokenAsync,
+  getExpoPushTokenAsync,
+  getPermissionsAsync,
+} from "expo-notifications";
 import { Platform } from "react-native";
 import { MutationResponseType } from "../constants/types";
 import gqlClient from "../graphql/gqlClient";
@@ -9,10 +14,16 @@ import { auth } from "../utils/firebase";
 
 // The token registered for the current session, so signing out can delete it
 let registeredToken: string | undefined;
+// The device token (APNs or FCM) behind the Expo token. Fetching it also fires the token
+// listener with the same value, so the listener compares against this to avoid a loop
+let currentDeviceToken: string | undefined;
 
 const getPushToken = async () => {
+  const devicePushToken = await getDevicePushTokenAsync();
+  currentDeviceToken = String(devicePushToken.data);
   const { data } = await getExpoPushTokenAsync({
     projectId: Constants.expoConfig?.extra?.eas?.projectId,
+    devicePushToken,
   });
   return data;
 };
@@ -51,4 +62,13 @@ export const unregisterPushToken = async () => {
   } catch (error) {
     console.warn("Could not delete the push token", error);
   }
+};
+
+// The token listener. It also fires every time syncPushToken fetches the token, so only a
+// device token different from the last one fetched is synced again
+export const onDevicePushTokenChange = ({ data }: DevicePushToken) => {
+  const deviceToken = String(data);
+  if (deviceToken === currentDeviceToken) return;
+  currentDeviceToken = deviceToken;
+  syncPushToken();
 };

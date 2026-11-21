@@ -19,6 +19,7 @@ import {
   useState,
 } from "react";
 import { Alert } from "react-native";
+import { syncPushToken, unregisterPushToken } from "../notifications";
 import { clearCart } from "../redux/cart/reducer";
 import { useAppDispatch } from "../redux/hooks";
 import { resetOrder } from "../redux/order/reducer";
@@ -98,6 +99,9 @@ const AuthStore = ({ children }: PropsWithChildren) => {
           // are refetched for the new user. A failed refetch shows up in its own query's error
           client.resetStore().catch(() => undefined);
         }
+        // At startup and on every new uid, so this phone only gets the notifications of the
+        // user with the session. Linking an account keeps the uid, so it doesn't run then
+        if (currentUser) syncPushToken();
         previousUserId.current = userId;
       }
       setUser(currentUser);
@@ -124,7 +128,9 @@ const AuthStore = ({ children }: PropsWithChildren) => {
     setIsAnonymous(linkedUser.isAnonymous);
   }, []);
 
+  // The token is deleted first, while the Firebase ID token still authorizes the request
   const signOut = useCallback(async () => {
+    await unregisterPushToken();
     await firebaseSignOut(auth);
   }, []);
 

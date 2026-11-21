@@ -101,5 +101,8 @@
       ]
     }
   },
+  "resolutions": {
+    "@grpc/grpc-js": "~1.13.6"
+  },
   "private": true
 }

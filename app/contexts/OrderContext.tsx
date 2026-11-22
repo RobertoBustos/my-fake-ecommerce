@@ -12,11 +12,13 @@ import { OrderType, Status } from "../constants/types";
 import useAppNavigation from "../hooks/useAppNavigation";
 import useCart from "../hooks/useCart";
 import useOrder, { PaymentCreated } from "../hooks/useOrder";
+import { askForNotificationPermission } from "../notifications";
 import {
   renewCartId,
   resetCart,
   setCartFromOrder,
 } from "../redux/cart/reducer";
+import { selectCartId } from "../redux/cart/selectors";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {
   setAddressData,
@@ -28,6 +30,7 @@ import {
   selectCustomerData,
   selectIsAddressDataValid,
   selectIsCustomerDataValid,
+  selectSelectedOrderId,
 } from "../redux/order/selectors";
 import {
   ApiErrorCode,
@@ -40,7 +43,7 @@ import { useStripeContext } from "./StripeContext";
 
 export type OrderContextType = {
   orderData: OrderType | undefined;
-  reloadOrder: () => void;
+  reloadOrder: () => Promise<void>;
   returnOrderToCart: () => void;
   cancelOrder: () => void;
   isLoading: boolean;
@@ -59,7 +62,7 @@ export type OrderContextType = {
 
 const OrderContext = createContext<OrderContextType>({
   orderData: undefined,
-  reloadOrder: () => {},
+  reloadOrder: () => Promise.resolve(),
   returnOrderToCart: () => {},
   cancelOrder: () => {},
   isLoading: false,
@@ -82,12 +85,15 @@ const MAX_PAYMENT_ATTEMPTS = 3;
 export type OrderStoreContextType = PropsWithChildren & {
   orderId: string;
   forceGoBack?: boolean;
+  // Without it, a cancelled order shows a screen that says it can't be used
+  showCancelled?: boolean;
 };
 
 const OrderStore = ({
   children,
   orderId,
   forceGoBack,
+  showCancelled,
 }: OrderStoreContextType) => {
   const navigation = useAppNavigation();
   const {
@@ -112,6 +118,8 @@ const OrderStore = ({
   const addressData = useAppSelector(selectAddressData());
   const isCustomerValid = useAppSelector(selectIsCustomerDataValid());
   const isAddressValid = useAppSelector(selectIsAddressDataValid());
+  const cartId = useAppSelector(selectCartId);
+  const selectedOrderId = useAppSelector(selectSelectedOrderId);
   const orderData: OrderType | undefined =
     orders && orders.length && orders.length === 1 ? orders[0] : undefined;
   const isProcessing =
@@ -155,7 +163,11 @@ const OrderStore = ({
     if (forceGoBack && forceGoBack === true) {
       return "Save";
     }
-    if (orderData?.status === "COMPLETE") return "Return to Home";
+    if (
+      orderData?.status === Status.COMPLETE ||
+      orderData?.status === Status.CANCELLED
+    )
+      return "Return to Home";
     if (orderData?.status === "PAYMENT_PENDING")
       return `Complete Your Payment for ${formatCurrency(
         orderData.totals.total,
@@ -164,9 +176,10 @@ const OrderStore = ({
     return "Continue";
   };
 
-  const reloadOrder = () => {
-    if (!orderData) return;
-    refetchOrder();
+  // Without the order, for instance after a failed first load, it is fetched again
+  const reloadOrder = async () => {
+    if (orderData) await refetchOrder();
+    else await fetchOrder(orderId);
   };
 
   const cancelIncompleteOrder = () => {
@@ -364,6 +377,8 @@ const OrderStore = ({
     if (!orderData || orderData.customer === null) return;
     setIsPaying(true);
     try {
+      // Before paying, while the button is busy, so the prompt can't be opened twice
+      await askForNotificationPermission();
       const payment = await requestPayment(orderData);
       if (!payment) return;
       const stripeCustomerId = await fetchPaymentCustomer(orderData.id);
@@ -407,8 +422,15 @@ const OrderStore = ({
   };
 
   const returnFromConfirmation = () => {
-    dispatch(resetCart());
-    dispatch(setSelectedOrderId(undefined));
+    if (orderData?.status === Status.CANCELLED) {
+      // The API cancelled an order left unpaid, while the app may have moved on to another
+      // cart or order. Only the cart of this order can't be ordered again
+      if (orderData.cart === cartId) dispatch(renewCartId());
+      if (orderData.id === selectedOrderId) dispatch(setSelectedOrderId(undefined));
+    } else {
+      dispatch(resetCart());
+      dispatch(setSelectedOrderId(undefined));
+    }
     navigation.reset({
       index: 0,
       routes: [{ name: "Products" }],
@@ -432,11 +454,13 @@ const OrderStore = ({
     });
   };
 
-  if (isLoading) {
+  // Only the first load replaces the screen. A refetch keeps it mounted: Apollo reports
+  // refetches as loading, and unmounting the screen restarts whatever it is doing
+  if (isLoading && !orderData) {
     return <LoadingScreen />;
   }
 
-  if (orderData?.status === "CANCELLED") {
+  if (orderData?.status === Status.CANCELLED && !showCancelled) {
     return (
       <OrderNotAllowedScreen textToDisplay="Sorry, This order has been cancelled" />
     );

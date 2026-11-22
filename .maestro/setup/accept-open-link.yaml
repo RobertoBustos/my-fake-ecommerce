@@ -1,0 +1,14 @@
+appId: ${MAESTRO_APP_ID}
+---
+# Run by the iOS job before the flows; once it's running, the job opens a link to the app.
+# iOS 26 asks the first time a link opens the app, and Xcode 26's simctl waits for the answer,
+# so a flow's openLink can't get past it. Accepted once here, the simulator doesn't ask again.
+- extendedWaitUntil:
+    visible: "(Open in|¿Abrir en) .*"
+    timeout: 60000
+    optional: true
+- runFlow:
+    when:
+      visible: "(Open in|¿Abrir en) .*"
+    commands:
+      - tapOn: "Open|Abrir"

@@ -9,20 +9,22 @@ tags:
     visible:
       id: "Catalog.Container"
     timeout: 30000
+# The test product can be the last card, and scrolling stops as soon as part of it shows.
+# The price is the card's lowest text, so once it shows the title above it does too. A
+# visibility percentage of the card doesn't help: on Android Maestro reads the bounds of
+# the part on screen, so a card cut off at the bottom edge counts as fully visible.
 - scrollUntilVisible:
     element:
-      id: "CatalogItemCard.CardContainer-${MAESTRO_PRODUCT_ID}"
+      id: "CatalogItemCard.Price-${MAESTRO_PRODUCT_ID}"
     direction: DOWN
     timeout: 120000
-    # The test product can be the last card, which never shows whole
-    visibilityPercentage: 50
+    visibilityPercentage: 100
 - assertVisible:
     id: "CatalogItemCard.Title-${MAESTRO_PRODUCT_ID}"
     text: ${output.expected.title}
 - assertVisible:
     id: "CatalogItemCard.Price-${MAESTRO_PRODUCT_ID}"
     text: ${output.expected.price}
-# The last card shows only partly, so the tap goes to its title, not to its center
 - tapOn:
     id: "CatalogItemCard.Title-${MAESTRO_PRODUCT_ID}"
 - extendedWaitUntil:

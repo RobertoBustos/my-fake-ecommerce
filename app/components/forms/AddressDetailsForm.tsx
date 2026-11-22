@@ -44,9 +44,14 @@ const AddressDetailsForm = () => {
     <CustomCard orientation="horizontal" testID="AddressDetailsForm.Container">
       <GooglePlacesAutocomplete
         debounce={700}
+        // The suggestions show inside the screen's scroll view, which scrolls them
+        disableScroll={true}
         enablePoweredByContainer={false}
         fetchDetails={true}
-        listViewDisplayed={false}
+        // A long address wraps to a second line and ends with an ellipsis, instead of
+        // scrolling sideways out of the card
+        isRowScrollable={false}
+        numberOfLines={2}
         minLength={5}
         onPress={(data, details = null) => {
           if (details === null) return;
@@ -61,6 +66,7 @@ const AddressDetailsForm = () => {
           language: "en",
         }}
         ref={ref}
+        styles={{ description: styles.suggestion }}
         textInputProps={{
           testID: "AddressDetailsForm.SearchInput",
           placeholderTextColor: theme.colors.typography,

@@ -2,8 +2,12 @@ appId: ${MAESTRO_APP_ID}
 ---
 # A fresh install: no Firebase session, cart id or Redux state from a previous run.
 # Permissions are granted up front so the location prompt doesn't block the address screen.
+# Notifications are denied: with the permission the app registers for pushes at startup,
+# and on a CI runner the iOS simulator's push daemon can't reach APNs and retries in a loop
+# that slows the simulator until Maestro's driver and the app's requests time out
 - launchApp:
     clearState: true
     clearKeychain: true
     permissions:
       all: allow
+      notifications: deny

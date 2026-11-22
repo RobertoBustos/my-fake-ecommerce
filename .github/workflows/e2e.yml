@@ -43,14 +43,46 @@ env:
   MAESTRO_CARD_NUMBER: ${{ vars.MAESTRO_CARD_NUMBER }}
   MAESTRO_CARD_EXPIRY: ${{ vars.MAESTRO_CARD_EXPIRY }}
   MAESTRO_CARD_CVC: ${{ vars.MAESTRO_CARD_CVC }}
+  MAESTRO_ORDER_ID: ${{ vars.MAESTRO_ORDER_ID }}
   # smoke on every pull request into dev; every flow into main or when asked
   MAESTRO_TAGS: ${{ (github.base_ref != 'main' && inputs.flows != 'all') && '--include-tags smoke' || '' }}
 
 jobs:
+  # A pull request that only changes documentation can't change the app, so the E2E jobs
+  # skip it. A condition and not paths-ignore: a skipped job counts as passed for a required
+  # check, while a workflow that never starts leaves it pending. A manual run always runs
+  changes:
+    name: changes
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      app: ${{ steps.files.outputs.app }}
+    steps:
+      - name: Look for changes outside the documentation
+        id: files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" != "pull_request" ]; then
+            echo "app=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          files=$(gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[].filename')
+          echo "$files"
+          if grep -qvE '\.md$' <<< "$files"; then
+            echo "app=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Only documentation changed: the E2E jobs are skipped"
+            echo "app=false" >> "$GITHUB_OUTPUT"
+          fi
+
   e2e-android:
     name: e2e-android
+    needs: changes
     # Pull requests from forks get no secrets, so they can't build the app
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    if: needs.changes.outputs.app == 'true' && (github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -115,7 +147,8 @@ jobs:
 
   e2e-ios:
     name: e2e-ios
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    needs: changes
+    if: needs.changes.outputs.app == 'true' && (github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository)
     # Xcode 26.6 and iOS 26.5 simulators. The xcode-27 image once the app builds with Xcode 27 in CI
     runs-on: macos-26
     timeout-minutes: 75
@@ -191,6 +224,25 @@ jobs:
           xcrun simctl boot "$SIMULATOR_UDID"
           xcrun simctl bootstatus "$SIMULATOR_UDID"
           xcrun simctl install "$SIMULATOR_UDID" ios/build/Build/Products/Release-iphonesimulator/*.app
+
+      # iOS 26 asks whether to open a link in the app the first time, and simctl waits for the
+      # answer, which a flow can't give from inside openLink. A link opened here in the background
+      # gets the answer from a setup flow, and the simulator remembers it for every flow after.
+      # The iOS driver takes one to three minutes to start and simctl gives up on a dialog left
+      # waiting, so the link is opened only once Maestro is running
+      - name: Accept opening the app's links
+        run: |
+          maestro --device "$SIMULATOR_UDID" test .maestro/setup/accept-open-link.yaml > accept-open-link.log 2>&1 &
+          maestro_pid=$!
+          until grep -q "Running on" accept-open-link.log || ! kill -0 "$maestro_pid" 2>/dev/null; do
+            sleep 2
+          done
+          xcrun simctl openurl "$SIMULATOR_UDID" "myapp://" &
+          status=0
+          wait "$maestro_pid" || status=$?
+          cat accept-open-link.log
+          wait
+          exit "$status"
 
       # MAESTRO_TAGS is split on purpose: it's empty or "--include-tags smoke"
       - name: Run the flows on the simulator

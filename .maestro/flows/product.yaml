@@ -9,15 +9,21 @@ tags:
     visible:
       id: "Catalog.Container"
     timeout: 30000
-# The test product can be the last card, and scrolling stops as soon as part of it shows.
-# The price is the card's lowest text, so once it shows the title above it does too. A
-# visibility percentage of the card doesn't help: on Android Maestro reads the bounds of
-# the part on screen, so a card cut off at the bottom edge counts as fully visible.
 - scrollUntilVisible:
     element:
-      id: "CatalogItemCard.Price-${MAESTRO_PRODUCT_ID}"
+      id: "CatalogItemCard.CardContainer-${MAESTRO_PRODUCT_ID}"
     direction: DOWN
     timeout: 120000
+    # The test product can be the last card. Scrolling stops as soon as part of it shows,
+    # which can leave its title under the bottom edge, so the whole card is brought into view
+    visibilityPercentage: 100
+# On Android the list can still move after the scroll ends and leave the card under the
+# bottom edge again, so once it settles the same scroll brings it back if needed
+- waitForAnimationToEnd
+- scrollUntilVisible:
+    element:
+      id: "CatalogItemCard.CardContainer-${MAESTRO_PRODUCT_ID}"
+    direction: DOWN
     visibilityPercentage: 100
 - assertVisible:
     id: "CatalogItemCard.Title-${MAESTRO_PRODUCT_ID}"

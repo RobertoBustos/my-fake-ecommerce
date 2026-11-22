@@ -55,11 +55,12 @@
 ## Working with Claude
 - **Default:** Claude writes the code and verifies it locally, as CI runs it, but does **not** run `git add`, `commit`, `push` or `gh pr create`, and does not merge. Claude hands over the finished code and the exact commands for the user to run.
 - This changes only if the user explicitly asks Claude to work autonomously up to a point (for example "push the branch" or "open the PR"), and only for that task.
-- Claude moves Jira issues directly at the equivalent moments, without asking, because that is not an action on the repository.
+- Claude moves Jira issues directly at the equivalent moments, without asking, because that is not an action on the repository: to In Review when the PR opens (whoever opens it), and to Done after verifying the merge.
 
 ## Jira and Confluence
 These apply to anyone who moves tasks or makes a release, person or Claude. Jira content is in Spanish.
 - **Assignee and story points before In Progress.** A task (not an epic) doesn't leave To Do without an assignee and story points (`customfield_10016`). 1 point = 1 hour of work, half points allowed. The same applies when creating a task.
+- **Board columns:** To Do → In Progress → In Review → Done. A task moves to **In Review** when its PR opens, and stays there while the PR waits for checks and the merge. If the PR is closed without merging and the work goes on, it returns to In Progress.
 - **Done only with a verified merge.** Before moving a task to Done, confirm that its PR is `MERGED` with `gh pr view <n> --json state,mergedAt`. Before starting the next branch, confirm the commit is in `origin/dev`.
 - **Epics.** An epic moves to Done when all its tasks without the `opcional` label are finished. Exception: ECOMMOB-33 (Hotfixes y mantenimiento) and ECOMMOB-34 (Deuda técnica) are perpetual and always In Progress, even with no open tasks.
 - **Confluence (MFE space).** Every page has two native tabs, **Español** first and **English** second, with the same content. A change goes in both tabs, in the same version and in the same position. A new page starts with both tabs. Re-read the current version before publishing and merge any change made since you read it.

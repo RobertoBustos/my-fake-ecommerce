@@ -92,9 +92,8 @@ const RootStack = () => {
       <Stack.Screen
         name="Confirmation"
         component={ConfirmationScreen}
-        options={({ route }) => ({
-          title: `Order Complete`,
-        })}
+        // ConfirmationHeader sets the title from the order's status once it loads
+        options={{ title: "Order" }}
       />
       <Stack.Screen
         name="Login"

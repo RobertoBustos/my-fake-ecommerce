@@ -119,13 +119,15 @@ jobs:
           curl -fsSL "https://get.maestro.mobile.dev" | MAESTRO_VERSION=2.12.1 bash
           echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
 
-      # The runner runs each script line as its own command
+      # The runner runs each script line as its own command. Without a profile the emulator
+      # gets a 320x640 screen, too small for the flows: a phone's screen, like the Pixel 6's
       - name: Run the flows on an emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 34
           target: google_apis
           arch: x86_64
+          profile: pixel_6
           ram-size: 4096M
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none

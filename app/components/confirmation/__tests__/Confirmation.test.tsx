@@ -5,9 +5,14 @@ import Confirmation from "../Confirmation";
 
 const mockReloadOrder = jest.fn();
 let mockOrderData: Partial<OrderType> | undefined;
+let mockIsPaymentExpected: boolean;
 
 jest.mock("../../../contexts/OrderContext", () => ({
-  useOrderContext: () => ({ orderData: mockOrderData, reloadOrder: mockReloadOrder }),
+  useOrderContext: () => ({
+    orderData: mockOrderData,
+    reloadOrder: mockReloadOrder,
+    isPaymentExpected: mockIsPaymentExpected,
+  }),
 }));
 // The paid order's summaries aren't under test
 jest.mock("../../PaymentSummary", () => () => null);
@@ -15,7 +20,12 @@ jest.mock("../../OrderSummary", () => () => null);
 jest.mock("../../CustomerSummary", () => () => null);
 jest.mock("../../AddressSummary", () => () => null);
 
-const pendingOrder = { id: "order-1", payment: null, details: [] } as unknown as OrderType;
+const pendingOrder = {
+  id: "order-1",
+  status: Status.PAYMENT_PENDING,
+  payment: null,
+  details: [],
+} as unknown as OrderType;
 const paidOrder = {
   ...pendingOrder,
   payment: { paymentDetails: {} },
@@ -29,6 +39,8 @@ describe("Confirmation", () => {
     jest.clearAllMocks();
     mockReloadOrder.mockResolvedValue(undefined);
     mockOrderData = pendingOrder;
+    // Right after paying in the app
+    mockIsPaymentExpected = true;
   });
 
   afterEach(() => {
@@ -80,6 +92,15 @@ describe("Confirmation", () => {
 
   it("shows a cancelled order without waiting for a payment", async () => {
     mockOrderData = { ...pendingOrder, status: Status.CANCELLED };
+    await render(<Confirmation />);
+    await advance(PAYMENT_POLL_INTERVAL_MS * 3);
+
+    expect(mockReloadOrder).not.toHaveBeenCalled();
+    expect(screen.getByTestId("Confirmation.Container")).toBeTruthy();
+  });
+
+  it("shows an order awaiting payment from a notification without waiting", async () => {
+    mockIsPaymentExpected = false;
     await render(<Confirmation />);
     await advance(PAYMENT_POLL_INTERVAL_MS * 3);
 

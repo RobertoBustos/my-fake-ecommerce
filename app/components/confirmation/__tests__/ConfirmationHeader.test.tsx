@@ -4,9 +4,10 @@ import ConfirmationHeader from "../ConfirmationHeader";
 
 const mockSetOptions = jest.fn();
 let mockOrderData: Partial<OrderType> | undefined;
+let mockIsPaymentExpected = false;
 
 jest.mock("../../../contexts/OrderContext", () => ({
-  useOrderContext: () => ({ orderData: mockOrderData }),
+  useOrderContext: () => ({ orderData: mockOrderData, isPaymentExpected: mockIsPaymentExpected }),
 }));
 jest.mock("../../../hooks/useAppNavigation", () => () => ({ setOptions: mockSetOptions }));
 
@@ -15,6 +16,7 @@ const messageText = () => screen.getByTestId("ConfirmationHeader.Text").props.ch
 describe("ConfirmationHeader", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockIsPaymentExpected = false;
   });
 
   it("thanks the user for a paid order", async () => {
@@ -32,6 +34,15 @@ describe("ConfirmationHeader", () => {
 
     expect(messageText()).toBe("Your order is waiting for payment. Complete it below.");
     expect(mockSetOptions).toHaveBeenLastCalledWith({ title: "Awaiting Payment" });
+  });
+
+  it("says the payment is being confirmed right after paying", async () => {
+    mockOrderData = { status: Status.PAYMENT_PENDING };
+    mockIsPaymentExpected = true;
+    await render(<ConfirmationHeader orderId="order-1" />);
+
+    expect(messageText()).toBe("We are confirming your payment, it will show here in a moment.");
+    expect(mockSetOptions).toHaveBeenLastCalledWith({ title: "Confirming Payment" });
   });
 
   it("says a cancelled order was never paid", async () => {
@@ -52,6 +63,7 @@ describe("ConfirmationHeader", () => {
 
   it("updates the title when the payment arrives", async () => {
     mockOrderData = { status: Status.PAYMENT_PENDING };
+    mockIsPaymentExpected = true;
     const { rerender } = await render(<ConfirmationHeader orderId="order-1" />);
 
     mockOrderData = { status: Status.COMPLETE };

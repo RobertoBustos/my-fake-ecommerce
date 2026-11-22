@@ -19,11 +19,14 @@ import LoadingScreen from "../common/LoadingScreen";
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const Confirmation = () => {
-  const { orderData, reloadOrder } = useOrderContext();
+  const { orderData, reloadOrder, isPaymentExpected } = useOrderContext();
   const [isWaiting, setIsWaiting] = useState<boolean>(true);
-  // A cancelled order was never paid, so there is no payment to wait for
-  const isOrderCancelled = orderData?.status === Status.CANCELLED;
-  const isPaymentMissing = orderData?.payment === null && !isOrderCancelled;
+  // There is no payment to wait for when the order was cancelled, or when it awaits payment
+  // and was opened from a notification or a link instead of right after paying
+  const isNotPaid =
+    orderData?.status === Status.CANCELLED ||
+    (orderData?.status === Status.PAYMENT_PENDING && !isPaymentExpected);
+  const isPaymentMissing = orderData?.payment === null && !isNotPaid;
   // Each reload renders again, so the latest function is read from a ref instead of
   // restarting the wait
   const reloadOrderRef = useRef(reloadOrder);
@@ -67,7 +70,7 @@ const Confirmation = () => {
     );
   }
 
-  if (orderData.payment === null && !isOrderCancelled) {
+  if (isPaymentMissing) {
     return <LoadingScreen />;
   }
 

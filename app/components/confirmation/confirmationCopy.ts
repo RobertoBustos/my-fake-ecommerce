@@ -7,8 +7,19 @@ export type ConfirmationCopy = {
 };
 
 // The confirmation screen also opens orders that aren't paid, from a "Payment failed" or
-// "Order cancelled" notification or a link, so its wording follows the order's status
-export const getConfirmationCopy = (status: Status | undefined): ConfirmationCopy => {
+// "Order cancelled" notification or a link, so its wording follows the order's status.
+// Right after paying in the app, the order awaits the payment that is being confirmed
+export const getConfirmationCopy = (
+  status: Status | undefined,
+  isPaymentExpected = false
+): ConfirmationCopy => {
+  if (status === Status.PAYMENT_PENDING && isPaymentExpected) {
+    return {
+      title: "Confirming Payment",
+      message: "We are confirming your payment, it will show here in a moment.",
+      icon: "file-invoice-dollar",
+    };
+  }
   switch (status) {
     case Status.COMPLETE:
       return {

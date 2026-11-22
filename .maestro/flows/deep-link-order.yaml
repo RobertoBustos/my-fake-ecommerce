@@ -31,7 +31,7 @@ tags:
     visible:
       id: "ConfirmationScreen.Layout"
     timeout: 20000
-# The order loaded: its number in the header and its products, which only show once paid
+# The order loaded: its number in the header and its products
 - assertVisible: "Order Number ${MAESTRO_ORDER_ID}"
 - extendedWaitUntil:
     visible:

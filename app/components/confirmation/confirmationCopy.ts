@@ -3,11 +3,11 @@ import { Status } from "../../constants/types";
 export type ConfirmationCopy = {
   title: string;
   message: string;
-  icon: "shopping-bag" | "file-invoice-dollar";
+  icon: "shopping-bag" | "file-invoice-dollar" | "ban";
 };
 
-// The confirmation screen also opens orders that aren't paid yet, from a "Payment failed"
-// notification or a link, so its wording follows the order's status
+// The confirmation screen also opens orders that aren't paid, from a "Payment failed" or
+// "Order cancelled" notification or a link, so its wording follows the order's status
 export const getConfirmationCopy = (status: Status | undefined): ConfirmationCopy => {
   switch (status) {
     case Status.COMPLETE:
@@ -21,6 +21,12 @@ export const getConfirmationCopy = (status: Status | undefined): ConfirmationCop
         title: "Awaiting Payment",
         message: "Your order is waiting for payment. Complete it below.",
         icon: "file-invoice-dollar",
+      };
+    case Status.CANCELLED:
+      return {
+        title: "Order Cancelled",
+        message: "This order was cancelled before it was paid.",
+        icon: "ban",
       };
     // While the order loads, and for any other status
     default:

@@ -34,6 +34,14 @@ describe("ConfirmationHeader", () => {
     expect(mockSetOptions).toHaveBeenLastCalledWith({ title: "Awaiting Payment" });
   });
 
+  it("says a cancelled order was never paid", async () => {
+    mockOrderData = { status: Status.CANCELLED };
+    await render(<ConfirmationHeader orderId="order-1" />);
+
+    expect(messageText()).toBe("This order was cancelled before it was paid.");
+    expect(mockSetOptions).toHaveBeenLastCalledWith({ title: "Order Cancelled" });
+  });
+
   it("stays neutral without the order", async () => {
     mockOrderData = undefined;
     await render(<ConfirmationHeader orderId="order-1" />);

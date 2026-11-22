@@ -14,3 +14,9 @@ xcrun simctl push booted <bundle id> /tmp/push.apns
 
 The bundle id is `UNIQUE_IDENTIFIER` in `.env.local`. Tapping the notification opens
 the order, with the app open, in the background or closed.
+
+| File | Notification | The order to use |
+| --- | --- | --- |
+| `order-completed.apns` | Order confirmed | A paid order |
+| `payment-failed.apns` | Payment failed | An order waiting for payment |
+| `order-cancelled.apns` | Order cancelled | A cancelled order, which the confirmation screen shows as cancelled |

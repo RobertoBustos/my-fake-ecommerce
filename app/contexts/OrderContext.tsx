@@ -18,6 +18,7 @@ import {
   resetCart,
   setCartFromOrder,
 } from "../redux/cart/reducer";
+import { selectCartId } from "../redux/cart/selectors";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {
   setAddressData,
@@ -29,6 +30,7 @@ import {
   selectCustomerData,
   selectIsAddressDataValid,
   selectIsCustomerDataValid,
+  selectSelectedOrderId,
 } from "../redux/order/selectors";
 import {
   ApiErrorCode,
@@ -83,12 +85,15 @@ const MAX_PAYMENT_ATTEMPTS = 3;
 export type OrderStoreContextType = PropsWithChildren & {
   orderId: string;
   forceGoBack?: boolean;
+  // Without it, a cancelled order shows a screen that says it can't be used
+  showCancelled?: boolean;
 };
 
 const OrderStore = ({
   children,
   orderId,
   forceGoBack,
+  showCancelled,
 }: OrderStoreContextType) => {
   const navigation = useAppNavigation();
   const {
@@ -113,6 +118,8 @@ const OrderStore = ({
   const addressData = useAppSelector(selectAddressData());
   const isCustomerValid = useAppSelector(selectIsCustomerDataValid());
   const isAddressValid = useAppSelector(selectIsAddressDataValid());
+  const cartId = useAppSelector(selectCartId);
+  const selectedOrderId = useAppSelector(selectSelectedOrderId);
   const orderData: OrderType | undefined =
     orders && orders.length && orders.length === 1 ? orders[0] : undefined;
   const isProcessing =
@@ -156,7 +163,11 @@ const OrderStore = ({
     if (forceGoBack && forceGoBack === true) {
       return "Save";
     }
-    if (orderData?.status === "COMPLETE") return "Return to Home";
+    if (
+      orderData?.status === Status.COMPLETE ||
+      orderData?.status === Status.CANCELLED
+    )
+      return "Return to Home";
     if (orderData?.status === "PAYMENT_PENDING")
       return `Complete Your Payment for ${formatCurrency(
         orderData.totals.total,
@@ -411,8 +422,15 @@ const OrderStore = ({
   };
 
   const returnFromConfirmation = () => {
-    dispatch(resetCart());
-    dispatch(setSelectedOrderId(undefined));
+    if (orderData?.status === Status.CANCELLED) {
+      // The API cancelled an order left unpaid, while the app may have moved on to another
+      // cart or order. Only the cart of this order can't be ordered again
+      if (orderData.cart === cartId) dispatch(renewCartId());
+      if (orderData.id === selectedOrderId) dispatch(setSelectedOrderId(undefined));
+    } else {
+      dispatch(resetCart());
+      dispatch(setSelectedOrderId(undefined));
+    }
     navigation.reset({
       index: 0,
       routes: [{ name: "Products" }],
@@ -442,7 +460,7 @@ const OrderStore = ({
     return <LoadingScreen />;
   }
 
-  if (orderData?.status === "CANCELLED") {
+  if (orderData?.status === Status.CANCELLED && !showCancelled) {
     return (
       <OrderNotAllowedScreen textToDisplay="Sorry, This order has been cancelled" />
     );

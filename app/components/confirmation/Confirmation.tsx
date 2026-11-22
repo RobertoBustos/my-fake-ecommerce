@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useUnistyles } from "react-native-unistyles";
 import { PAYMENT_POLL_INTERVAL_MS, PAYMENT_POLL_TIMEOUT_MS } from "../../constants/config";
-import { CartItemType } from "../../constants/types";
+import { CartItemType, Status } from "../../constants/types";
 import { useOrderContext } from "../../contexts/OrderContext";
 import styles from "../../styles/components/Confirmation";
 import orderConfirmationItemStyleSheet from "../../styles/components/OrderConfirmationItem";
@@ -21,7 +21,9 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const Confirmation = () => {
   const { orderData, reloadOrder } = useOrderContext();
   const [isWaiting, setIsWaiting] = useState<boolean>(true);
-  const isPaymentMissing = orderData?.payment === null;
+  // A cancelled order was never paid, so there is no payment to wait for
+  const isOrderCancelled = orderData?.status === Status.CANCELLED;
+  const isPaymentMissing = orderData?.payment === null && !isOrderCancelled;
   // Each reload renders again, so the latest function is read from a ref instead of
   // restarting the wait
   const reloadOrderRef = useRef(reloadOrder);
@@ -65,7 +67,7 @@ const Confirmation = () => {
     );
   }
 
-  if (orderData.payment === null) {
+  if (orderData.payment === null && !isOrderCancelled) {
     return <LoadingScreen />;
   }
 
@@ -78,7 +80,7 @@ const Confirmation = () => {
       {orderData.details.map((item) => {
         return <OrderConfirmationItem data={item} key={item.id} />;
       })}
-      <PaymentSummary data={orderData.payment.paymentDetails} />
+      {orderData.payment && <PaymentSummary data={orderData.payment.paymentDetails} />}
       <OrderSummary data={orderData.totals} />
       <CustomerSummary data={orderData.customer} />
       <AddressSummary data={orderData.address} />

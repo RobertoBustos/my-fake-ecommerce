@@ -10,7 +10,8 @@ export type ConfirmationScreenPropsType = NativeStackScreenProps<RootStackParamL
 
 const ConfirmationScreen = ({ route }: ConfirmationScreenPropsType) => {
   return (
-    <OrderStore orderId={route.params.orderId}>
+    // A cancelled order is shown here as cancelled, the other screens don't open it
+    <OrderStore orderId={route.params.orderId} showCancelled>
       <Layout
         headerComponent={<ConfirmationHeader orderId={route.params.orderId} />}
         footerComponent={<ConfirmationFooter />}

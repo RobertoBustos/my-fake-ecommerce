@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 import { PAYMENT_POLL_INTERVAL_MS, PAYMENT_POLL_TIMEOUT_MS } from "../../../constants/config";
-import { OrderType } from "../../../constants/types";
+import { OrderType, Status } from "../../../constants/types";
 import Confirmation from "../Confirmation";
 
 const mockReloadOrder = jest.fn();
@@ -76,6 +76,15 @@ describe("Confirmation", () => {
     await render(<Confirmation />);
     await advance(PAYMENT_POLL_INTERVAL_MS * 3);
     expect(mockReloadOrder).toHaveBeenCalledTimes(3);
+  });
+
+  it("shows a cancelled order without waiting for a payment", async () => {
+    mockOrderData = { ...pendingOrder, status: Status.CANCELLED };
+    await render(<Confirmation />);
+    await advance(PAYMENT_POLL_INTERVAL_MS * 3);
+
+    expect(mockReloadOrder).not.toHaveBeenCalled();
+    expect(screen.getByTestId("Confirmation.Container")).toBeTruthy();
   });
 
   it("doesn't check by itself when the order failed to load", async () => {

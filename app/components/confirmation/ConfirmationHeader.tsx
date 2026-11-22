@@ -14,8 +14,8 @@ export type ConfirmationHeaderPropsType = {
 const ConfirmationHeader = ({ orderId }: ConfirmationHeaderPropsType) => {
   const { theme } = useUnistyles();
   const navigation = useAppNavigation();
-  const { orderData } = useOrderContext();
-  const { title, message, icon } = getConfirmationCopy(orderData?.status);
+  const { orderData, isPaymentExpected } = useOrderContext();
+  const { title, message, icon } = getConfirmationCopy(orderData?.status, isPaymentExpected);
 
   // The navigator doesn't know the order, so the screen's title is set from here
   useLayoutEffect(() => {

@@ -15,7 +15,6 @@ import useOrder, { PaymentCreated } from "../hooks/useOrder";
 import { askForNotificationPermission } from "../notifications";
 import {
   renewCartId,
-  resetCart,
   setCartFromOrder,
 } from "../redux/cart/reducer";
 import { selectCartId } from "../redux/cart/selectors";
@@ -58,6 +57,7 @@ export type OrderContextType = {
   editCustomerRedirect: () => void;
   editAddressRedirect: () => void;
   isDisabled: boolean;
+  isPaymentExpected: boolean;
 };
 
 const OrderContext = createContext<OrderContextType>({
@@ -77,6 +77,7 @@ const OrderContext = createContext<OrderContextType>({
   editCustomerRedirect: () => {},
   editAddressRedirect: () => {},
   isDisabled: true,
+  isPaymentExpected: false,
 });
 
 // Attempts of createOrderPayment while recovering from expired reservations
@@ -87,6 +88,9 @@ export type OrderStoreContextType = PropsWithChildren & {
   forceGoBack?: boolean;
   // Without it, a cancelled order shows a screen that says it can't be used
   showCancelled?: boolean;
+  // The order was just paid in the app, so a missing payment is still on its way. Without
+  // it, an order awaiting payment was opened from a notification or a link and isn't paid
+  isPaymentExpected?: boolean;
 };
 
 const OrderStore = ({
@@ -94,6 +98,7 @@ const OrderStore = ({
   orderId,
   forceGoBack,
   showCancelled,
+  isPaymentExpected = false,
 }: OrderStoreContextType) => {
   const navigation = useAppNavigation();
   const {
@@ -124,6 +129,8 @@ const OrderStore = ({
     orders && orders.length && orders.length === 1 ? orders[0] : undefined;
   const isProcessing =
     isUpdating || isLoading || isCreatingPayment || isPaying;
+  // An order awaiting payment that was opened from a notification or a link
+  const isUnpaid = orderData?.status === Status.PAYMENT_PENDING && !isPaymentExpected;
   // The server moves the order to PAYMENT_PENDING once it has customer and address, only then it can be paid
   const isDisabled = orderData?.status !== Status.PAYMENT_PENDING;
 
@@ -165,10 +172,11 @@ const OrderStore = ({
     }
     if (
       orderData?.status === Status.COMPLETE ||
-      orderData?.status === Status.CANCELLED
+      orderData?.status === Status.CANCELLED ||
+      (orderData?.status === Status.PAYMENT_PENDING && isPaymentExpected)
     )
       return "Return to Home";
-    if (orderData?.status === "PAYMENT_PENDING")
+    if (orderData?.status === Status.PAYMENT_PENDING)
       return `Complete Your Payment for ${formatCurrency(
         orderData.totals.total,
         orderData.totals.currency
@@ -182,13 +190,19 @@ const OrderStore = ({
     else await fetchOrder(orderId);
   };
 
+  // A notification or a link can open an older order while the app has moved on to another
+  // cart, so the cart and the selected order are cleared only when they belong to this order.
+  // A cart is ordered only once
+  const releaseOrderCart = (order: OrderType) => {
+    if (order.cart === cartId) dispatch(renewCartId());
+    if (order.id === selectedOrderId) dispatch(setSelectedOrderId(undefined));
+  };
+
   const cancelIncompleteOrder = () => {
     if (!orderData) return;
     cancelExistingOrder({ id: orderData.id })
       .then(() => {
-        // The cart of a cancelled order can not be ordered again
-        dispatch(renewCartId());
-        dispatch(setSelectedOrderId(undefined));
+        releaseOrderCart(orderData);
         navigation.reset({
           index: 0,
           routes: [{ name: "Products" }],
@@ -397,15 +411,13 @@ const OrderStore = ({
           "We are still confirming your payment, your order will be completed in a moment"
         );
       }
-      // The cart of this order can not be ordered again
-      dispatch(renewCartId());
-      dispatch(setSelectedOrderId(undefined));
+      releaseOrderCart(orderData);
       navigation.reset({
         index: 0,
         routes: [
           {
             name: "Confirmation",
-            params: { orderId: orderData.id },
+            params: { orderId: orderData.id, afterPayment: true },
           },
         ],
       });
@@ -422,20 +434,23 @@ const OrderStore = ({
   };
 
   const returnFromConfirmation = () => {
-    if (orderData?.status === Status.CANCELLED) {
-      // The API cancelled an order left unpaid, while the app may have moved on to another
-      // cart or order. Only the cart of this order can't be ordered again
-      if (orderData.cart === cartId) dispatch(renewCartId());
-      if (orderData.id === selectedOrderId) dispatch(setSelectedOrderId(undefined));
-    } else {
-      dispatch(resetCart());
-      dispatch(setSelectedOrderId(undefined));
+    if (orderData && isUnpaid) {
+      // The payment is completed in Checkout, with the catalog below it so back doesn't
+      // return here. The cart and the selected order are left as they are
+      navigation.reset({
+        index: 1,
+        routes: [
+          { name: "Products" },
+          { name: "Checkout", params: { orderId: orderData.id } },
+        ],
+      });
+      return;
     }
+    if (orderData) releaseOrderCart(orderData);
     navigation.reset({
       index: 0,
       routes: [{ name: "Products" }],
     });
-    return;
   };
 
   const editCustomerRedirect = () => {
@@ -479,6 +494,7 @@ const OrderStore = ({
         footerText: getFooterText(),
         isProcessing,
         isDisabled,
+        isPaymentExpected,
         updateOrderAddress,
         isAddressValid,
         updateOrderCustomer,

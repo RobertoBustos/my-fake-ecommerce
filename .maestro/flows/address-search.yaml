@@ -5,8 +5,8 @@ tags:
 # Without the location permission the address field stays empty, without any alert, and
 # the user finds the address with the search instead. The order is cancelled at the end.
 - runScript: ../scripts/expected.js
-# A fresh install, as in launch-clean, but with the location denied: Maestro takes
-# "never" on iOS and "deny" on Android
+# A fresh install, as in launch-clean (notifications denied too), but with the location
+# denied: Maestro takes "never" on iOS and "deny" on Android
 - runFlow:
     when:
       platform: iOS
@@ -17,6 +17,7 @@ tags:
           permissions:
             all: allow
             location: never
+            notifications: deny
 - runFlow:
     when:
       platform: Android
@@ -27,6 +28,7 @@ tags:
           permissions:
             all: allow
             location: deny
+            notifications: deny
 - runFlow: ../subflows/add-to-cart.yaml
 - tapOn:
     id: "ShoppingCartHeaderIcon.Button"

@@ -48,10 +48,41 @@ env:
   MAESTRO_TAGS: ${{ (github.base_ref != 'main' && inputs.flows != 'all') && '--include-tags smoke' || '' }}
 
 jobs:
+  # A pull request that only changes documentation can't change the app, so the E2E jobs
+  # skip it. A condition and not paths-ignore: a skipped job counts as passed for a required
+  # check, while a workflow that never starts leaves it pending. A manual run always runs
+  changes:
+    name: changes
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      app: ${{ steps.files.outputs.app }}
+    steps:
+      - name: Look for changes outside the documentation
+        id: files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" != "pull_request" ]; then
+            echo "app=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          files=$(gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files" --jq '.[].filename')
+          echo "$files"
+          if grep -qvE '\.md$' <<< "$files"; then
+            echo "app=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Only documentation changed: the E2E jobs are skipped"
+            echo "app=false" >> "$GITHUB_OUTPUT"
+          fi
+
   e2e-android:
     name: e2e-android
+    needs: changes
     # Pull requests from forks get no secrets, so they can't build the app
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    if: needs.changes.outputs.app == 'true' && (github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -116,7 +147,8 @@ jobs:
 
   e2e-ios:
     name: e2e-ios
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    needs: changes
+    if: needs.changes.outputs.app == 'true' && (github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository)
     # Xcode 26.6 and iOS 26.5 simulators. The xcode-27 image once the app builds with Xcode 27 in CI
     runs-on: macos-26
     timeout-minutes: 75

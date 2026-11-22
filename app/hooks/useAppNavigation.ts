@@ -1,5 +1,4 @@
-import { NavigationProp } from "@react-navigation/native";
-import { useNavigation } from "expo-router";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../constants/types";
 
 const useAppNavigation = () => {

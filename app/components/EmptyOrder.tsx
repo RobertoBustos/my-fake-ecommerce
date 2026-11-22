@@ -1,7 +1,7 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Text, View } from "react-native";
-import { useStyles } from "react-native-unistyles";
-import emptyOrderStyleSheet from "../styles/components/EmptyOrder";
+import { useUnistyles } from "react-native-unistyles";
+import styles from "../styles/components/EmptyOrder";
 import CustomButton from "./common/CustomButton";
 import { ReloadButton } from "./common/IconButtons";
 
@@ -10,7 +10,7 @@ export type EmptyOrderPropsType = {
 };
 
 const EmptyOrder = ({ onRetry }: EmptyOrderPropsType) => {
-  const { styles, theme } = useStyles(emptyOrderStyleSheet);
+  const { theme } = useUnistyles();
 
   return (
     <View style={styles.container} testID="EmptyOrder.Container">

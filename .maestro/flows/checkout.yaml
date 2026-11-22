@@ -1,0 +1,112 @@
+appId: ${MAESTRO_APP_ID}
+tags:
+  - main
+---
+# Customer (with validation), address and the order summary; the order is cancelled at the end
+- runScript: ../scripts/expected.js
+# A fixed position, so the address is prefilled from the location the same way on every run
+- setLocation:
+    latitude: 19.4326
+    longitude: -99.1332
+- runFlow: ../subflows/launch-clean.yaml
+- runFlow: ../subflows/add-to-cart.yaml
+- tapOn:
+    id: "ShoppingCartHeaderIcon.Button"
+- tapOn:
+    id: "CartScreen.Footer"
+
+# Customer: invalid values show their error, valid ones enable Continue.
+# On iOS the footer button rises with the keyboard and covers the next field,
+# so Enter closes the keyboard after each one (hideKeyboard fails in this app).
+- extendedWaitUntil:
+    visible:
+      id: "UserDetailsForm.EmailInput"
+    timeout: 20000
+- tapOn:
+    id: "UserDetailsForm.EmailInput"
+- inputText: "not-an-email"
+- pressKey: Enter
+- assertVisible:
+    id: "UserDetailsForm.EmailErrorText"
+- tapOn:
+    id: "UserDetailsForm.EmailInput"
+- eraseText: 20
+- inputText: ${output.customer.email}
+- pressKey: Enter
+- assertNotVisible:
+    id: "UserDetailsForm.EmailErrorText"
+- tapOn:
+    id: "UserDetailsForm.NameInput"
+- inputText: ${output.customer.name}
+- pressKey: Enter
+- tapOn:
+    id: "UserDetailsForm.PhoneInput"
+- inputText: "123"
+- pressKey: Enter
+- assertVisible:
+    id: "UserDetailsForm.PhoneErrorText"
+- tapOn:
+    id: "UserDetailsForm.PhoneInput"
+- eraseText: 5
+- inputText: ${output.customer.phone}
+- pressKey: Enter
+- assertNotVisible:
+    id: "UserDetailsForm.PhoneErrorText"
+- tapOn:
+    id: "CustomerScreen.Footer"
+
+# Address: prefilled from the location. The map itself is not checked: it doesn't
+# render on the Android emulator (ECOMMOB-30).
+- extendedWaitUntil:
+    visible:
+      id: "AddressDetailsForm.SearchInput"
+    timeout: 20000
+# Continue is enabled once the address from the location arrives
+- extendedWaitUntil:
+    visible:
+      id: "AddressScreen.Footer"
+      enabled: true
+    timeout: 20000
+- tapOn:
+    id: "AddressScreen.Footer"
+
+# Checkout: the customer, the address and the amounts for the ordered quantity.
+# On iOS the order summary rows have no children in the hierarchy (their texts are
+# siblings), so each amount is checked as an exact text on the screen; they all differ.
+- extendedWaitUntil:
+    visible:
+      id: "CheckoutScreen.Footer"
+    timeout: 20000
+# The customer card is touchable: on iOS its texts are merged into the card's own label
+- assertVisible:
+    id: "CustomerSummary.Container"
+    text: ${output.contains.customerEmail}
+- assertVisible:
+    id: "CustomerSummary.Container"
+    text: ${output.contains.customerName}
+- assertVisible:
+    id: "CustomerSummary.Container"
+    text: ${output.contains.customerPhone}
+- assertVisible:
+    id: "AddressSummary.Address"
+- scrollUntilVisible:
+    element:
+      id: "OrderSummary.Total"
+    direction: DOWN
+- assertVisible: ${output.expected.subtotal}
+- assertVisible: ${output.expected.taxes}
+- assertVisible: ${output.expected.total}
+
+# Cancel the order, so the run leaves no pending order and the stock is released
+- scrollUntilVisible:
+    element:
+      id: "CheckoutButtons.CancelOrderButton"
+    direction: DOWN
+- tapOn:
+    id: "CheckoutButtons.CancelOrderButton"
+- assertVisible: "Cancel this order?"
+- tapOn: "OK"
+- extendedWaitUntil:
+    visible:
+      id: "Catalog.Container"
+    timeout: 20000

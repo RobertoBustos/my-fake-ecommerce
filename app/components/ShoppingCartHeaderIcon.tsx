@@ -1,10 +1,10 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
-import { useStyles } from "react-native-unistyles";
+import { useUnistyles } from "react-native-unistyles";
 import { selectCartItems } from "../redux/cart/selectors";
 import { useAppSelector } from "../redux/hooks";
-import shoppingCartHeaderIconStylesheet from "../styles/components/ShoppingCartHeaderIcon";
+import styles from "../styles/components/ShoppingCartHeaderIcon";
 
 type ShoppingCartHeaderIconPropsType = {
   onPress?: () => void;
@@ -13,11 +13,11 @@ type ShoppingCartHeaderIconPropsType = {
 const ShoppingCartHeaderIcon = ({
   onPress,
 }: ShoppingCartHeaderIconPropsType) => {
-  const { styles, theme } = useStyles(shoppingCartHeaderIconStylesheet);
+  const { theme } = useUnistyles();
   const { length } = useAppSelector(selectCartItems);
 
   return (
-    <Pressable onPress={onPress}>
+    <Pressable onPress={onPress} testID="ShoppingCartHeaderIcon.Button">
       <View style={styles.container}>
         <FontAwesome
           name="shopping-cart"
@@ -26,7 +26,12 @@ const ShoppingCartHeaderIcon = ({
         />
         {length > 0 ? (
           <View style={styles.notificationContainer}>
-            <Text style={styles.notificationText}>{length}</Text>
+            <Text
+              style={styles.notificationText}
+              testID="ShoppingCartHeaderIcon.Count"
+            >
+              {length}
+            </Text>
           </View>
         ) : null}
       </View>

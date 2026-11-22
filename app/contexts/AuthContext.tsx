@@ -1,4 +1,4 @@
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { FirebaseError } from "firebase/app";
 import {
   EmailAuthProvider,
@@ -72,15 +72,18 @@ const AuthStore = ({ children }: PropsWithChildren) => {
   const previousUserId = useRef<string | null>(null);
 
   const startAnonymousSession = useCallback(() => {
-    signInAnonymously(auth).catch((error) => {
-      setIsInitializing(false);
-      Alert.alert(
-        "We could not start your session",
-        getAuthErrorMessage(error),
-        [{ text: "Try again", onPress: () => startAnonymousSession() }],
-        { cancelable: false }
-      );
-    });
+    const signIn = () => {
+      signInAnonymously(auth).catch((error) => {
+        setIsInitializing(false);
+        Alert.alert(
+          "We could not start your session",
+          getAuthErrorMessage(error),
+          [{ text: "Try again", onPress: signIn }],
+          { cancelable: false }
+        );
+      });
+    };
+    signIn();
   }, []);
 
   useEffect(() => {
@@ -91,7 +94,9 @@ const AuthStore = ({ children }: PropsWithChildren) => {
         if (previousUserId.current) {
           dispatch(clearCart());
           dispatch(resetOrder());
-          client.clearStore();
+          // clearStore leaves the active queries without data until they fetch again, so they
+          // are refetched for the new user. A failed refetch shows up in its own query's error
+          client.resetStore().catch(() => undefined);
         }
         previousUserId.current = userId;
       }

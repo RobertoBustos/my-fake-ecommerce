@@ -1,0 +1,40 @@
+appId: ${MAESTRO_APP_ID}
+---
+# From the cart to the checkout screen with valid customer data and the address
+# from the location. Needs ${output.customer} from scripts/expected.js and a setLocation.
+- tapOn:
+    id: "ShoppingCartHeaderIcon.Button"
+- tapOn:
+    id: "CartScreen.Footer"
+# On iOS the footer button rises with the keyboard and covers the next field,
+# so Enter closes the keyboard after each one (hideKeyboard fails in this app)
+- extendedWaitUntil:
+    visible:
+      id: "UserDetailsForm.EmailInput"
+    timeout: 20000
+- tapOn:
+    id: "UserDetailsForm.EmailInput"
+- inputText: ${output.customer.email}
+- pressKey: Enter
+- tapOn:
+    id: "UserDetailsForm.NameInput"
+- inputText: ${output.customer.name}
+- pressKey: Enter
+- tapOn:
+    id: "UserDetailsForm.PhoneInput"
+- inputText: ${output.customer.phone}
+- pressKey: Enter
+- tapOn:
+    id: "CustomerScreen.Footer"
+# Continue is enabled once the address from the location arrives
+- extendedWaitUntil:
+    visible:
+      id: "AddressScreen.Footer"
+      enabled: true
+    timeout: 20000
+- tapOn:
+    id: "AddressScreen.Footer"
+- extendedWaitUntil:
+    visible:
+      id: "CheckoutScreen.Footer"
+    timeout: 20000

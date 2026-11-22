@@ -6,8 +6,8 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { useStyles } from "react-native-unistyles";
-import customCardStyleSheet from "../../styles/components/CustomCard";
+import { useUnistyles } from "react-native-unistyles";
+import styles from "../../styles/components/CustomCard";
 
 export type CustomCardPropsType = PropsWithChildren & {
   onPress?: () => void;
@@ -31,34 +31,43 @@ const CustomCard = ({
   testID,
   showEditLabel,
 }: CustomCardPropsType) => {
-  const { styles, theme } = useStyles(customCardStyleSheet);
-  const mixedStyles: StyleProp<ViewStyle> = { ...styles.container };
-  const mixedContentStyles: StyleProp<ViewStyle> = { ...styles.content };
+  const { theme } = useUnistyles();
+  // Unistyles 3 styles can't be spread, so the overrides go in arrays
+  const mixedStyles: StyleProp<ViewStyle> = [
+    styles.container,
+    variant === "warning" && { backgroundColor: theme.colors.warning },
+  ];
+  const mixedContentStyles: StyleProp<ViewStyle> = [
+    styles.content,
+    orientation === "vertical" && { flexDirection: "column" },
+  ];
 
-  if (variant === "warning") {
-    mixedStyles.backgroundColor = theme.colors.warning;
-  }
+  if (isLoading) return null;
 
-  if (orientation === "vertical") {
-    mixedContentStyles.flexDirection = "column";
-  }
+  const card = (
+    <View style={mixedStyles} testID={onPress ? undefined : testID}>
+      {headerText ? (
+        <CustomCardHeader
+          text={headerText}
+          style={styles}
+          showEditLabel={showEditLabel}
+        />
+      ) : null}
+      <View style={mixedContentStyles}>{children}</View>
+    </View>
+  );
 
-  return isLoading ? null : (
+  // A touchable is a single accessibility element on iOS and hides the testID of
+  // everything inside it, so a card without onPress (the forms) is a plain View
+  if (!onPress) return card;
+
+  return (
     <TouchableWithoutFeedback
       onPress={onPress}
       disabled={disabled}
       testID={testID}
     >
-      <View style={mixedStyles}>
-        {headerText ? (
-          <CustomCardHeader
-            text={headerText}
-            style={styles}
-            showEditLabel={showEditLabel}
-          />
-        ) : null}
-        <View style={mixedContentStyles}>{children}</View>
-      </View>
+      {card}
     </TouchableWithoutFeedback>
   );
 };

@@ -3,19 +3,19 @@ import {
   GooglePlacesAutocomplete,
   GooglePlacesAutocompleteRef,
 } from "react-native-google-places-autocomplete";
-import { useStyles } from "react-native-unistyles";
+import { useUnistyles } from "react-native-unistyles";
 import { GOOGLE_MAPS_API_KEY } from "../../constants/config";
 import { useOrderContext } from "../../contexts/OrderContext";
 import useLocation from "../../hooks/useLocation";
 import { useAppDispatch } from "../../redux/hooks";
 import { setAddressData } from "../../redux/order/reducer";
-import addressDetailsFormStyleSheet from "../../styles/components/AddressDetailsForm";
+import styles from "../../styles/components/AddressDetailsForm";
 import { formatAddress } from "../../utils/formatAddress";
 import CustomCard from "../common/CustomCard";
 
 const AddressDetailsForm = () => {
   const dispatch = useAppDispatch();
-  const { styles, theme } = useStyles(addressDetailsFormStyleSheet);
+  const { theme } = useUnistyles();
   const ref = useRef<GooglePlacesAutocompleteRef>(null);
   const { getFormatedAddress } = useLocation();
   const { orderData } = useOrderContext();

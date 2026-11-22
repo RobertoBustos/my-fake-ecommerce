@@ -1,6 +1,6 @@
-import { createStyleSheet } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
-const loadingSpinnerStyleSheet = createStyleSheet((theme) => ({
+const loadingSpinnerStyleSheet = StyleSheet.create((theme) => ({
     loader: {
         flex: 1,
     },

@@ -1,4 +1,4 @@
-import { StaticScreenProps } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React from "react";
 import Layout from "../components/Layout";
 import Product from "../components/product/Product";
@@ -6,9 +6,7 @@ import ProductFooter from "../components/product/ProductFooter";
 import { RootStackParamList } from "../constants/types";
 import ProductStore from "../contexts/ProductContext";
 
-export type ProductScreenPropsType = StaticScreenProps<
-  RootStackParamList["Product"]
->;
+export type ProductScreenPropsType = NativeStackScreenProps<RootStackParamList, "Product">;
 
 const ProductScreen = ({ route }: ProductScreenPropsType) => {
   return (

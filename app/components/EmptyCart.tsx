@@ -1,10 +1,10 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Text, View } from "react-native";
-import { useStyles } from "react-native-unistyles";
-import emptyCartStyleSheet from "../styles/components/EmptyCart";
+import { useUnistyles } from "react-native-unistyles";
+import styles from "../styles/components/EmptyCart";
 
 const EmptyCart = () => {
-  const { styles, theme } = useStyles(emptyCartStyleSheet);
+  const { theme } = useUnistyles();
 
   return (
     <View style={styles.container} testID="EmptyCart.Container">

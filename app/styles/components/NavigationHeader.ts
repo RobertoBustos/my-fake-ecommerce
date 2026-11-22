@@ -1,6 +1,9 @@
-import { createStyleSheet } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
-const navigationHeaderStyleSheet = createStyleSheet(theme => ({
+const navigationHeaderStyleSheet = StyleSheet.create(theme => ({
+    statusBarArea: {
+        backgroundColor: theme.colors.primary
+    },
     container: {
         height: 50,
         flexDirection: "row",

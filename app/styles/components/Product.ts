@@ -1,7 +1,7 @@
 import { Platform } from "react-native";
-import { createStyleSheet } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
-const productStyleSheet = createStyleSheet(theme => ({
+const productStyleSheet = StyleSheet.create(theme => ({
     scrollContainer: {
         alignItems: "center",
         justifyContent: "center",

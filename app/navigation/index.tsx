@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { useStyles } from "react-native-unistyles";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { RootStackParamList } from "../constants/types";
 import { useAuthContext } from "../contexts/AuthContext";
 import useAppState from "../hooks/useAppState";
@@ -19,8 +19,10 @@ import NavigationHeader from "./NavigationHeader";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const RootStack = () => {
-  const { theme } = useStyles();
   const { user, isInitializing } = useAuthContext();
+  // Screens draw edge-to-edge, so their content is kept above the home indicator
+  // and the navigation bar
+  const insets = useSafeAreaInsets();
   useInitialFetch(user?.uid);
   useAppState();
 
@@ -39,7 +41,9 @@ const RootStack = () => {
     <Stack.Navigator
       screenOptions={{
         animation: "slide_from_right",
-        statusBarBackgroundColor: theme.colors.primary,
+        contentStyle: { paddingBottom: insets.bottom },
+        // The header extends under the status bar, so its text and icons stay light
+        statusBarStyle: "light",
         header: (props) => {
           return <NavigationHeader {...props} />;
         },

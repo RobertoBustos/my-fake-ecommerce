@@ -1,7 +1,7 @@
 import { Platform } from "react-native";
-import { createStyleSheet } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
-const quantityButtonsStyleSheet = createStyleSheet(theme => ({
+const quantityButtonsStyleSheet = StyleSheet.create(theme => ({
     container: {
         flexDirection: "row",
         height: "auto",

@@ -1,6 +1,6 @@
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client/react";
 import { useCallback } from "react";
-import { CartItemType, ConnectionType, nodesOf } from "../constants/types";
+import { CartItemType, ConnectionType, MutationResponseType, dataOf, nodesOf } from "../constants/types";
 import { ADD_PRODUCT, REMOVE_PRODUCT } from "../graphql/mutations";
 import { GET_CART } from "../graphql/queries";
 
@@ -18,12 +18,12 @@ export type RemoveFromCartInput = {
 
 const useCart = () => {
     const [getCart, { loading: isLoading, refetch: reloadCart }] = useLazyQuery<{ carts: ConnectionType<CartItemType> }>(GET_CART, { fetchPolicy: "no-cache" })
-    const [addToCart, { loading: isAdding }] = useMutation(ADD_PRODUCT);
-    const [removeFromCart, { loading: isRemoving }] = useMutation(REMOVE_PRODUCT);
+    const [addToCart, { loading: isAdding }] = useMutation<{ addToCart: MutationResponseType<CartItemType> }>(ADD_PRODUCT);
+    const [removeFromCart, { loading: isRemoving }] = useMutation<{ removeFromCart: MutationResponseType }>(REMOVE_PRODUCT);
 
     // Items of the cart that are not in an order yet
-    const fetchCart = useCallback(async (id: string, pollInterval: number = 0): Promise<CartItemType[]> => {
-        const response = await getCart({ variables: { cartId: id, first: 100 }, pollInterval })
+    const fetchCart = useCallback(async (id: string): Promise<CartItemType[]> => {
+        const response = await getCart({ variables: { cartId: id, first: 100 } })
         return nodesOf(response.data?.carts)
     }, [getCart])
 
@@ -34,7 +34,7 @@ const useCart = () => {
                     input: input,
                 }
             })
-            return response.data.addToCart.data as CartItemType
+            return dataOf(response.data).addToCart.data as CartItemType
         } catch (error) {
             throw error as Error
         }
@@ -47,7 +47,7 @@ const useCart = () => {
                     input: input,
                 }
             })
-            return response.data.removeFromCart
+            return dataOf(response.data).removeFromCart
         } catch (error) {
             throw error as Error
         }

@@ -1,9 +1,11 @@
-import { ApolloClient, ApolloLink, HttpLink, InMemoryCache, from, fromPromise } from "@apollo/client";
+import { ApolloClient, ApolloLink, HttpLink, InMemoryCache } from "@apollo/client";
 import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
-import { setContext } from "@apollo/client/link/context";
-import { onError } from "@apollo/client/link/error";
+import { CombinedGraphQLErrors, ServerError } from "@apollo/client/errors";
+import { SetContextLink } from "@apollo/client/link/context";
+import { ErrorLink } from "@apollo/client/link/error";
 import { User, signOut } from "firebase/auth";
 import "react-native-get-random-values";
+import { from, map, mergeMap } from "rxjs";
 import { v4 as uuidv4 } from "uuid";
 import { API_URL, REQUEST_TIMEOUT_MS } from "../constants/config";
 import { ApiErrorCode } from "../utils/apiErrors";
@@ -24,20 +26,22 @@ const requestIdLink = new ApolloLink((operation, forward) => {
     requestId,
     headers: { ...headers, "X-Request-Id": requestId },
   }))
-  return forward(operation).map((result) => {
-    if (!result.errors) return result
-    return {
-      ...result,
-      errors: result.errors.map((error) => ({
-        ...error,
-        extensions: { ...error.extensions, requestId },
-      })),
-    }
-  })
+  return forward(operation).pipe(
+    map((result) => {
+      if (!result.errors) return result
+      return {
+        ...result,
+        errors: result.errors.map((error) => ({
+          ...error,
+          extensions: { ...error.extensions, requestId },
+        })),
+      }
+    })
+  )
 })
 
 // The SDK returns the cached ID token and refreshes it only when it is close to expiry
-const authLink = setContext(async (_, { headers = {} }) => {
+const authLink = new SetContextLink(async ({ headers = {} }) => {
   const token = await auth.currentUser?.getIdToken()
   if (!token) return { headers }
   return { headers: { ...headers, Authorization: `Bearer ${token}` } }
@@ -51,13 +55,21 @@ const renewToken = (user: User) => user.getIdToken(true).catch(async (error) => 
   throw error
 })
 
-const errorLink: ApolloLink = onError(({ graphQLErrors, networkError, operation, forward }) => {
-  // onError does not run for the result of a retry, so it goes through this link again
-  const retry = () => errorLink.request(operation, forward)!
+const hasErrorCode = (error: unknown, code: ApiErrorCode, retryable?: boolean) =>
+  CombinedGraphQLErrors.is(error) &&
+  error.errors.some(
+    (graphQLError) =>
+      graphQLError.extensions?.code === code &&
+      (retryable === undefined || graphQLError.extensions?.retryable === retryable)
+  )
+
+const errorLink: ApolloLink = new ErrorLink(({ error, operation, forward }) => {
+  // The error link does not run for the result of a retry, so it goes through this link again
+  const retry = () => errorLink.request(operation, forward)
   const context = operation.getContext()
   const isUnauthenticated =
-    (networkError && "statusCode" in networkError && networkError.statusCode === 401) ||
-    graphQLErrors?.some((error) => error.extensions?.code === ApiErrorCode.UNAUTHENTICATED)
+    (ServerError.is(error) && error.statusCode === 401) ||
+    hasErrorCode(error, ApiErrorCode.UNAUTHENTICATED)
 
   if (isUnauthenticated) {
     if (context.authRetried || !auth.currentUser) {
@@ -67,29 +79,21 @@ const errorLink: ApolloLink = onError(({ graphQLErrors, networkError, operation,
     }
     // Force the token renewal once and retry
     operation.setContext({ authRetried: true })
-    return fromPromise(renewToken(auth.currentUser)).flatMap(retry)
+    return from(renewToken(auth.currentUser)).pipe(mergeMap(retry))
   }
 
   const conflictRetries: number = context.conflictRetries ?? 0
-  const isRetryableConflict = graphQLErrors?.some(
-    (error) => error.extensions?.code === ApiErrorCode.CONFLICT && error.extensions?.retryable === true
-  )
-  if (isRetryableConflict && conflictRetries < MAX_CONFLICT_RETRIES) {
+  if (hasErrorCode(error, ApiErrorCode.CONFLICT, true) && conflictRetries < MAX_CONFLICT_RETRIES) {
     operation.setContext({ conflictRetries: conflictRetries + 1 })
-    return fromPromise(delay(CONFLICT_RETRY_DELAY_MS)).flatMap(retry)
+    return from(delay(CONFLICT_RETRY_DELAY_MS)).pipe(mergeMap(retry))
   }
 
-  if (graphQLErrors) {
-    graphQLErrors.map((error) => {
-      console.error(`[${context.requestId}] ${error.extensions?.code}: ${error.message}`)
+  if (CombinedGraphQLErrors.is(error)) {
+    error.errors.forEach((graphQLError) => {
+      console.error(`[${context.requestId}] ${graphQLError.extensions?.code}: ${graphQLError.message}`)
     })
-  }
-  if (networkError) {
-    console.error(`[${context.requestId}] ${networkError.message}`)
-    // A non-2xx answer does not go through requestIdLink as a result
-    graphQLErrors?.forEach((error) => {
-      Object.assign(error, { extensions: { ...error.extensions, requestId: context.requestId } })
-    })
+  } else {
+    console.error(`[${context.requestId}] ${error.message}`)
   }
 })
 
@@ -101,7 +105,7 @@ const fetchWithTimeout: typeof fetch = (input, init) => {
   return fetch(input, { ...init, signal: controller.signal }).finally(() => clearTimeout(timeout))
 }
 
-const link = from([
+const link = ApolloLink.from([
   requestIdLink, errorLink, authLink, new HttpLink({ uri: API_URL, fetch: fetchWithTimeout })
 ])
 

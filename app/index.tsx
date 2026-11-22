@@ -1,4 +1,5 @@
-import { AppRegistry } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import RootContext from "./contexts";
 import RootStack from "./navigation";
 if (__DEV__) {
@@ -7,10 +8,12 @@ if (__DEV__) {
 
 export default function Index() {
   return (
-    <RootContext>
-      <RootStack />
-    </RootContext>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <RootContext>
+          <RootStack />
+        </RootContext>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
-
-AppRegistry.registerComponent("MyFakeEcommerce", () => Index);

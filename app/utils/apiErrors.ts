@@ -1,4 +1,4 @@
-import { ApolloError, ServerError } from "@apollo/client";
+import { CombinedGraphQLErrors, ServerError, ServerParseError } from "@apollo/client/errors";
 import { GraphQLFormattedError } from "graphql";
 
 export enum ApiErrorCode {
@@ -31,13 +31,25 @@ export type ApiErrorExtensions = {
 export class UnsuccessfulMutationError extends Error { }
 
 const getFirstError = (error: unknown): GraphQLFormattedError | undefined => {
-    if (error instanceof ApolloError) {
-        // A non-2xx answer arrives as a network error, with the GraphQL errors in its result
-        const result = (error.networkError as ServerError | null)?.result
-        return error.graphQLErrors[0] ?? (typeof result === "object" ? result?.errors?.[0] : undefined)
+    if (CombinedGraphQLErrors.is(error)) {
+        return error.errors[0]
+    }
+    // A non-2xx answer sent as application/json arrives unparsed, but its body can still hold the GraphQL errors
+    if (ServerError.is(error)) {
+        try {
+            return JSON.parse(error.bodyText)?.errors?.[0]
+        } catch {
+            return undefined
+        }
     }
     return undefined
 }
+
+// The request never got a GraphQL answer: no connection, the timeout, or a body that is not GraphQL
+const isNetworkError = (error: unknown): boolean =>
+    ServerError.is(error) ||
+    ServerParseError.is(error) ||
+    (error instanceof Error && (error.name === "AbortError" || error.message === "Network request failed"))
 
 // Decide by extensions.code, never by the text of the message
 export const getErrorExtensions = (error: unknown): ApiErrorExtensions => {
@@ -66,7 +78,7 @@ export const getErrorMessage = (error: unknown): string => {
         }
         return graphQLError.message
     }
-    if (error instanceof ApolloError && error.networkError) {
+    if (isNetworkError(error)) {
         return "We could not reach the store, please try again"
     }
     if (error instanceof Error) {

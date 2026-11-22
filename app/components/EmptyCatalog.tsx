@@ -1,7 +1,7 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Text, View } from "react-native";
-import { useStyles } from "react-native-unistyles";
-import emptyCatalogStyleSheet from "../styles/components/EmptyCatalog";
+import { useUnistyles } from "react-native-unistyles";
+import styles from "../styles/components/EmptyCatalog";
 import CustomButton from "./common/CustomButton";
 import { ReloadButton } from "./common/IconButtons";
 
@@ -10,7 +10,7 @@ export type EmptyCatalogPropsType = {
 };
 
 const EmptyCatalog = ({ onRetry }: EmptyCatalogPropsType) => {
-  const { styles, theme } = useStyles(emptyCatalogStyleSheet);
+  const { theme } = useUnistyles();
 
   return (
     <View style={styles.container} testID="EmptyCatalog.Container">

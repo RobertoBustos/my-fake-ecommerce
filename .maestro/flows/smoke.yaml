@@ -1,0 +1,13 @@
+appId: ${MAESTRO_APP_ID}
+tags:
+  - smoke
+---
+- runFlow: ../subflows/launch-clean.yaml
+# The anonymous session and the first page of the catalog; the API can take a few seconds on a cold start
+- extendedWaitUntil:
+    visible:
+      id: "Catalog.Container"
+    timeout: 30000
+- assertVisible: "Products"
+- assertVisible:
+    id: "CatalogItemCard\\.CardContainer-.*"

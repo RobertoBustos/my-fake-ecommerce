@@ -1,6 +1,6 @@
-import { createStyleSheet } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
-const orderConfirmationItemStyleSheet = createStyleSheet(theme => ({
+const orderConfirmationItemStyleSheet = StyleSheet.create(theme => ({
     container: {
         flexDirection: "row",
         alignItems: "center",

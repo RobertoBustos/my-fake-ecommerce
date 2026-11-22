@@ -1,4 +1,4 @@
-import { StaticScreenProps } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React from "react";
 import Layout from "../components/Layout";
 import Address from "../components/address/Address";
@@ -7,7 +7,7 @@ import AddressHeader from "../components/address/AddressHeader";
 import { RootStackParamList } from "../constants/types";
 import OrderStore from "../contexts/OrderContext";
 
-type AddressScreenPropsType = StaticScreenProps<RootStackParamList["Address"]>;
+type AddressScreenPropsType = NativeStackScreenProps<RootStackParamList, "Address">;
 
 const AddressScreen = ({ route }: AddressScreenPropsType) => {
   return (

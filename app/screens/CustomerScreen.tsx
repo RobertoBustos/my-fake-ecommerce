@@ -1,4 +1,4 @@
-import { StaticScreenProps } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React from "react";
 import Layout from "../components/Layout";
 import Customer from "../components/customer/Customer";
@@ -7,9 +7,7 @@ import CustomerHeader from "../components/customer/CustomerHeader";
 import { RootStackParamList } from "../constants/types";
 import OrderStore from "../contexts/OrderContext";
 
-type CustomerScreenPropsType = StaticScreenProps<
-  RootStackParamList["Customer"]
->;
+type CustomerScreenPropsType = NativeStackScreenProps<RootStackParamList, "Customer">;
 
 const CustomerScreen = ({ route }: CustomerScreenPropsType) => {
   return (

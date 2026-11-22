@@ -11,22 +11,17 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: getAppName(),
   slug: "my-fake-ecommerce",
-  version: "1.0.0",
+  version: "1.2.0",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
   scheme: "myapp",
   userInterfaceStyle: "automatic",
-  newArchEnabled: true,
   ios: {
-    config: {
-      googleMapsApiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY
-    },
     supportsTablet: true,
     bundleIdentifier: process.env.UNIQUE_IDENTIFIER,
     infoPlist: {
       "ITSAppUsesNonExemptEncryption": false,
-      "NSLocationWhenInUseUsageDescription": "We use your location to display your current position on the map",
-      "NSLocationAlwaysAndWhenInUseUsageDescription": "We use your location to display your current position on the map",
+      // Stripe's Payment Sheet offers card scanning only when this is set
       "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera."
     },
     icon: {
@@ -36,27 +31,65 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     }
   },
   android: {
-    config: {
-      googleMaps: {
-        apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY
-      }
-    },
     adaptiveIcon: {
       foregroundImage: "./assets/icons/adaptive-icon.png",
       monochromeImage: "./assets/icons/adaptive-icon.png",
       backgroundColor: "#ffffff"
     },
     package: process.env.UNIQUE_IDENTIFIER,
-    permissions: ["CAMERA", "ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION", "ACCESS_BACKGROUND_LOCATION"]
+    permissions: ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
+    // The template and libraries can add these back; nothing in the app needs them
+    blockedPermissions: [
+      "android.permission.ACCESS_BACKGROUND_LOCATION",
+      "android.permission.READ_EXTERNAL_STORAGE",
+      "android.permission.WRITE_EXTERNAL_STORAGE",
+      "android.permission.SYSTEM_ALERT_WINDOW"
+    ]
   },
   web: {
     bundler: "metro",
-    output: "static",
+    output: "single",
     favicon: "./assets/images/favicon.png"
   },
   plugins: [
-    "expo-router",
+    [
+      "expo-build-properties",
+      {
+        ios: {
+          // The minimum since Expo SDK 56
+          deploymentTarget: "16.4",
+          // Stripe 0.78+ gets its iOS SDK through Swift Package Manager, which needs dynamic frameworks
+          useFrameworks: "dynamic",
+        },
+        android: {
+          // R8 strips the Room database that WorkManager (from react-native-maps) creates by
+          // name, and the app crashes at launch
+          extraProguardRules: "-keep class * extends androidx.room.RoomDatabase { <init>(); }",
+        },
+      },
+    ],
+    // The location is only read while the app is open, to prefill the delivery address. Setting
+    // a permission to false keeps the plugin from adding its default text for it
+    [
+      "expo-location",
+      {
+        locationWhenInUsePermission: "We use your location to prefill your delivery address and show it on the map",
+        locationAlwaysAndWhenInUsePermission: false,
+        locationAlwaysPermission: false,
+        locationFullAccuracyPermission: false,
+        motionUsagePermission: false,
+      },
+    ],
     "./plugins/withIosMinimumDeploymentTarget",
+    "./plugins/withFmtCxx17",
+    // react-native-maps 1.21+ replaced the pod that ios.config.googleMapsApiKey adds
+    [
+      "react-native-maps",
+      {
+        iosGoogleMapsApiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY,
+        androidGoogleMapsApiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY
+      }
+    ],
     [
       "expo-splash-screen",
       {

@@ -1,6 +1,6 @@
-import { createStyleSheet } from "react-native-unistyles";
+import { StyleSheet } from "react-native-unistyles";
 
-const summaryCardRowStyleSheet = createStyleSheet((theme) => ({
+const summaryCardRowStyleSheet = StyleSheet.create((theme) => ({
     rowContainer: {
         paddingVertical: 4,
         flexDirection: "row",

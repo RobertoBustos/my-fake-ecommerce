@@ -6,6 +6,61 @@ follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-11-23
+
+### Added
+
+- Dependabot opens weekly update PRs into `dev` for npm and GitHub Actions,
+  except for the packages the Expo SDK pins, which move with each SDK upgrade.
+- expo-notifications, configured for push without any logic yet: the iOS push
+  entitlement, the Android notification icon and color, and the Firebase
+  `google-services.json`, which Android builds take from `GOOGLE_SERVICES_JSON`
+  when it is set.
+- Order notifications show as a banner while the app is open, except when that
+  order is already on screen, and Android gets an "Orders" channel. Tapping one
+  opens the order, with the app open, in the background or closed. The app also
+  opens `myapp://orders/<orderId>` links; any other notification opens the
+  catalog. `.maestro/push/` has the test notifications for the iOS simulator.
+- Before the first payment the app asks whether to get notified when the payment
+  is confirmed; the system's permission dialog shows only if the user accepts.
+  With the permission, the app registers its push token with the API at every
+  startup and for every new account, and deletes it before signing out.
+- The confirmation screen's header follows the order's status: "Awaiting
+  Payment" for an order opened from a "Payment failed" notification or a link,
+  "Order Cancelled" for one the API cancelled, and "Confirming Payment" right
+  after paying in the app. `.maestro/push/` also has the "Order cancelled" test
+  notification.
+
+### Changed
+
+- The E2E checks skip pull requests that only change Markdown files. The
+  Maestro flows scroll until the test product's price shows, close the iOS 27
+  number pad by tapping a label, and deny notifications on a clean launch, so
+  the simulator doesn't retry APNs in a loop on CI.
+- The CI Android emulator has a phone-sized screen (Pixel 6), so every Maestro
+  flow passes on it, and the payment flow scrolls the Payment Sheet to its Pay
+  button.
+
+### Fixed
+
+- The address search shows its suggestions again. They had been hidden since
+  the map was added, so without the location the address could not be entered
+  and the order could not continue. A long suggestion wraps to a second line
+  instead of running off the screen.
+- `yarn start` works again. The config still turned on expo-router's typed
+  routes, so the dev server crashed looking for expo-router.
+- The confirmation screen no longer floods the API while the payment is being
+  confirmed. It reloaded the order on every render, and each reload remounted
+  the screen, so a payment that took a while sent thousands of requests a
+  minute. It now checks every 1.5 seconds for up to 30 seconds and then offers
+  to try again. An order screen also stays mounted while its order refetches,
+  and "try again" loads an order that failed to load instead of doing nothing.
+- "Complete Your Payment" on an unpaid order opens that order's checkout, with
+  the catalog below it, instead of emptying the cart and going to the catalog.
+  The screen shows the unpaid or cancelled order's items right away instead of
+  waiting for a payment, and leaving a paid order only renews the cart when the
+  order used the current one.
+
 ## [1.2.0] - 2026-11-22
 
 ### Added

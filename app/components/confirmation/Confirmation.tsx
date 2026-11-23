@@ -1,23 +1,76 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { useEffect, useRef, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useUnistyles } from "react-native-unistyles";
-import { CartItemType } from "../../constants/types";
+import { PAYMENT_POLL_INTERVAL_MS, PAYMENT_POLL_TIMEOUT_MS } from "../../constants/config";
+import { CartItemType, Status } from "../../constants/types";
 import { useOrderContext } from "../../contexts/OrderContext";
 import styles from "../../styles/components/Confirmation";
 import orderConfirmationItemStyleSheet from "../../styles/components/OrderConfirmationItem";
 import { formatCurrency } from "../../utils/formatCurrency";
 import AddressSummary from "../AddressSummary";
+import EmptyOrder from "../EmptyOrder";
 import CustomerSummary from "../CustomerSummary";
 import OrderSummary from "../OrderSummary";
 import PaymentSummary from "../PaymentSummary";
 import CustomImage from "../common/CustomImage";
 import LoadingScreen from "../common/LoadingScreen";
 
-const Confirmation = () => {
-  const { orderData, reloadOrder } = useOrderContext();
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  if (!orderData || orderData.payment === null) {
-    reloadOrder();
+const Confirmation = () => {
+  const { orderData, reloadOrder, isPaymentExpected } = useOrderContext();
+  const [isWaiting, setIsWaiting] = useState<boolean>(true);
+  // There is no payment to wait for when the order was cancelled, or when it awaits payment
+  // and was opened from a notification or a link instead of right after paying
+  const isNotPaid =
+    orderData?.status === Status.CANCELLED ||
+    (orderData?.status === Status.PAYMENT_PENDING && !isPaymentExpected);
+  const isPaymentMissing = orderData?.payment === null && !isNotPaid;
+  // Each reload renders again, so the latest function is read from a ref instead of
+  // restarting the wait
+  const reloadOrderRef = useRef(reloadOrder);
+  useEffect(() => {
+    reloadOrderRef.current = reloadOrder;
+  });
+
+  // The Stripe webhook adds the payment, so the order is checked again with a pause between
+  // checks and for a limited time. A failed check waits like any other
+  useEffect(() => {
+    if (!isPaymentMissing || !isWaiting) return;
+    let isCancelled = false;
+    const waitForPayment = async () => {
+      const deadline = Date.now() + PAYMENT_POLL_TIMEOUT_MS;
+      while (Date.now() < deadline) {
+        await delay(PAYMENT_POLL_INTERVAL_MS);
+        if (isCancelled) return;
+        await reloadOrderRef.current().catch(() => undefined);
+        if (isCancelled) return;
+      }
+      setIsWaiting(false);
+    };
+    waitForPayment();
+    return () => {
+      isCancelled = true;
+    };
+  }, [isPaymentMissing, isWaiting]);
+
+  // OrderStore shows the first load, so here the order failed to load. Retrying is up to
+  // the user, so a failing API gets one request per tap
+  if (!orderData) {
+    return <EmptyOrder onRetry={reloadOrder} />;
+  }
+
+  if (isPaymentMissing && !isWaiting) {
+    return (
+      <EmptyOrder
+        message="We are still confirming your payment, try again in a moment"
+        onRetry={() => setIsWaiting(true)}
+      />
+    );
+  }
+
+  if (isPaymentMissing) {
     return <LoadingScreen />;
   }
 
@@ -30,7 +83,7 @@ const Confirmation = () => {
       {orderData.details.map((item) => {
         return <OrderConfirmationItem data={item} key={item.id} />;
       })}
-      <PaymentSummary data={orderData.payment.paymentDetails} />
+      {orderData.payment && <PaymentSummary data={orderData.payment.paymentDetails} />}
       <OrderSummary data={orderData.totals} />
       <CustomerSummary data={orderData.customer} />
       <AddressSummary data={orderData.address} />

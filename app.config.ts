@@ -11,7 +11,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: getAppName(),
   slug: "my-fake-ecommerce",
-  version: "1.2.0",
+  version: "1.3.0",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
   scheme: "myapp",
@@ -37,6 +37,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       backgroundColor: "#ffffff"
     },
     package: process.env.UNIQUE_IDENTIFIER,
+    // FCM delivers the push notifications. The file is only set when the variable is, so a build
+    // without it, like the one the e2e-android check makes, still compiles
+    ...(process.env.GOOGLE_SERVICES_JSON && { googleServicesFile: process.env.GOOGLE_SERVICES_JSON }),
     permissions: ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
     // The template and libraries can add these back; nothing in the app needs them
     blockedPermissions: [
@@ -80,6 +83,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         motionUsagePermission: false,
       },
     ],
+    // Adds the iOS push entitlement and the Android notification icon. The app creates the orders
+    // channel; until it does, Android shows the notifications in a fallback channel
+    [
+      "expo-notifications",
+      {
+        icon: "./assets/icons/notification-icon.png",
+        color: "#000040",
+        defaultChannel: "orders",
+      },
+    ],
     "./plugins/withIosMinimumDeploymentTarget",
     "./plugins/withFmtCxx17",
     // react-native-maps 1.21+ replaced the pod that ios.config.googleMapsApiKey adds
@@ -104,13 +117,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       }
     ]
   ],
-  experiments: {
-    typedRoutes: true
-  },
   extra: {
-    router: {
-      origin: false
-    },
     eas: {
       projectId: "83be7d54-e5d5-43d8-b734-91a1c965d45f"
     }

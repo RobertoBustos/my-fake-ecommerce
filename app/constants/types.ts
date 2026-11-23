@@ -8,7 +8,8 @@ export type RootStackParamList = {
     Customer: { orderId: string, goBack?: boolean }
     Address: { orderId: string, goBack?: boolean }
     Checkout: { orderId: string }
-    Confirmation: { orderId: string }
+    // afterPayment: opened right after paying in the app, so the payment is on its way
+    Confirmation: { orderId: string, afterPayment?: boolean }
 }
 
 export type ProductType = {

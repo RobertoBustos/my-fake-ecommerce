@@ -1,0 +1,11 @@
+{
+  "aps": {
+    "alert": { "title": "Order cancelled", "body": "Your order expired before it was paid." },
+    "sound": "default"
+  },
+  "body": {
+    "type": "order_cancelled",
+    "orderId": "ORDER_ID",
+    "url": "myapp://orders/ORDER_ID"
+  }
+}

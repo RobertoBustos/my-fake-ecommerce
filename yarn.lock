@@ -2170,10 +2170,10 @@
     protobufjs "^7.2.5"
     yargs "^17.7.2"
 
-"@hookform/resolvers@^7.0.6":
-  version "7.0.6"
-  resolved "https://registry.yarnpkg.com/@hookform/resolvers/-/resolvers-7.0.6.tgz#c5a489b153989670bec2824dc5f2e29cf305d21c"
-  integrity sha512-LSTMwW4tmRWtM7pS5HkSqahi71USbhrmjc9pNHNa7UyYTbKIK/e0G1EAw6xsEnp9GahTjXhunxRJp0Bd8E6NZA==
+"@hookform/resolvers@^7.0.8":
+  version "7.0.8"
+  resolved "https://registry.yarnpkg.com/@hookform/resolvers/-/resolvers-7.0.8.tgz#580a251b31002460189ca76ffe94409a7dbe0a77"
+  integrity sha512-44+R4PUy3MWIBJR4sOjW0bZaz+H81k26urkTYeXAvEa8h45ueHrvQpZR/96iyLOobL6/yO0BJTaRPwwyDlL1/A==
   dependencies:
     "@standard-schema/utils" "^0.3.0"
 
@@ -3194,10 +3194,10 @@
   dependencies:
     nanoid "^3.3.20"
 
-"@reduxjs/toolkit@^2.14.0":
-  version "2.14.0"
-  resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-2.14.0.tgz#4977d4f7f889e634eeb7381becc5b5648fecf051"
-  integrity sha512-m/PxMwRe0xLL6XUsAgy0YjInklHcfi9uMwFhJk+QINqjxqPvyc89T5cMjszA5bDmTE0gwGc7zr9LRO4gL+mhaw==
+"@reduxjs/toolkit@^2.15.0":
+  version "2.15.0"
+  resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-2.15.0.tgz#095b0a37eda330dbbfaba43868ea361b2adaa5c5"
+  integrity sha512-tHrFdR/AAbhhnL0/D3Abu60mAeyRqMAaq3pMeIKWRFWpzZek9LbGKk9J2U+Cl43FixzEDaYKk3zUoK7sFl98FA==
   dependencies:
     "@standard-schema/spec" "^1.0.0"
     "@standard-schema/utils" "^0.3.0"

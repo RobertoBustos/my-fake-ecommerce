@@ -14,6 +14,13 @@ follows [Semantic Versioning](https://semver.org/).
   current behavior; components read them with `useFlag` and other code with
   `flagValue`. Test builds can pin flags with the `FLAG_OVERRIDES` variable, and
   ESLint keeps flag SDKs out of the rest of the app.
+- Firebase Remote Config answers the `ops` flags, through React Native
+  Firebase. At launch the app activates the values downloaded in the previous
+  session and fetches new ones in the background; a value published in the
+  console reaches an open app within seconds. iOS builds take the Firebase
+  `GoogleService-Info.plist` from `GOOGLE_SERVICE_INFO_PLIST`; without it the
+  app builds and the flags keep their defaults. Flag keys are snake_case
+  (`checkout_banner`), because Remote Config doesn't accept hyphens.
 
 ## [1.3.0] - 2026-11-23
 

@@ -18,7 +18,7 @@ const getFlagOverrides = (): Record<string, unknown> | undefined => {
   try {
     overrides = JSON.parse(raw);
   } catch {
-    throw new Error('FLAG_OVERRIDES is not valid JSON. Example: {"checkout-banner":"Free shipping"}');
+    throw new Error('FLAG_OVERRIDES is not valid JSON. Example: {"checkout_banner":"Free shipping"}');
   }
   if (typeof overrides !== "object" || overrides === null || Array.isArray(overrides)) {
     throw new Error("FLAG_OVERRIDES must be a JSON object of flag key to value.");
@@ -38,6 +38,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: process.env.UNIQUE_IDENTIFIER,
+    // Firebase's iOS app, for Remote Config. Only set when the variable is: without it the app builds
+    // and runs, and the flags keep their defaults
+    ...(process.env.GOOGLE_SERVICE_INFO_PLIST && { googleServicesFile: process.env.GOOGLE_SERVICE_INFO_PLIST }),
     infoPlist: {
       "ITSAppUsesNonExemptEncryption": false,
       // Stripe's Payment Sheet offers card scanning only when this is set
@@ -114,6 +117,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
     "./plugins/withIosMinimumDeploymentTarget",
     "./plugins/withFmtCxx17",
+    // React Native Firebase (Remote Config): its iOS setup, only when the iOS Firebase file is set
+    "./plugins/withFirebaseIos",
     // react-native-maps 1.21+ replaced the pod that ios.config.googleMapsApiKey adds
     [
       "react-native-maps",

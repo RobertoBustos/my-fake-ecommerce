@@ -10,6 +10,8 @@ export type FlagType = boolean | number | string;
 export type FlagOwner = "release" | "ops";
 
 type BaseFlag<T extends FlagType> = {
+  // snake_case: Remote Config only accepts letters, digits and underscores, and GrowthBook uses the
+  // same rule so both tools name flags alike. The API uses the same key for a flag both read
   key: string;
   default: T;
   description: string;
@@ -31,6 +33,8 @@ export type FlagDefinition<T extends FlagType = FlagType> = OpsFlag<T> | Release
 // only valid value is ""
 type Widen<T> = T extends boolean ? boolean : T extends number ? number : T extends string ? string : never;
 
+export const FLAG_KEY_PATTERN = /^[a-z][a-z0-9_]*$/;
+
 export const defineFlag = <T extends FlagType>(flag: FlagDefinition<T>): FlagDefinition<Widen<T>> =>
   flag as unknown as FlagDefinition<Widen<T>>;
 
@@ -38,7 +42,7 @@ export const flags = {
   // Text of an announcement banner on the checkout screen; empty shows no banner. The API reads
   // the same key from the same tool
   checkoutBanner: defineFlag({
-    key: "checkout-banner",
+    key: "checkout_banner",
     owner: "ops",
     default: "",
     description: "Announcement shown on the checkout screen. Empty: no banner.",

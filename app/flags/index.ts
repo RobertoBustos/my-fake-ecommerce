@@ -1,7 +1,7 @@
 // Everything about feature flags lives in this folder: the rest of the app reads them only through
 // useFlag and flagValue, and never imports a flag SDK (ESLint enforces it)
 import { type Client, OpenFeature, ProviderEvents } from "@openfeature/web-sdk";
-import { useCallback, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import type { FlagDefinition, FlagType } from "./registry";
 
 export { flags } from "./registry";
@@ -30,20 +30,29 @@ const evaluate = <T extends FlagType>(client: Client, flag: FlagDefinition<T>): 
 export const flagValue = <T extends FlagType>(flag: FlagDefinition<T>): T =>
   evaluate(clients[flag.owner], flag);
 
-// Events after which a flag can have a different value
-const CHANGE_EVENTS = [ProviderEvents.Ready, ProviderEvents.ConfigurationChanged, ProviderEvents.ContextChanged];
+// Events after which a flag can have a different value. Release flags only take the value their
+// provider has once it's ready: a newer GrowthBook payload applies on the next screen or launch,
+// never on a screen that's open. Ops flags (kill switches) follow every change at once
+const CHANGE_EVENTS: Record<FlagDefinition["owner"], ProviderEvents[]> = {
+  release: [ProviderEvents.Ready],
+  ops: [ProviderEvents.Ready, ProviderEvents.ConfigurationChanged, ProviderEvents.ContextChanged],
+};
 
-// The flag's value in a component, which re-renders when the value changes. It reads its domain's
-// client directly, because OpenFeature's React SDK binds every hook to a single domain
+// The flag's value in a component. It reads its domain's client directly, because OpenFeature's
+// React SDK binds every hook to a single domain
 export const useFlag = <T extends FlagType>(flag: FlagDefinition<T>): T => {
-  const { owner } = flag;
-  const subscribe = useCallback(
-    (onChange: () => void) => {
-      const client = clients[owner];
-      CHANGE_EVENTS.forEach((event) => client.addHandler(event, onChange));
-      return () => CHANGE_EVENTS.forEach((event) => client.removeHandler(event, onChange));
-    },
-    [owner],
-  );
-  return useSyncExternalStore(subscribe, () => flagValue(flag));
+  const [value, setValue] = useState(() => flagValue(flag));
+
+  // Flags are module constants from the registry, so `flag` keeps its identity between renders
+  useEffect(() => {
+    const client = clients[flag.owner];
+    const update = () => setValue(flagValue(flag));
+    const events = CHANGE_EVENTS[flag.owner];
+    events.forEach((event) => client.addHandler(event, update));
+    // The provider may have become ready between the first render and this effect
+    update();
+    return () => events.forEach((event) => client.removeHandler(event, update));
+  }, [flag]);
+
+  return value;
 };

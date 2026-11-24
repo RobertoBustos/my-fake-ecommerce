@@ -21,6 +21,13 @@ follows [Semantic Versioning](https://semver.org/).
   `GoogleService-Info.plist` from `GOOGLE_SERVICE_INFO_PLIST`; without it the
   app builds and the flags keep their defaults. Flag keys are snake_case
   (`checkout_banner`), because Remote Config doesn't accept hyphens.
+- GrowthBook answers the `release` flags. The app starts from the features
+  cached in AsyncStorage and downloads newer ones at most every 15 minutes, at
+  launch or on returning to the foreground; rollouts split users by their `id`.
+  A release flag keeps its value while a screen is open and takes a new one on
+  the next screen or launch. Each EAS environment has its own client key in
+  `EXPO_PUBLIC_GROWTHBOOK_CLIENT_KEY`; without one, release flags keep their
+  defaults.
 
 ## [1.3.0] - 2026-11-23
 

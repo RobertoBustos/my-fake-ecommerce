@@ -7,6 +7,25 @@ const getAppName = (): string => {
   return process.env.APP_NAME;
 };
 
+// FLAG_OVERRIDES pins feature flags in test builds, as a JSON object of flag key to value. The app
+// reads it from extra.flags, ahead of any remote value
+const getFlagOverrides = (): Record<string, unknown> | undefined => {
+  const raw = process.env.FLAG_OVERRIDES;
+  if (!raw) {
+    return undefined;
+  }
+  let overrides: unknown;
+  try {
+    overrides = JSON.parse(raw);
+  } catch {
+    throw new Error('FLAG_OVERRIDES is not valid JSON. Example: {"checkout-banner":"Free shipping"}');
+  }
+  if (typeof overrides !== "object" || overrides === null || Array.isArray(overrides)) {
+    throw new Error("FLAG_OVERRIDES must be a JSON object of flag key to value.");
+  }
+  return overrides as Record<string, unknown>;
+};
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: getAppName(),
@@ -120,7 +139,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   extra: {
     eas: {
       projectId: "83be7d54-e5d5-43d8-b734-91a1c965d45f"
-    }
+    },
+    flags: getFlagOverrides()
   },
   owner: "robertobustos"
 })

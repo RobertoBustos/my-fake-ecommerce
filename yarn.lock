@@ -2518,6 +2518,16 @@
   resolved "https://registry.yarnpkg.com/@noxcturnal/noxcturnal-win32-x64-msvc/-/noxcturnal-win32-x64-msvc-0.1.14.tgz#ca42816aad309bdce4bdc7d2dd6171464602bcaa"
   integrity sha512-qiiOLLQUYnLZai3traWx90yzMLGZlkvwGNYMFkGw5MwnMifVgfl3Z3ooFiSYaVKjkTYqxBF9rOCvhFL6yXaoxA==
 
+"@openfeature/core@^1.12.0":
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/@openfeature/core/-/core-1.12.0.tgz#c9c2be428f9ceb1e8aff4e33709efe6005ea99b3"
+  integrity sha512-7PCPzyd1OC19begz30+CRknFB0ChtyaZUhk7YWrk+Bov1fpVw0HYkTXtoxxsvPfDZB9P9WsT7uixN+Z8f9+bcA==
+
+"@openfeature/web-sdk@^1.10.0":
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/@openfeature/web-sdk/-/web-sdk-1.10.0.tgz#fa21c61c46f4fdd9df95839e32f76a6604cbb4dc"
+  integrity sha512-qf+JmJSnaslhegNwoDDLn2Cf72P6cIobuAQPUb61MSkzJOZuVLU6f9pv/90FlLcK6UDtp6od//xZHW712rBrmg==
+
 "@opentelemetry/api-logs@^0.223.0":
   version "0.223.0"
   resolved "https://registry.yarnpkg.com/@opentelemetry/api-logs/-/api-logs-0.223.0.tgz#12819b6542fbde1a394a592214b62990a3ad1615"

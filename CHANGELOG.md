@@ -6,6 +6,15 @@ follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Feature flags module (`app/flags/`) on top of OpenFeature, with one domain per
+  tool (`release` for GrowthBook, `ops` for Remote Config) that no tool answers
+  yet. Every flag is declared once in its registry with a default that keeps the
+  current behavior; components read them with `useFlag` and other code with
+  `flagValue`. Test builds can pin flags with the `FLAG_OVERRIDES` variable, and
+  ESLint keeps flag SDKs out of the rest of the app.
+
 ## [1.3.0] - 2026-11-23
 
 ### Added

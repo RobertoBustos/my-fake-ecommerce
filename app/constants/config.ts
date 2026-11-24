@@ -2,6 +2,8 @@ export const PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY
 export const MERCHANT_ID = process.env.EXPO_PUBLIC_STRIPE_MERCHANT_ID
 export const API_URL = process.env.EXPO_PUBLIC_API_URL
 export const GOOGLE_MAPS_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY
+// Public by design: GrowthBook's client keys only read the features of one SDK connection
+export const GROWTHBOOK_CLIENT_KEY = process.env.EXPO_PUBLIC_GROWTHBOOK_CLIENT_KEY
 
 export const FIREBASE_CONFIG = {
     apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,

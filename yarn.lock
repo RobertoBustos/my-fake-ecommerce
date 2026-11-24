@@ -2145,6 +2145,13 @@
   resolved "https://registry.yarnpkg.com/@graphql-typed-document-node/core/-/core-3.2.0.tgz#5f3d96ec6b2354ad6d8a28bf216a1d97b5426861"
   integrity sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==
 
+"@growthbook/growthbook@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@growthbook/growthbook/-/growthbook-2.2.0.tgz#a4383b898fb6098adba9bfcea64e4213b1e18cae"
+  integrity sha512-21b84B0FU+OvCdSW4RASqw1Z5vsBbNKhY0S3WCqDEtqeOi2Dsk7BFl5MTtNaLJNKr6OEy2sOI1oS6rJMakDjfw==
+  dependencies:
+    dom-mutator "^0.6.0"
+
 "@grpc/grpc-js@~1.13.6", "@grpc/grpc-js@~1.9.0":
   version "1.13.7"
   resolved "https://registry.yarnpkg.com/@grpc/grpc-js/-/grpc-js-1.13.7.tgz#5c8081376aa81a6f2a94b36e0602cbad51853ef9"
@@ -4750,6 +4757,11 @@ doctrine@^2.1.0:
   integrity sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==
   dependencies:
     esutils "^2.0.2"
+
+dom-mutator@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/dom-mutator/-/dom-mutator-0.6.0.tgz#079d7a4b3e8981a562cd777548b99baab51d65c5"
+  integrity sha512-iCt9o0aYfXMUkz/43ZOAUFQYotjGB+GNbYJiJdz4TgXkyToXbbRy5S6FbTp72lRBtfpUMwEc1KmpFEU4CZeoNg==
 
 dom-serializer@^2.0.0:
   version "2.0.0"

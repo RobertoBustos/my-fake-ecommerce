@@ -74,25 +74,40 @@ describe("flags", () => {
     expect(flagValue(maxItems)).toBe(10);
   });
 
-  it("renders the value in a component and re-renders when it changes", async () => {
+  it("re-renders an ops flag when it changes, and keeps a release flag until the next mount", async () => {
     const release = new InMemoryProvider({
       "new_checkout": { variants: { on: true, off: false }, defaultVariant: "off", disabled: false },
     });
     const ops = new InMemoryProvider({
-      "checkout_banner": { variants: { sale: "Sale" }, defaultVariant: "sale", disabled: false },
+      "checkout_banner": { variants: { sale: "Sale", none: "" }, defaultVariant: "sale", disabled: false },
     });
     await OpenFeature.setProviderAndWait("release", release);
     await OpenFeature.setProviderAndWait("ops", ops);
 
-    await render(<FlagText />);
+    const { unmount } = await render(<FlagText />);
     expect(screen.getByText("Sale|false")).toBeTruthy();
 
+    // A kill switch applies on the open screen
+    await act(() =>
+      ops.putConfiguration({
+        "checkout_banner": { variants: { sale: "Sale", none: "" }, defaultVariant: "none", disabled: false },
+      }),
+    );
+    expect(screen.getByText("|false")).toBeTruthy();
+
+    // A release flag doesn't change the open screen
     await act(() =>
       release.putConfiguration({
         "new_checkout": { variants: { on: true, off: false }, defaultVariant: "on", disabled: false },
       }),
     );
-    expect(screen.getByText("Sale|true")).toBeTruthy();
+    expect(screen.getByText("|false")).toBeTruthy();
+    expect(flagValue(newCheckout)).toBe(true);
+
+    // The next screen gets the new value
+    await unmount();
+    await render(<FlagText />);
+    expect(screen.getByText("|true")).toBeTruthy();
   });
 
   it("renders the default until the providers are ready, then the override", async () => {
